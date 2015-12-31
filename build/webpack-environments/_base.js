@@ -37,13 +37,18 @@ const webpackConfig = {
     new webpack.optimize.DedupePlugin(),
     new HtmlWebpackPlugin({
       template: paths.client('index.html'),
-      hash: false,
-      favicon: paths.client('static/favicon.ico'),
+      // hash: false,
+      // favicon: paths.client('static/favicon.ico'),
       filename: 'index.html',
-      inject: 'body',
+      // inject: 'body',
       minify: {
-        collapseWhitespace: true
+        collapseWhitespace: false
       }
+    }),
+    new HtmlWebpackPlugin({
+      title: 'Redirecting...',
+      filename: '200.html',
+      template: paths.client('200.html')
     })
   ],
   resolve: {
