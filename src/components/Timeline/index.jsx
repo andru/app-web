@@ -5,21 +5,30 @@ import scale from 'd3-scale'
 
 import {Cover} from 'components/View'
 
+import TrackGroup from './TrackGroup'
 import Track from './Track'
 import Line from './Line'
 import Marker from './Marker'
 import Period from './Period'
+import TimeAxis from './TimeAxis'
 
+export TrackGroup from './TrackGroup'
 export Track from './Track'
 export Line from './Line'
 export Marker from './Marker'
 export Period from './Period'
+export TimeAxis from './TimeAxis'
+
 
 const defaultStyles = {
-  monthLabels: {
-    fontSize: 12,
-    fontFamily: 'Museo Sans',
-    textAnchor: "middle"
+  svg: {
+    overflow:'visible',
+    userSelect:'none',
+    display: 'flex',
+    flex: 1
+  },
+  backdrop: {
+    fill: '#F5F4E9'
   }
 }
 
@@ -31,7 +40,7 @@ export default class Timeline extends React.Component {
   }
 
   static defaultProps = {
-    height: 30,
+    trackHeight: 50,
     styles: defaultStyles,
     topGutterHeight: 20
   }
@@ -41,7 +50,19 @@ export default class Timeline extends React.Component {
   }
 
   render () {
-    const {children, from, to, height, styles, topGutterHeight} = this.props
+    if (this.props.data) {
+      return this.controlledRender( this.props )
+    }else{
+      return this.assistedRender( this.props )
+    }
+  }
+
+  controlledRender (props) {
+    const {children, data, styles, topGutterHeight} = props
+  }
+
+  assistedRender (props) {
+    const {children, from, to, trackHeight, styles, topGutterHeight} = props
 
     const viewScale = scale.time()
     .domain([from, to])
@@ -51,31 +72,29 @@ export default class Timeline extends React.Component {
     const timeAxisTicks = viewScale.ticks()
 
     const plotX = date => viewScale(date.getTime())
-    const format = viewScale.tickFormat()
+    const formatDate = viewScale.tickFormat()
+
+    var cumulativeY = topGutterHeight
+    const plotY = numChildren => {
+      let y = cumulativeY
+      cumulativeY += trackHeight * numChildren
+      return y
+    }
 
     const newChildren = React.Children.map(children, (child, index) => {
-      // if(!child || !child.type)
-       // || child.type!==Track)
-        // return null;
-      return React.cloneElement(child, {plotX, yPos: height*index+topGutterHeight, height});
+      if (child.type) {
+        return React.cloneElement(child, {plotX, format: formatDate, plotY, trackHeight, ticks: timeAxisTicks, isEven: index%2});
+      }
     }, this);
 
     return (
       <Cover>
-      <svg style={{overflow:'visible',userSelect:'none',width:'100%',height:'100%'}}>
-        <g>
-        {timeAxisTicks
-          .map( date => ({date, xPos:viewScale(date)}) )
-          .map( ({date, xPos}) => <g key={date}>
-            <line x1={xPos} x2={xPos} y1={topGutterHeight} y2={1000} strokeWidths={1} stroke="#ddd" />
-            <text x={xPos} style={{...defaultStyles.monthLabels, ...styles.monthLabels}}>{format(date)}</text>
-          </g> )
-        }
-        </g>
+      <svg style={{...defaultStyles.svg, ...styles.svg}}>
+        <rect x={0} y={0} width="100%" height="100%" style={{...defaultStyles.backdrop, ...styles.backdrop}} />
         {newChildren}
       </svg>
       </Cover>
-    )
+    )    
   }
 }
 

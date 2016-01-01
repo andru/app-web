@@ -18,6 +18,10 @@ function roundedRect(x, y, w, h, [r1=0, r2=0, r3=0, r4=0]){
   return strPath;
 }
 
+const defaultStyle = { 
+  strokeWidth: 0,
+  fillOpacity: 0.5
+}
 
 export default class Period extends React.Component {
   static propTypes = {
@@ -25,6 +29,10 @@ export default class Period extends React.Component {
     from: React.PropTypes.instanceOf(Date).isRequired,
     to: React.PropTypes.instanceOf(Date).isRequired,
     style: React.PropTypes.object
+  }
+
+  static defaultProps = {
+    style: defaultStyle
   }
 
   render () {
@@ -38,6 +46,3 @@ export default class Period extends React.Component {
 }
 
 
-const defaultStyle = { 
-  fill: '#6bc25f', 
-}

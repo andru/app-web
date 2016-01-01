@@ -24,6 +24,5 @@ export default class Line extends React.Component {
 
 const defaultStyle = {
   strokeLinecap: 'round',
-  stroke: '#ccc',
   strokeWidth: 4
 }
