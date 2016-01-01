@@ -11,7 +11,7 @@ import CoreLayout from 'layouts/CoreLayout.jsx'
 import Home from 'views/Home'
 import AboutView from 'views/AboutView'
 
-import TimelineView from 'views/Timeline'
+import TimelineView from 'views/timeline'
 
 export default (
   <Route path='/' component={CoreLayout}>
