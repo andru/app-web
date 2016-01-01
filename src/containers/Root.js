@@ -2,6 +2,8 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router'
 
+import {Cover} from 'components/View'
+
 export default class Root extends React.Component {
   static propTypes = {
     history: React.PropTypes.object.isRequired,
@@ -31,10 +33,10 @@ export default class Root extends React.Component {
   render () {
     return (
       <Provider store={this.props.store}>
-        <div style={{ height: '100%' }}>
+        <Cover>
           {this.content}
           {this.devTools}
-        </div>
+        </Cover>
       </Provider>
     )
   }
