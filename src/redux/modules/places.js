@@ -3,7 +3,6 @@ import { createAction, handleActions } from 'redux-actions'
 // ------------------------------------
 // Constants
 // ------------------------------------
-export const SHOW_CREATE_PLANTING_UI = 'createPlantingUI'
 /*
 export const SHOW_CREATE_EVENT_UI = 'createEventUI'
 export const UPDATE_EVENT = 'updateEvent'
@@ -16,21 +15,21 @@ export const TRASH_EVENT = 'trashEvent'
 export const UPDATE_EVENT = 'updateEvent'
 export const ADD_TIMELINE_EVENT = 'addTimelineEvent'
     */
-export const CREATE_PLANTING = 'create' //create a new planting document
-export const UPDATE_PLANTING = 'update' //updating a planting document
-export const DESTROY_PLANTING = 'destroy' //permanently destroy a planting document
+export const CREATE_PLACE = 'create' //create a new planting document
+export const UPDATE_PLACE = 'update' //updating a planting document
+export const DESTROY_PLACE = 'destroy' //permanently destroy a planting document
 
 
 
 // ------------------------------------
 // Actions
 // ------------------------------------
-export const addPlanting = createAction(SHOW_CREATE_PLANTING_UI, () => value)
+// export const addPlanting = createAction(SHOW_CREATE_PLACE_UI, () => value)
 
 
 
 export const actions = {
-  addPlanting
+  // addPlanting
 }
 
 // ------------------------------------
@@ -43,5 +42,5 @@ function showPlantingUI (state) {
 }
 
 export default handleActions({
-  [SHOW_CREATE_PLANTING_UI]: showPlantingUI
+  // [SHOW_CREATE_PLACE_UI]: showPlantingUI
 }, 1)
