@@ -4,6 +4,15 @@ import scale from 'd3-scale'
 
 import {View} from 'components/View'
 
+const defaultStyles = {
+  all: {
+    stroke: '#6bc25f',
+    fill: '#6bc25f'
+  },
+  outer: {
+
+  }
+}
 
 export default class Track extends React.Component {
   static propTypes = {
@@ -16,7 +25,7 @@ export default class Track extends React.Component {
   }
 
   static defaultProps = {
-    styles: {inner:{}, outer:{}}
+    styles: defaultStyles
   }
 
   render () {
@@ -24,7 +33,7 @@ export default class Track extends React.Component {
 
     const newChildren = React.Children.map(children, (child, index) => {
       if(!child || !child.type)
-        return null;
+        return child;
 
       return React.cloneElement(child, {plotX, yPos: height/2});
     }, this);
@@ -32,21 +41,11 @@ export default class Track extends React.Component {
     const numChildren = React.Children.count(newChildren)
 
     return (
-      <g height={height} transform={`translate(0, ${yPos})`} style={{...defaultStyles.outer, ...styles.outer}}>
+      <g transform={`translate(0, ${yPos})`} style={{...defaultStyles.all, ...styles.all}}>
         <g style={{...defaultStyles.inner, ...styles.inner}}>
-        {newChildren}
+          {newChildren}
         </g>
       </g>
     )
-  }
-}
-
-
-const defaultStyles = {
-  inner: {
-
-  },
-  outer: {
-
   }
 }
