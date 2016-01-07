@@ -17,6 +17,8 @@ const CSS_LOADER = !config.compiler_css_modules
     'localIdentName=[name]__[local]___[hash:base64:5]'
   ].join('&')
 
+const excludes = [/node_modules/, '/Volumes/Files/Code/GitHub']
+
 const webpackConfig = {
   name: 'client',
   target: 'web',
@@ -60,13 +62,13 @@ const webpackConfig = {
       {
         test: /\.js$/,
         loader: 'eslint',
-        exclude: /node_modules/
+        exclude: excludes
       }
     ],
     loaders: [
       {
         test: /\.(js|jsx)$/,
-        exclude: /node_modules/,
+        exclude: excludes,
         loader: 'babel',
         query: {
           cacheDirectory: true,
