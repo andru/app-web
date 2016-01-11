@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import { StyleSheet } from 'react-native-web'
 import TransitionGroup from 'react-addons-css-transition-group'
+import Measure from 'react-measure'
 import moment from 'moment'
 import _ from 'lodash'
 
@@ -76,8 +77,19 @@ export class TimelineView extends React.Component {
     // increment: React.PropTypes.func.isRequired
   }
 
+  state = {
+    dimensions: {},
+    isMounted: false
+  }
+
+  componentDidMount = () => {
+    setTimeout(() => this.setState({isMounted: true}), 20)
+  }
+
   render () {
     const {plantings, plants, places} = this.props
+    const {width, height} = this.state.dimensions
+
     // const plantingsForTimeline = plantings.filter()
     let start_date = new Date('2015-01-01')
     let end_date = new Date('2016-01-01')
@@ -194,27 +206,33 @@ export class TimelineView extends React.Component {
     console.log(timelinePlantings, timelinePlantings[0].tracks[0].periods[0])
 
     return (
-      <Cover>
-        <Timeline from={start_date} to={end_date}>
-        <TimeAxis />
-        {timelinePlantings.map( ({name, tracks}) => (
-          <TrackGroup
-          from={tracks.map( ({from}) => from ).reduce(earliest)}
-          to={tracks.map( ({to}) => to ).reduce(latest)} >
-            {tracks.map(({from, to, lines, periods, markers, styles}, i) =>
-              (<Track from={from} to={to} key={i} styles={styles || {}}>
-                {periods.map( ({from, to}, i) => <Period from={from} to={to} key={i} /> )}
+      <Measure
+        onMeasure={(dimensions, mutations, target) => {
+          console.log('Dimensions: ', dimensions);
+          this.setState({dimensions})
+        }}>
+        <Cover style={{visibility: this.state.isMounted ? 'visible' : 'hidden'}}>
+          <Timeline from={start_date} to={end_date} height={height} width={width}>
+            <TimeAxis />
+            {timelinePlantings.map( ({name, tracks}) => (
+              <TrackGroup
+              from={tracks.map( ({from}) => from ).reduce(earliest)}
+              to={tracks.map( ({to}) => to ).reduce(latest)} >
+                {tracks.map(({from, to, lines, periods, markers, styles}, i) =>
+                  (<Track from={from} to={to} key={i} styles={styles || {}}>
+                    {periods.map( ({from, to}, i) => <Period from={from} to={to} key={i} /> )}
 
-                {lines.map( ({from, to, appearance}) => <Line from={from} to={to} style={{strokeDasharray:`10 ${appearance==='solid'?0:10}`}} /> )}
+                    {lines.map( ({from, to, appearance}) => <Line from={from} to={to} strokeDash={[10,appearance==='solid'?0:10]} /> )}
 
-                {markers.map( ({date, appearance}, i) => <Marker date={date} icon={true} key={i} appearance={appearance} /> )}
+                    {markers.map( ({date, appearance}, i) => <Marker date={date} icon={true} key={i} appearance={appearance} /> )}
 
-              </Track>)
-            )}
-          </TrackGroup>
-          ))}
-        </Timeline>
-      </Cover>
+                  </Track>)
+                )}
+              </TrackGroup>
+            ))}
+          </Timeline>
+        </Cover>
+      </Measure>
     )
   }
 }
