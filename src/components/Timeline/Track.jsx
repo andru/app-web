@@ -1,18 +1,10 @@
 import React from 'react'
 import TransitionGroup from 'react-addons-css-transition-group'
 import scale from 'd3-scale'
+import {Group, Transform} from 'react-art'
 
 import {View} from 'components/View'
 
-const defaultStyles = {
-  all: {
-    stroke: '#6bc25f',
-    fill: '#6bc25f'
-  },
-  outer: {
-
-  }
-}
 
 export default class Track extends React.Component {
   static propTypes = {
@@ -25,7 +17,7 @@ export default class Track extends React.Component {
   }
 
   static defaultProps = {
-    styles: defaultStyles
+    
   }
 
   render () {
@@ -35,17 +27,18 @@ export default class Track extends React.Component {
       if(!child || !child.type)
         return child;
 
-      return React.cloneElement(child, {plotX, yPos: height/2});
+      return React.cloneElement(child, {plotX, yPos: height/2, styles: styles[child.type] || {}});
     }, this);
 
     const numChildren = React.Children.count(newChildren)
+    // const groupTransform = new Transform().translate(0, yPos);
 
     return (
-      <g transform={`translate(0, ${yPos})`} style={{...defaultStyles.all, ...styles.all}}>
-        <g style={{...defaultStyles.inner, ...styles.inner}}>
+      <Group x={0} y={yPos}>
+        <Group>
           {newChildren}
-        </g>
-      </g>
+        </Group>
+      </Group>
     )
   }
 }

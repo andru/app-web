@@ -1,11 +1,14 @@
 import React from 'react'
 import TransitionGroup from 'react-addons-css-transition-group'
+import {Group, Shape, Text} from 'react-art'
+import Rectangle from 'react-art/shapes/rectangle'
 
 const defaultStyles = {
   labels: {
-    fontSize: 12,
+    fontSize: 10,
     fontFamily: 'Museo Sans',
-    textAnchor: "middle"
+    alignment: "center",
+    fill: '#B2B2B2'
   },
   lines: {
   	strokeWidth: 1,
@@ -18,7 +21,6 @@ export default class TimeAxis extends React.Component {
     styles: React.PropTypes.object,
 
   }
-
 
   static defaultProps = {
     styles: defaultStyles,
@@ -33,15 +35,15 @@ export default class TimeAxis extends React.Component {
     const {ticks, plotX, format, topGutterHeight, styles} = this.props
 
     return (
-        <g>
+        <Group x={0} y={0}>
         {ticks
           .map( date => ({date, xPos:plotX(date)}) )
-          .map( ({date, xPos}) => <g key={date}>
-            <line x1={xPos} x2={xPos} y1={topGutterHeight} y2={1000} style={{...defaultStyles.lines, ...styles.lines}} />
-            <text x={xPos} style={{...defaultStyles.labels, ...styles.labels}}>{format(date)}</text>
-          </g> )
+          .map( ({date, xPos}) => <Group key={date}>
+            <Shape d={`M ${xPos},${topGutterHeight} L ${xPos},${1000}`} {...{...defaultStyles.lines, ...styles.lines}} />
+            <Text x={xPos} {...{...defaultStyles.labels, ...styles.labels}}>{format(date)}</Text>
+          </Group> )
         }
-        </g>
+        </Group>
     )
   }
 }

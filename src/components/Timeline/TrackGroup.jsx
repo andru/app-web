@@ -1,12 +1,14 @@
 import React from 'react'
 import TransitionGroup from 'react-addons-css-transition-group'
+import {Group, Transform} from 'react-art'
+// import Rectangle from 'react-art/shapes/rectangle'
+import Rectangle from 'components/Shapes/Rectangle'
+
+
 
 const defaultStyles = {
-  all: {
-    
-  },
   backdrop: {
-    fill: 'transparent',
+    fill: 'rgba(255,255,255,0)',
     strokeWidth: 0
   },
   backdropEven: {
@@ -16,7 +18,7 @@ const defaultStyles = {
   },
   lines: {
     strokeWidth: 1,
-    stroke: '#fff'
+    stroke: 'rgb(255,255,255)'
   }
 }
 
@@ -27,6 +29,8 @@ export default class TrackGroup extends React.Component {
     to: React.PropTypes.instanceOf(Date).isRequired,
     plotY: React.PropTypes.func,
     styles: React.PropTypes.object,
+    timelineHeight: React.PropTypes.number,
+    timelineWidth: React.PropTypes.number,
     trackHeight: React.PropTypes.number,
     ticks: React.PropTypes.object,
     showTicks: React.PropTypes.bool
@@ -38,7 +42,7 @@ export default class TrackGroup extends React.Component {
   }
 
   render () {
-    const {children, plotX, plotY, from, to, trackHeight, styles, ticks,
+    const {timelineWidth, timelineHeight, children, plotX, plotY, from, to, trackHeight, styles, ticks,
     showTicks, isEven, ...childProps } = this.props
 
     const newChildren = React.Children.map(children, (child, index) => {
@@ -50,18 +54,19 @@ export default class TrackGroup extends React.Component {
 
     const numChildren = React.Children.count(newChildren)
 
+    // const groupTransform = new Transform().translate(0, plotY(numChildren));
+
     return (
-      <g transform={`translate(0, ${plotY(numChildren)})`} style={{...defaultStyles.all, ...styles.all}}>
-        <rect x={0} y={0} width="100%" height={trackHeight * numChildren} 
-        style={{...defaultStyles.backdrop, ...styles.backdrop, ...defaultStyles[`backdrop${isEven?'Even':'Odd'}`], ...styles[`backdrop${isEven?'Even':'Odd'}`]}} />
-        <g style={{...defaultStyles.lines, ...styles.lines}}>
+      <Group x={0} y={plotY(numChildren)}>
+        <Rectangle x={0} y={0} width={timelineWidth} height={trackHeight * numChildren} {...{...defaultStyles.backdrop, ...styles.backdrop, ...defaultStyles[`backdrop${isEven?'Even':'Odd'}`], ...styles[`backdrop${isEven?'Even':'Odd'}`]}} />
+        <Group>
         {showTicks && ticks
           .map( date => ({date, xPos:plotX(date)}) )
-          .map( ({date, xPos}) => <line x1={xPos} x2={xPos} y1={0} y2={trackHeight * numChildren} />)
+          .map( ({date, xPos}) => <Shape d={`M ${xPos},0 L ${xPos},${trackHeight * numChildren}`} {...{...defaultStyles.lines, ...styles.lines}} />)
         }
-        </g>
+        </Group>
         {newChildren}
-      </g>
+      </Group>
     )
   }
 }

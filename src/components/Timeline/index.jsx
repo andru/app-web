@@ -1,6 +1,14 @@
-import React from 'react'
+import React from 'react' 
+import ReactDOM from 'react-dom'
+import shallowCompare from 'react/lib/shallowCompare'
 import { StyleSheet } from 'react-native-web'
 import TransitionGroup from 'react-addons-css-transition-group'
+import ReactART, {Surface} from 'react-art'
+ReactART.mode('svg')
+// import Rectangle from 'react-art/shapes/rectangle'
+
+import {Rectangle} from 'components/Shapes'
+
 import scale from 'd3-scale'
 
 import {Cover} from 'components/View'
@@ -36,24 +44,28 @@ export default class Timeline extends React.Component {
   static propTypes = {
     from: React.PropTypes.instanceOf(Date).isRequired,
     to: React.PropTypes.instanceOf(Date).isRequired,
+    height: React.PropTypes.number.isRequired,
+    width: React.PropTypes.number.isRequired,
     topGutterHeight: React.PropTypes.number
   }
 
   static defaultProps = {
     trackHeight: 50,
     styles: defaultStyles,
-    topGutterHeight: 20
+    topGutterHeight: 20,
+    width: 0,
+    height: 0
   }
 
-  componentDidMount(){
-   // var width = this.refs.svg.offsetWidth;
+  shouldComponentUpdate (nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState)
   }
 
   render () {
     if (this.props.data) {
       return this.controlledRender( this.props )
     }else{
-      return this.assistedRender( this.props )
+      return this.assistedRender( this.state, this.props )
     }
   }
 
@@ -61,8 +73,8 @@ export default class Timeline extends React.Component {
     const {children, data, styles, topGutterHeight} = props
   }
 
-  assistedRender (props) {
-    const {children, from, to, trackHeight, styles, topGutterHeight} = props
+  assistedRender (state, props) {
+    const {children, width, height, from, to, trackHeight, styles, topGutterHeight} = props
 
     const viewScale = scale.time()
     .domain([from, to])
@@ -83,16 +95,24 @@ export default class Timeline extends React.Component {
 
     const newChildren = React.Children.map(children, (child, index) => {
       if (child.type) {
-        return React.cloneElement(child, {plotX, format: formatDate, plotY, trackHeight, ticks: timeAxisTicks, isEven: index%2});
+        return React.cloneElement(child, {
+          timelineWidth: width, 
+          timelineHeight: height, 
+          plotX, 
+          format: formatDate,
+          plotY,
+          trackHeight,
+          ticks: timeAxisTicks,
+          isEven: index%2});
       }
     }, this);
 
     return (
-      <Cover>
-      <svg style={{...defaultStyles.svg, ...styles.svg}}>
-        <rect x={0} y={0} width="100%" height="100%" style={{...defaultStyles.backdrop, ...styles.backdrop}} />
+      <Cover ref="container">
+      <Surface width={width} height={height}>
+        <Rectangle width={width} height={height} {...{...defaultStyles.backdrop, ...styles.backdrop}} />
         {newChildren}
-      </svg>
+      </Surface>
       </Cover>
     )    
   }

@@ -177,9 +177,11 @@ export class TimelineView extends React.Component {
       }
 
       if (plants[track.plant_id].appTheme){  
-        track.styles.all = {
-          stroke: plants[track.plant_id].appTheme.timelineColor,
+        track.styles.Period = {
           fill: plants[track.plant_id].appTheme.timelineColor
+        }
+        track.styles.Line = {
+          stroke: plants[track.plant_id].appTheme.timelineColor,
         }
       }
 
