@@ -1,6 +1,5 @@
 
 import React, {Component} from 'react'
-import {Rectangle} from 'components/Shapes'
 
 export default class Background extends Component {
 
@@ -24,7 +23,7 @@ export default class Background extends Component {
 
 
     return (
-        <Rectangle {...{...styles.bg, width, height}} onMouseDown={this.handleMouseDown} onMouseUp={this.handleMouseUp}  />
+        <rect {...{...styles.bg, width, height}} onMouseDown={this.handleMouseDown} onMouseUp={this.handleMouseUp}  />
     )
   }
 

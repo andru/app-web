@@ -1,6 +1,5 @@
 
 import React, {Component} from 'react'
-import {Group, Shape, Path} from 'react-art'
 
 export default class Grid extends Component {
 
@@ -52,10 +51,10 @@ export default class Grid extends Component {
 
 
     return (
-      <Group>
-        <Shape d={minor} {...styles.minor} />
-        <Shape d={major} {...styles.major} />
-      </Group>
+      <g>
+        <path d={minor} {...styles.minor} />
+        <path d={major} {...styles.major} />
+      </g>
     )
   }
 

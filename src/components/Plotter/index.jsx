@@ -75,8 +75,7 @@ export default class Plotter extends React.Component {
   })
 
   setCurrent = (planting) => {
-    this.setState({current: planting})
-    this.updateCurrent({zIndex: this.state.plantings.length*999})
+    this.setState({current: Object.assign({}, planting, {zIndex: this.state.plantings.length*999})})
     this.orderZIndex()
   }
 
@@ -102,16 +101,19 @@ export default class Plotter extends React.Component {
     let {width, height} = this.props
 
     return (
-      <Surface width={width} height={height}>
+      <svg width={width} height={height}  viewBox={`0 0 ${width} ${height}`} 
+      xmlns="http://www.w3.org/2000/svg" version="1.1" baseProfile="full"
+      ref="svg">
         <Background updateState={this.updateState} deselectAll={this.deselectAll} {...{...this.state, width, height}}/>
         <Grid {...{width, height, resolution: this.state.resolution}} />
         <Plantings 
+        getSVG={() => this.refs.svg}
         updateState={this.updateState} 
         setCurrent={this.setCurrent}
         updateCurrent={this.updateCurrent}
         setCurrentPosition={this.setCurrentPosition}
         setCursor={this.setCursor} {...this.state} />
-      </Surface>
+      </svg>
     )  
   }
 
