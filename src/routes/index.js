@@ -12,11 +12,14 @@ import Home from 'views/Home'
 import AboutView from 'views/AboutView'
 
 import TimelineView from 'views/timeline'
+import PlotsView from 'views/plots'
+
 
 export default (
   <Route path='/' component={CoreLayout}>
     <IndexRoute component={Home} />
     <Route path='about' component={AboutView} />
     <Route path='timeline' component={TimelineView} />
+    <Route path='plots' component={PlotsView} />
   </Route>
 )
