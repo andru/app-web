@@ -2,20 +2,15 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { StyleSheet } from 'react-native-web'
 
-import {Group} from 'react-art'
-
-import {Rectangle} from 'components/Shapes'
-
 import Planting from './Planting'
 
 import _ from 'lodash'
-
 
 const defaultStyles = {
 
 }
 
-let debouncedMouseMoveLogger = _.debounce((ev) => console.log(ev, ev.layerX, ev.layerY), 100)
+let debouncedMouseMoveLogger = _.debounce((ev) => console.log(ev), 200)
 
 let minWidth = 100
 let minHeight = 20
@@ -32,7 +27,7 @@ export default class Plotter extends React.Component {
   }
 
   componentDidMount () {
-    window.addEventListener('keydown', this.handleKeyDown)
+    window.addEventListener('keydown', this.handleKeyDown)    
   }
 
   selectPlanting = (planting) => {
@@ -68,17 +63,24 @@ export default class Plotter extends React.Component {
   }
 
   handleMouseMove = (e) => {
-    // requestAnimationFrame(time => this.batchedMouseMove(e))
+    //requestAnimationFrame(time => this.batchedMouseMove(e))
     this.batchedMouseMove(e)
   }
 
+  cursorPoint = (e) => {
+    let pt = this.props.getSVG().createSVGPoint()
+    pt.x = e.clientX
+    pt.y = e.clientY
+    return pt.matrixTransform(this.props.getSVG().getScreenCTM().inverse())
+  }
+
   batchedMouseMove = (e) => {
+
     const {
       plantings,
       isTranslating,
       isScaling,
       transformStart,
-      transformParams,
       current,
       width,
       height,
@@ -90,21 +92,44 @@ export default class Plotter extends React.Component {
       updateCurrent,
       setCurrentPosition
     } = this.props
-    //const ev = e.nativeEvent 
-    // debouncedMouseMoveLogger(e)
-    let x = e.layerX - transformStart.x
-    let y = e.layerY - transformStart.y
+    const ev = e.nativeEvent
+
+    debouncedMouseMoveLogger(Object.assign({}, e))
+    
+    let x = ev.offsetX
+    let y = ev.offsetY
+
+    let deltaX = x - transformStart.x
+    let deltaY = y - transformStart.y
+
+    let pt = this.props.getSVG().createSVGPoint()
+
+    let currentCursor = this.cursorPoint(ev)
+
     if (snap) {
       x = Math.floor(x / resolution) * resolution || 0
       y = Math.floor(y / resolution) * resolution || 0
     }
     if (isTranslating) {
-      setCurrentPosition(x, y)
+      console.log(transformStart, {deltaX, deltaY})
+      //setCurrentPosition(x + deltaX, y + deltaY)
+      updateState({
+        plantings: plantings.map(p => p._id===current._id ? Object.assign(p, { x: current.x + deltaX, y: current.y + deltaY }) : p),
+        transformStart: { x: x, y: y }
+      })
     } else if (isScaling) {
-      console.log(transformStart)
+      console.dir(ReactDOM.findDOMNode(this.refs[current._id].refs.bodyRect))
       let {width, height, surface} = transformStart
       let newX = transformStart.x
       let newY = transformStart.y
+
+
+      // let rectXY = pointIn(rect,dot.cx.animVal.value,dot.cy.animVal.value)
+      pt.x = x
+      pt.y = y
+      let rectXY = pt.matrixTransform(ReactDOM.findDOMNode(this.refs[current._id].refs.container).getTransformToElement(this.props.getSVG()).inverse())
+      width = Math.max( rectXY.x-rect.x.animVal.value, 1 )
+      height = Math.max( rectXY.y-rect.y.animVal.value, 1 )
 
       // const cx = current.width/2
       // const cy = current.height/2
@@ -115,18 +140,18 @@ export default class Plotter extends React.Component {
       switch (surface) {
         case 1: // top
         console.log(x, y)
-          height = height + y*-1
-          newY = e.layerY
+          // height = height + y*-1
+          newY = e.offsetY
           break;
         case 2: // right
-          width = x
+          // width = x
           break;
         case 3: // bottom
-          height = y
+          // height = y
           break;
         case 4:
-          width = width + Math.abs(x)
-          newX = e.layerX
+          // width = width + x*-1
+          newX = e.offsetX
           break; 
       }
 
@@ -142,16 +167,17 @@ export default class Plotter extends React.Component {
 
   handleTranslate = (planting_id, e) => {
     const planting = this.props.plantings.find(p => p._id === planting_id)
+    const ev = e.nativeEvent
     this.selectPlanting(planting)
-    console.log('Mouse down: planting:translate', planting);
+
     const {
       zoom,
       snap,
       resolution,
       updateState
     } = this.props
-    let x = e.layerX - planting.x
-    let y = e.layerY - planting.y
+    let x = ev.offsetX
+    let y = ev.offsetY
     if (snap) {
       x = Math.floor(x / resolution) * resolution || 0
       y = Math.floor(y / resolution) * resolution || 0
@@ -169,6 +195,8 @@ export default class Plotter extends React.Component {
 
     this.selectPlanting(planting)
 
+    let ev = e.nativeEvent
+
     const {
       zoom,
       padding,
@@ -181,15 +209,15 @@ export default class Plotter extends React.Component {
       height
     } = planting
     // const ev = e.nativeEvent
-    let x = e.layerX  
-    let y = e.layerY  
+    let x = ev.offsetX  
+    let y = ev.offsetY  
     if (snap) {
       x = Math.floor(x / resolution) * resolution || 0
       y = Math.floor(y / resolution) * resolution || 0
     }
     updateState({
       isScaling: true,
-      transformStart: { x: planting.x, y: planting.y, width, height, surface }
+      transformStart: { x: planting.x, y: planting.y, width, height, surface, cursorTransform: this.cursorPoint(ev) }
     })
   }
 
@@ -248,9 +276,10 @@ export default class Plotter extends React.Component {
     let {plantings, current, width, height, cursor, setCursor} = this.props
 
     return (
-      <Group>
+      <g>
         {plantings
-          .map(planting => <Planting 
+          .map(planting => <Planting
+            ref={planting._id} 
             key={planting._id}
             onMouseMove={this.handleMouseMove}
             onTranslate={this.handleTranslate}
@@ -260,11 +289,10 @@ export default class Plotter extends React.Component {
             onScale={this.handleScale}
             setCursor={setCursor}
             isSelected={current && current._id === planting._id} 
-            planting={planting} 
-            {...planting} />
+            planting={planting} />
           )
         }
-      </Group>
+      </g>
     )  
   }
 
