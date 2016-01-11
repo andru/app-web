@@ -19,8 +19,8 @@ let NavBar = React.createClass({
 
 	
 	render(){
-		var sections = ['timeline', 'journal', 'plantings', 'seedbox', 'growspaces', 'plants'];
-		var icons = ['journal.svg', 'journal.svg', 'plantings.svg', 'seedbox.svg', 'growspaces.svg', 'plantings.svg']
+		var sections = ['timeline', 'plots', 'journal', 'plantings', 'seedbox', 'growspaces', 'plants'];
+		var icons = ['journal.svg', 'journal.svg', 'journal.svg', 'plantings.svg', 'seedbox.svg', 'growspaces.svg', 'plantings.svg']
 		return (
 		<View style={styles.NavBar}>
     	<View style={styles.TabContainer}>
