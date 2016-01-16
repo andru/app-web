@@ -14,9 +14,9 @@ export default class Line extends React.Component {
   }
 
   render () {
-    const {plotX, yPos, from, to, style} = this.props
+    const {plotX, yPos, from, to, appearance, style} = this.props
     return (
-      <line x1={plotX(from)} x2={plotX(to)} y1={yPos} y2={yPos} style={{...defaultStyle, ...style}} />
+      <line x1={plotX(from)} x2={plotX(to)} y1={yPos} y2={yPos} strokeDasharray={[10,appearance==='solid'?0:10]} style={{...defaultStyle, ...style}} />
     )
   }
 }

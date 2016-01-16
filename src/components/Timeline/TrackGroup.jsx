@@ -1,6 +1,8 @@
 import React from 'react'
 import TransitionGroup from 'react-addons-css-transition-group'
 
+import Track from './Track'
+
 const defaultStyles = {
   all: {
     
@@ -22,6 +24,8 @@ const defaultStyles = {
 
 export default class TrackGroup extends React.Component {
   static propTypes = {
+    state: React.PropTypes.object,
+    actions: React.PropTypes.object,
     plotX: React.PropTypes.func,
     from: React.PropTypes.instanceOf(Date).isRequired,
     to: React.PropTypes.instanceOf(Date).isRequired,
@@ -37,16 +41,42 @@ export default class TrackGroup extends React.Component {
     showTicks: false
   }
 
+  getSharedChildProps () {
+    const {
+      actions,
+      assistedRender,
+      isEditing,
+      trackGroupIndex,
+      plotX,
+      plotY,
+      from,
+      to,
+      trackHeight,
+      styles,
+      ticks,
+      showTicks,
+      isEven,
+      ...childProps 
+    } = this.props
+
+    return {
+      actions,
+      assistedRender,
+      isEditing,
+      plotX,
+      from,
+      to,
+      height: trackHeight,
+      trackGroupIndex,
+      ...childProps
+    }
+  }
+
   render () {
-    const {children, plotX, plotY, from, to, trackHeight, styles, ticks,
+    const {children, actions, isEditing, trackGroupIndex, plotX, plotY, from, to, trackHeight, styles, ticks,
     showTicks, isEven, ...childProps } = this.props
 
-    const newChildren = React.Children.map(children, (child, index) => {
-      if(!child || !child.type)
-        return child;
-
-      return React.cloneElement(child, {plotX, yPos: trackHeight*index, from, to, height:trackHeight, ...childProps});
-    }, this);
+    const newChildren = this.props.assistedRender ? this.copyChildren() : this.renderChildren()
 
     const numChildren = React.Children.count(newChildren)
 
@@ -63,5 +93,47 @@ export default class TrackGroup extends React.Component {
         {newChildren}
       </g>
     )
+  }
+
+  renderChildren () {
+    const {
+      tracks,
+      trackHeight,
+      styles
+    } = this.props
+
+    const sharedProps = this.getSharedChildProps()
+
+    return (tracks.map(({from, to, lines, periods, markers, styles}, trackIndex) =>
+      (<Track 
+        from={from} 
+        to={to} 
+        key={trackIndex} 
+        styles={styles || {}}
+        yPos={trackHeight*trackIndex}
+        trackIndex={trackIndex}
+        lines={lines}
+        periods={periods}
+        markers={markers}
+        {...sharedProps}>
+      </Track>)
+    ))
+  }
+
+  copyChildren () {
+    const { children, trackHeight } = this.props
+
+    let sharedProps = this.getSharedChildProps()
+
+    const newChildren = React.Children.map(children, (child, trackIndex) => {
+      if(!child || !child.type)
+        return child;
+
+      let props = Object.assign(this.getSharedChildProps(), {
+        yPos: trackHeight*trackIndex
+      })
+
+      return React.cloneElement(child, props);
+    }, this);
   }
 }
