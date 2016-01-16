@@ -41,6 +41,6 @@ function showPlantingUI (state) {
 	  return state
 }
 
-export default handleActions({
+export const reducer = handleActions({
   // [SHOW_CREATE_PLACE_UI]: showPlantingUI
-}, 1)
+}, [])
