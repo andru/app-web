@@ -1,9 +1,12 @@
 
 import React, {Component} from 'react'
+import ReactDOM from 'react-dom'
 
 export default class Background extends Component {
 
-  handleMouseDown = e => this.props.deselectAll()
+  handleMouseDown = e => {
+    this.props.deselectAll()
+  }
 
   handleMouseUp = e => this.props.isTranslating && this.props.updateState({isTranslating: false})
 
@@ -23,7 +26,9 @@ export default class Background extends Component {
 
 
     return (
-        <rect {...{...styles.bg, width, height}} onMouseDown={this.handleMouseDown} onMouseUp={this.handleMouseUp}  />
+      <g>
+        <rect {...{...styles.bg, width, height}} onMouseDown={this.handleMouseDown} onMouseUp={this.handleMouseUp} ref="background"  />
+      </g>
     )
   }
 

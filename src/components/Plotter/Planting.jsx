@@ -5,8 +5,8 @@ export default class Planting extends Component {
 
   render () {
     let { planting, isSelected, setCursor,
-          onMouseOver, onMouseOut, onMouseMove, onTranslate, onMouseUp, onKeyDown,
-          onScale  } = this.props
+          onMouseOver, onMouseOut, onMouseMove, onMouseUp, onKeyDown,
+          onTranslate, onScale, onRotate  } = this.props
     let { name, progress, x, y, width, height, rotation } = planting
 
     if (isSelected){
@@ -28,8 +28,13 @@ export default class Planting extends Component {
       caret: {
         fill: '#F06F68'
       },
-      handle: {
+      resizeHandle: {
         fill: '#F06F68'
+      },
+      rotateHandle: {
+        fill: 'transparent',
+        stroke: '#F06F68',
+        strokeWidth: 10
       },
       hitBox: {
         fill: '#fff',
@@ -43,15 +48,17 @@ export default class Planting extends Component {
 
     return (
       <g transform={`translate(${x}, ${y}) rotate(${rotation})`} {...{onMouseOver, onMouseOut, onMouseMove, onMouseUp: e => onMouseUp(planting, e), onKeyDown}}
-      ref="container">
+      ref="container"
+      id={planting._id}>
         {isSelected &&
           <g>
             <rect x={-selectedHitPadding} y={-selectedHitPadding} width={width+selectedHitPadding*2} height={height+selectedHitPadding*2} {...{...styles.hitBox}} />
+            <circle cx={width/2} cy={height/2} r={Math.max(width, height)/2} {...{...styles.rotateHandle}} cursor="row-resize" onMouseDown={e => onRotate(planting._id, e)} />
             <rect x={-caretWidth} y={-caretWidth} width={width+caretWidth*2} height={height+caretWidth*2} {...{...styles.caret}} />
-            <circle cx={width/2} cy={-caretWidth} r={handleRadius} {...{...styles.handle}} cursor="row-resize" onMouseDown={e => onScale(planting._id, 1, e)} />
-            <circle cx={width+caretWidth} cy={height/2} r={handleRadius} {...{...styles.handle}} cursor="col-resize" onMouseDown={e => onScale(planting._id, 2, e)} />
-            <circle cx={width/2} cy={height+caretWidth} r={handleRadius} {...{...styles.handle}} cursor="row-resize" onMouseDown={e => onScale(planting._id, 3, e)} />
-            <circle cx={-caretWidth} cy={height/2} r={handleRadius} {...{...styles.handle}} cursor="col-resize" onMouseDown={e => onScale(planting._id, 4, e)} />
+            <circle cx={width/2} cy={-caretWidth} r={handleRadius} {...{...styles.resizeHandle}} cursor="row-resize" onMouseDown={e => onScale(planting._id, 1, e)} />
+            <circle cx={width+caretWidth} cy={height/2} r={handleRadius} {...{...styles.resizeHandle}} cursor="col-resize" onMouseDown={e => onScale(planting._id, 2, e)} />
+            <circle cx={width/2} cy={height+caretWidth} r={handleRadius} {...{...styles.resizeHandle}} cursor="row-resize" onMouseDown={e => onScale(planting._id, 3, e)} />
+            <circle cx={-caretWidth} cy={height/2} r={handleRadius} {...{...styles.resizeHandle}} cursor="col-resize" onMouseDown={e => onScale(planting._id, 4, e)} />
           </g>
         }
         <rect width={width*progress} height={6} {...{...styles.progress}}/>

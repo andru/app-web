@@ -4,12 +4,6 @@ import { StyleSheet } from 'react-native-web'
 import TransitionGroup from 'react-addons-css-transition-group'
 import scale from 'd3-scale'
 
-import ReactART, {Surface} from 'react-art'
-ReactART.mode('svg')
-// import Rectangle from 'react-art/shapes/rectangle'
-
-import {Rectangle} from 'components/Shapes'
-
 import Background from './Background' 
 import Grid from './Grid'
 import Plantings from './Plantings'
@@ -47,6 +41,7 @@ export default class Plotter extends React.Component {
     cursor: undefined,
     isTranslating: false,
     isScaling: false,
+    isRotating: false,
     transformParams: false,
     transformStart: false,
   }
@@ -97,6 +92,9 @@ export default class Plotter extends React.Component {
     this.setState({cursor})
   }
 
+  getSVG = () => this.refs.svg
+
+
   render () {
     let {width, height} = this.props
 
@@ -104,10 +102,10 @@ export default class Plotter extends React.Component {
       <svg width={width} height={height}  viewBox={`0 0 ${width} ${height}`} 
       xmlns="http://www.w3.org/2000/svg" version="1.1" baseProfile="full"
       ref="svg">
-        <Background updateState={this.updateState} deselectAll={this.deselectAll} {...{...this.state, width, height}}/>
+        <Background updateState={this.updateState} deselectAll={this.deselectAll} getSVG={this.getSVG} {...{...this.state, width, height}}/>
         <Grid {...{width, height, resolution: this.state.resolution}} />
         <Plantings 
-        getSVG={() => this.refs.svg}
+        getSVG={this.getSVG}
         updateState={this.updateState} 
         setCurrent={this.setCurrent}
         updateCurrent={this.updateCurrent}
