@@ -34,12 +34,12 @@ export default class TrackGroup extends React.Component {
     trackHeight: React.PropTypes.number,
     ticks: React.PropTypes.object,
     showTicks: React.PropTypes.bool
-  }
+  };
 
   static defaultProps = {
     styles: defaultStyles, 
     showTicks: false
-  }
+  };
 
   getSharedChildProps () {
     const {

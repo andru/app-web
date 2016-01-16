@@ -72,16 +72,16 @@ export class PlotsView extends React.Component {
     // counter: React.PropTypes.number.isRequired,
     // doubleAsync: React.PropTypes.func.isRequired,
     // increment: React.PropTypes.func.isRequired
-  }
+  };
 
   state = {
     dimensions: {},
     isMounted: false
-  }
+  };
 
   componentDidMount = () => {
     setTimeout(() => this.setState({isMounted: true}), 20)
-  }
+  };
 
   render () {
     const {plantings, plants, places} = this.props

@@ -16,14 +16,12 @@ const defaultStyles = {
 export default class TimeAxis extends React.Component {
   static propTypes = {
     styles: React.PropTypes.object,
-
-  }
-
+  };
 
   static defaultProps = {
     styles: defaultStyles,
     topGutterHeight: 20
-  }
+  };
 
   componentDidMount(){
    // var width = this.refs.svg.offsetWidth;

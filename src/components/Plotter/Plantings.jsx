@@ -19,12 +19,12 @@ export default class Plotter extends React.Component {
   static propTypes = {
     height: React.PropTypes.number,
     width: React.PropTypes.number
-  }
+  };
 
   static defaultProps = {
     width: 0,
     height: 0
-  }
+  };
 
   componentDidMount () {
     window.addEventListener('keydown', this.handleKeyDown)    
@@ -32,13 +32,12 @@ export default class Plotter extends React.Component {
 
   selectPlanting = (planting) => {
     this.props.setCurrent(planting)
-  }
+  };
 
   handleMouseDown = (e) => {
     console.log('Mouse down')
     const { updateState } = this.props
-
-  }
+  };
 
   handleMouseUp = (planting, e) => {
     console.log('Mouse up: planting')
@@ -49,7 +48,7 @@ export default class Plotter extends React.Component {
       transformParams: false,
       transformStart: false
     })
-  }
+  };
 
   handleMouseLeave = (e) => {
     console.log('mouse leave')
@@ -60,19 +59,19 @@ export default class Plotter extends React.Component {
       transformParams: false,
       transformStart: false
     })
-  }
+  };
 
   handleMouseMove = (e) => {
     //requestAnimationFrame(time => this.batchedMouseMove(e))
     this.batchedMouseMove(e)
-  }
+  };
 
   makePoint = (x, y) => {
     this.point = this.point || this.props.getSVG().createSVGPoint()
     this.point.x = x
     this.point.y = y
     return this.point
-  }
+  };
 
   batchedMouseMove = (e) => {
 
@@ -165,7 +164,7 @@ export default class Plotter extends React.Component {
       // dy = resistor_y - mouse_y
       // theta = 90+Math.atan2(dy, dx)*180/Math.PI
     }
-  }
+  };
 
   handleTranslate = (planting_id, e) => {
     const planting = this.props.plantings.find(p => p._id === planting_id)
@@ -204,7 +203,7 @@ export default class Plotter extends React.Component {
       isTranslating: true,
       transformStart: { x, y}
     })
-  }
+  };
 
   handleScale = (planting_id, surface, e) => {
     const planting = this.props.plantings.find(p => p._id === planting_id)
@@ -235,7 +234,7 @@ export default class Plotter extends React.Component {
       isScaling: true,
       transformStart: { x: planting.x, y: planting.y, width, height, surface, original:{x, y, width, height} }
     })
-  }
+  };
 
   handleRotate = (planting, e) => {
     const {
@@ -245,7 +244,7 @@ export default class Plotter extends React.Component {
     updateState({
       isRotating: true
     })
-  }
+  };
 
   handleKeyDown = (e) => {
     console.log(e.keyCode)
@@ -292,10 +291,10 @@ export default class Plotter extends React.Component {
         break
     }
     setCurrentPosition(x, y)
-  }
+  };
 
-  handleMouseOver = e => { this.props.setCursor('move') }
-  handleMouseOut = e => { this.props.setCursor() }
+  handleMouseOver = e => { this.props.setCursor('move') };
+  handleMouseOut = e => { this.props.setCursor() };
 
 
   render () {

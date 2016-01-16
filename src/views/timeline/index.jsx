@@ -20,22 +20,22 @@ export class TimelineView extends React.Component {
     // doubleAsync: React.PropTypes.func.isRequired,
     // increment: React.PropTypes.func.isRequired
     timelineData: React.PropTypes.object
-  }
+  };
 
   state = {
     dimensions: {},
     isMounted: false
-  }
+  };
 
   componentWillMount = () => {
 
     const {plantings, plants, places} = this.props
 
-  }
+  };
 
   componentDidMount = () => {
     setTimeout(() => this.setState({isMounted: true}), 20)
-  }
+  };
 
   handleMarkerChange = (groupIndex, trackIndex, markerIndex, marker) => {
     // let data = this.state.data.slice()
@@ -53,7 +53,7 @@ export class TimelineView extends React.Component {
     })
 
     // actions.go SET_PLANTING_EVENT_DATE
-  }
+  };
 
   render () {
     const {plantings, plants, places} = this.props

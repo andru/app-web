@@ -24,15 +24,15 @@ export default class Track extends React.Component {
     to: React.PropTypes.instanceOf(Date).isRequired,
     styles: React.PropTypes.object,
     height: React.PropTypes.number
-  }
+  };
 
   static defaultProps = {
     styles: defaultStyles
-  }
+  };
 
   startMarkerMove = (group, track, marker, e) => {
     this.props.actions.startMarkerMove(group, track, marker, e)
-  }
+  };
 
   getSharedChildProps () {
     const { children, isEditing, plotX, height, trackGroupIndex, trackIndex } = this.props

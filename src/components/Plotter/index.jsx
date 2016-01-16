@@ -20,12 +20,12 @@ export default class Plotter extends React.Component {
   static propTypes = {
     height: React.PropTypes.number,
     width: React.PropTypes.number
-  }
+  }; 
 
   static defaultProps = {
     width: 0,
     height: 0
-  }
+  }; 
 
   state = {
     plantings: this.props.plantings,
@@ -44,7 +44,7 @@ export default class Plotter extends React.Component {
     isRotating: false,
     transformParams: false,
     transformStart: false,
-  }
+  }; 
 
   componentWillMount () {
     this.orderZIndex()
@@ -54,7 +54,7 @@ export default class Plotter extends React.Component {
     console.log('receiving props', props);
   }
 
-  updateState = (state) => this.setState(state)
+  updateState = (state) => this.setState(state); 
 
   orderZIndex = () => {
     this.setState({
@@ -62,21 +62,21 @@ export default class Plotter extends React.Component {
         .sort((a, b) => a.zIndex < b.zIndex ? -1 : 1) 
         .map((p, i) => Object.assign(p, {zIndex: i}))
     })
-  }
+  }; 
 
   deselectAll = () => this.setState({
     selected: false,
     current: undefined
-  })
+  }); 
 
   setCurrent = (planting) => {
     this.setState({current: Object.assign({}, planting, {zIndex: this.state.plantings.length*999})})
     this.orderZIndex()
-  }
+  }; 
 
-  setZoom = zoom => this.setState({zoom: zoom})
+  setZoom = zoom => this.setState({zoom: zoom}); 
 
-  setCurrentPosition = (x, y) => this.updateCurrent({x, y})
+  setCurrentPosition = (x, y) => this.updateCurrent({x, y}); 
 
   updateCurrent = change => {
     let planting = this.state.plantings.find(p => p._id === this.state.current._id)
@@ -86,13 +86,13 @@ export default class Plotter extends React.Component {
       plantings: this.state.plantings.map(p => p._id===this.state.current._id ? changed : p),
       current: planting
     })
-  }
+  }; 
 
   setCursor = cursor => {
     this.setState({cursor})
-  }
+  }; 
 
-  getSVG = () => this.refs.svg
+  getSVG = () => this.refs.svg; 
 
 
   render () {

@@ -29,11 +29,11 @@ export default class Period extends React.Component {
     from: React.PropTypes.instanceOf(Date).isRequired,
     to: React.PropTypes.instanceOf(Date).isRequired,
     style: React.PropTypes.object
-  }
+  };
 
   static defaultProps = {
     style: defaultStyle
-  }
+  };
 
   render () {
     const {children, plotX, yPos, from, to, style} = this.props

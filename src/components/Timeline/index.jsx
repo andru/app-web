@@ -52,7 +52,7 @@ export default class Timeline extends Component {
     from: PropTypes.instanceOf(Date).isRequired,
     to: PropTypes.instanceOf(Date).isRequired,
     topGutterHeight: PropTypes.number
-  }
+  };
 
   static defaultProps = {
     width: 0,
@@ -60,11 +60,11 @@ export default class Timeline extends Component {
     trackHeight: 50,
     styles: defaultStyles,
     topGutterHeight: 20
-  }
+  };
 
   state = {
     isEditing: true
-  }
+  };
 
   componentDidMount(){
    // var width = this.refs.svg.offsetWidth;
@@ -76,18 +76,18 @@ export default class Timeline extends Component {
       dragObject: MARKER,
       dragParams: {groupIndex, trackIndex, markerIndex, marker}
     })
-  }
+  };
 
   setMarkerDate = (groupIndex, trackIndex, markerIndex, marker, date) => {
     // console.log(groupIndex, trackIndex, markerIndex, date)
     this.props.onMarkerChange(groupIndex, trackIndex, markerIndex, Object.assign({}, marker, {date: new Date(date)}))
-  }
+  };
 
   setPeriodDates = (track, period, dates) => {
 
-  }
+  };
 
-  getSVGElement = () => ReactDOM.findDOMNode(this.refs.svg)
+  getSVGElement = () => ReactDOM.findDOMNode(this.refs.svg);
 
   // return an SVG point with the given X, Y coords
   makePoint = (x=0, y=0) => {
@@ -95,7 +95,7 @@ export default class Timeline extends Component {
     this.point.x = x
     this.point.y = y
     return this.point
-  }
+  };
 
   handleMouseMove = (e) => {
     if (this.state.isDragging) {
@@ -117,7 +117,7 @@ export default class Timeline extends Component {
       }
     }
     // debouncedMouseMoveLogger(date)
-  }
+  };
 
   handleMouseUp = (e) => {
     this.setState({
@@ -125,7 +125,7 @@ export default class Timeline extends Component {
       dragObject: undefined,
       dragParams: undefined
     })
-  }
+  };
 
   getScale = () => {
     const {from, to, width} = this.props
@@ -136,12 +136,12 @@ export default class Timeline extends Component {
       .nice()
     }
     return this.cachedScale
-  }
+  };
 
   getChildProps = () => {
     const {from, to, trackHeight, styles, topGutterHeight} = this.props
 
-  }
+  };
 
   render () {
     if (this.props.data) {

@@ -12,12 +12,12 @@ export default class Marker extends React.Component {
     radius: React.PropTypes.number,
     style: React.PropTypes.object,
     appearance: React.PropTypes.oneOf(['circle', 'rightArrow', 'leftArrow'])
-  }
+  };
 
   static defaultProps = {
     radius: 5.5,
     appearance: 'circle'
-  }
+  };
 
   render () {
     const {

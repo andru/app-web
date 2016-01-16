@@ -11,7 +11,7 @@ export default class Line extends React.Component {
     from: React.PropTypes.instanceOf(Date).isRequired,
     to: React.PropTypes.instanceOf(Date).isRequired,
     style: React.PropTypes.object
-  }
+  };
 
   render () {
     const {plotX, yPos, from, to, appearance, style} = this.props
