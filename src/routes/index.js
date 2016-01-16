@@ -12,6 +12,7 @@ import Home from 'views/Home'
 
 import TimelineView from 'views/timeline'
 import PlotsView from 'views/plots'
+import JournalView from 'views/journal'
 
 
 export default (
@@ -19,5 +20,6 @@ export default (
     <IndexRoute component={Home} />
     <Route path='timeline' component={TimelineView} />
     <Route path='plots' component={PlotsView} />
+    <Route path='journal' component={JournalView} />
   </Route>
 )
