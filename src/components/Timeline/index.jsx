@@ -130,7 +130,7 @@ export default class Timeline extends Component {
   getScale = () => {
     const {from, to, width} = this.props
     if(from !== this.cachedFrom && to !== this.cachedTo){
-      this.cachedScale = scale.time()
+      this.cachedScale = scale.scaleTime()
       .domain([from, to])
       .range([0, width])
       .nice()
