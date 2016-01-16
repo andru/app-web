@@ -19,7 +19,7 @@ export class TimelineView extends React.Component {
     // counter: React.PropTypes.number.isRequired,
     // doubleAsync: React.PropTypes.func.isRequired,
     // increment: React.PropTypes.func.isRequired
-    timelineData: React.PropTypes.object
+    timelineData: React.PropTypes.array
   };
 
   state = {

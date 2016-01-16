@@ -14,5 +14,5 @@ export default combineReducers({
 
   // views
   timeline,
-  router: routeReducer
+  routing: routeReducer
 })

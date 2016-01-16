@@ -1,15 +1,15 @@
 import thunk from 'redux-thunk'
 import rootReducer from './modules'
-import {
-  applyMiddleware,
-  compose,
-  createStore
-} from 'redux'
+import {syncHistory} from 'redux-simple-router'
+import {applyMiddleware, compose, combineReducers, createStore} from 'redux'
 
-export default function configureStore (initialState) {
+export default function configureStore (initialState, history) {
   let createStoreWithMiddleware
 
-  const middleware = applyMiddleware(thunk)
+  // Sync dispatched route actions to the history
+  const reduxRouterMiddleware = syncHistory(history)
+
+  const middleware = applyMiddleware(reduxRouterMiddleware, thunk)
 
   if (__DEBUG__) {
     createStoreWithMiddleware = compose(
@@ -23,6 +23,10 @@ export default function configureStore (initialState) {
   const store = createStoreWithMiddleware(createStore)(
     rootReducer, initialState
   )
+  if (__DEBUG__) {
+    // Required for replaying actions from devtools to work
+    reduxRouterMiddleware.listenForReplays(store)
+  }
   if (module.hot) {
     module.hot.accept('./modules', () => {
       const nextRootReducer = require('./modules')
