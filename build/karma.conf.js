@@ -7,6 +7,15 @@ debug('Create configuration.')
 
 const karmaConfig = {
   basePath: '../', // project root in relation to bin/karma.js
+  plugins: [
+    require('karma-webpack'),
+    require('karma-mocha'),
+    require('karma-tap'),
+    require('karma-chrome-launcher'),
+    require('karma-phantomjs-launcher'),
+    require('karma-coverage'),
+    require('karma-tap-reporter')
+  ],
   files: [
     './node_modules/phantomjs-polyfill/bind-polyfill.js',
     {
@@ -17,37 +26,50 @@ const karmaConfig = {
     }
   ],
   singleRun: !argv.watch,
-  frameworks: ['mocha', 'chai-sinon', 'chai-as-promised', 'chai'],
+  frameworks: ['tap', 'mocha'],// 'chai-sinon', 'chai-as-promised', 'chai', ],
   preprocessors: {
     [`${config.dir_test}/**/*.js`]: ['webpack']
   },
-  reporters: ['spec'],
-  browsers: ['PhantomJS'],
+  reporters: ['tap'],//, 'spec'],
+  browsers: ['PhantomJS'],//, 'Chrome'],
   webpack: {
     devtool: 'inline-source-map',
     resolve: webpackConfig.resolve,
     plugins: webpackConfig.plugins
       .filter(plugin => !plugin.__KARMA_IGNORE__),
     module: {
-      loaders: webpackConfig.module.loaders
+      loaders: webpackConfig.module.loaders,
+      postLoaders: [{
+        test: /\.js$/,
+        exclude: /(test|node_modules)\//,
+        loader: 'istanbul-instrumenter'
+      }]
     },
-    sassLoader: webpackConfig.sassLoader
+    node : {
+      fs: 'empty' //for tape
+    }
   },
   webpackMiddleware: {
     noInfo: true
   },
   coverageReporter: {
     reporters: config.coverage_reporters
-  }
+  },
+
+  port: 9876,
+  colors: true,
+  logLevel: config.LOG_WARN,
+  autoWatch: true,
 }
 
 if (config.coverage_enabled) {
   karmaConfig.reporters.push('coverage')
-  karmaConfig.webpack.module.preLoaders = [{
-    test: /\.(js|jsx)$/,
-    include: new RegExp(config.dir_client),
-    loader: 'isparta'
-  }]
+  // karmaConfig.webpack.module.preLoaders = [{
+  //   test: /\.(js|jsx)$/,
+  //   include: new RegExp(config.dir_client),
+  //   loader: 'isparta'
+  // }]
+  // 
 }
 
 export default (cfg) => cfg.set(karmaConfig)

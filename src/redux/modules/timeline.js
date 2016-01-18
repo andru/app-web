@@ -47,7 +47,7 @@ function addLine (lines=[], line) {
 
 const getPlaceId = timeline => timeline && timeline.length && timeline.reduceRight((placeId, ev) => placeId || ev.placeId, undefined)
 
-const selectTimelineData = createSelector(
+export const selectTimelineData = createSelector(
   selectPlantings,
   selectPlants,
   selectPlaces,
