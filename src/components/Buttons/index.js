@@ -1,5 +1,3 @@
-'use strict'
-
 var css = require('./Button.css')
 
 export SolidButton from './SolidButton'
