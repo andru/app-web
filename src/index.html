@@ -5,7 +5,7 @@
 		<meta http-equiv="Content-type" content="text/html, charset=utf-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
 		<meta charset="utf-8" />
-		<title>{%=o.htmlWebpackPlugin.options.title || 'Hortomatic is loading'%}</title>
+		<title><%= htmlWebpackPlugin.options.title || 'Hortomatic is loading'%></title>
 		<script>
 			/* Modernizr 2.8.3 (Custom Build) | MIT & BSD
 			 * Build: http://modernizr.com/download/#-csstransforms3d-webworkers-inlinesvg-svg-svgclippaths-teststyles-prefixes
@@ -255,15 +255,6 @@
 			</svg>
 		</div>
 	</div>
-
-
-
-
-      {% for (var chunk in o.htmlWebpackPlugin.files.chunks) { %}
-          <script src="{%=o.htmlWebpackPlugin.files.chunks[chunk].entry %}"></script>
-      {% } %}   
-
-
 
 
 <script type="text/javascript">
