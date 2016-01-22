@@ -1,7 +1,7 @@
 import React from 'react'
 
 import NavBar from 'components/NavBar'
-import { Button, ButtonPanel } from 'components/Button'
+import { Button, ButtonPanel } from 'components/Buttons'
 
 import View, { Cover } from 'components/View'
 
