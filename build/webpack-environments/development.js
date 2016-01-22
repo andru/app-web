@@ -21,8 +21,8 @@ export default (webpackConfig) => {
       'webpack-hot-middleware/client?path=/__webpack_hmr'
     )
 
-    debug('Override devtool with "cheap-module-eval-source-map".')
-    webpackConfig.devtool = 'cheap-module-eval-source-map'
+    //debug('Override devtool with "cheap-module-eval-source-map".')
+    //webpackConfig.devtool = 'cheap-module-eval-source-map'
 
     webpackConfig.plugins.push(
       new webpack.HotModuleReplacementPlugin(),

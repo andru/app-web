@@ -38,11 +38,13 @@ const webpackConfig = {
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.optimize.DedupePlugin(),
     new HtmlWebpackPlugin({
+      title: 'Hortomatic is loading...',
       template: paths.client('index.html'),
       // hash: false,
       // favicon: paths.client('static/favicon.ico'),
       filename: 'index.html',
-      // inject: 'body',
+      //chunks: ['entry'],
+      inject: 'body',
       minify: {
         collapseWhitespace: false
       }
