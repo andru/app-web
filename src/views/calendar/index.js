@@ -33,7 +33,7 @@ export class CalendarView extends React.Component {
     return (
       <Measure
         onMeasure={(dimensions, mutations, target) => {
-          console.log('Dimensions: ', dimensions);
+          console.log('Dimensions: ', dimensions)
           this.setState({dimensions})
         }}>
         <Cover style={{visibility: this.state.isMounted ? 'visible' : 'hidden'}}>

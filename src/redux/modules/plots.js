@@ -38,7 +38,7 @@ export const actions = {
 //
 
 function showPlantingUI (state) {
-	    return state
+	      return state
 }
 
 export const reducer = handleActions({

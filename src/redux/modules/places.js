@@ -35,12 +35,21 @@ export const actions = {
 // ------------------------------------
 // Reducer
 // ------------------------------------
-//
+
 
 function showPlantingUI (state) {
-	  return state
+	    return state
 }
 
 export const reducer = handleActions({
   // [SHOW_CREATE_PLACE_UI]: showPlantingUI
 }, [])
+
+// ------------------------------------
+// Selectors
+// ------------------------------------
+
+export function selectPlaces (state) {
+  return state.places
+}
+

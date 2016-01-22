@@ -16,44 +16,9 @@ const mapStateToProps = (state) => ({
   places: state.places
 })
 
-// array reducer. given an unsorted array of dates, reduce to the earliest
-function earliest (earliest, value, i) {
-  return value < earliest ? value : earliest
-}
-// array reducer. given an unsorted array of dates, reduce to the latest
-function latest (latest, value, i) {
-  return value > latest ? value : latest
-}
 //return the last elemet of an array
 function last (arr) {
   return arr[arr.length-1]
-}
-
-function getDate (event) {
-  return event.eventType === 'period'
-    ? (event.actualDateRange || event.estimateDateRange).map(string => new Date(string))
-    : new Date(event.actualDate || event.estimateDate)
-}
-
-function getEarliestDate (event) {
-  return event.eventType === 'period'
-    ? getDate(event)[0]
-    : getDate(event)
-}
-
-function getLatestDate (event) {
-  return event.eventType === 'period'
-    ? getDate(event)[1]
-    : getDate(event)
-}
-
-function getLatestTimelineDate (timeline) {
-  return timeline.map(event => getLatestDate(event)).reduce(latest)
-}
-
-// check whether an event is an estimate or actual
-function isEstimate (event) {
-  return (event.actualDate || event.actualDateRange)
 }
 
 function addLine (lines=[], line) {

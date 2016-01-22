@@ -2,8 +2,9 @@ import { createAction, handleActions } from 'redux-actions'
 import { createSelector } from 'reselect'
 import moment from 'moment'
 
-import {selectPlantings, selectPlants, selectPlaces} from './sharedSelectors.js'
-
+import {selectPlantings} from './plantings'
+import {selectPlants} from './plants'
+import {selectPlaces} from './places'
 
 // ------------------------------------
 // Constants

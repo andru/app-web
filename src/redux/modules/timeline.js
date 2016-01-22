@@ -3,7 +3,16 @@ import { createSelector } from 'reselect'
 import _ from 'lodash'
 import moment from 'moment'
 
-import {selectPlantings, selectPlants, selectPlaces} from './sharedSelectors.js'
+import {
+  getEventDate,
+  getEarliestEventDate,
+  getLatestEventDate,
+  getLatestTimelineDate,
+  isEstimate} from 'utils/plantings.js'
+
+import {selectPlantings} from './plantings'
+import {selectPlants} from './plants'
+import {selectPlaces} from './places'
 
 // ------------------------------------
 // Constants
@@ -32,13 +41,12 @@ export const reducer = handleActions({
 
 let last = _.last
 
-import {getDate, getEarliestDate, getLatestDate, getLatestTimelineDate, isEstimate} from 'utils/plantings.js'
 
-function addLine (lines=[], line) {
+function addLine (lines = [], line) {
   // extend the previous line if the new line is of the same type
   lines.length
     ? last(lines).appearance === line.appearance
-      ? lines[lines.length-1] = {...last(lines), to: line.to}
+      ? lines[lines.length - 1] = {...last(lines), to: line.to}
       : lines.push(line)
     : lines.push(line)
 
@@ -61,8 +69,8 @@ export const selectTimelineData = createSelector(
     .filter(p => p.timeline && p.timeline.length)
     // only plantings that exist within or span the current date range
     .filter(p => {
-      let earliest = getEarliestDate(p.timeline[0])
-      let latest = getLatestDate(last(p.timeline))
+      let earliest = getEarliestEventDate(p.timeline[0])
+      let latest = getLatestEventDate(last(p.timeline))
       return (
         earliest > start_date && earliest < end_date ||
         earliest < start_date && latest > end_date ||
@@ -72,24 +80,24 @@ export const selectTimelineData = createSelector(
     // create an object that the timeline can use
     .map(({name, id, plantId, placeId, timeline}) => {
       let track = {
-        from: getEarliestDate(timeline),
-        to: getLatestDate(last(timeline)),
+        from: getEarliestEventDate(timeline),
+        to: getLatestEventDate(last(timeline)),
         plantingId: id,
         placeId: getPlaceId(timeline),
         plantId,
         name,
         lines: timeline.reduce((accum, ev) => {
-          if (accum.previousEvent===undefined) {
+          if (accum.previousEvent === undefined) {
             accum.previousEvent = ev
             return accum
           }
 
-          let earliestDate = getEarliestDate(ev)
-          let latestDate = getLatestDate(ev)
-          let previousEventDate = getLatestDate(accum.previousEvent)
+          let earliestDate = getEarliestEventDate(ev)
+          let latestDate = getLatestEventDate(ev)
+          let previousEventDate = getLatestEventDate(accum.previousEvent)
 
           if (isEstimate(accum.previousEvent) && isEstimate(ev)) {
-            
+
             addLine(accum.lines, {
               from: previousEventDate,
               to: earliestDate,
@@ -97,9 +105,9 @@ export const selectTimelineData = createSelector(
             })
             // if the event is a range/period, draw a line between the two dates
             if (!moment(latestDate).isSame(earliestDate)) {
-              
+
               // draw a dotted line between the two range dates if the latter is undefined...
-              if (ev.estimateDateRange[1] === undefined){
+              if (ev.estimateDateRange[1] === undefined) {
                 addLine(accum.lines, {
                   from: earliestDate,
                   to: latestDate,
@@ -111,7 +119,7 @@ export const selectTimelineData = createSelector(
                   to: latestDate,
                   appearance: 'solid'
                 })
-              } 
+              }
             }
           } else {
             addLine(accum.lines, {
@@ -130,22 +138,22 @@ export const selectTimelineData = createSelector(
           .filter(e => e.eventType === 'activity' || e.eventType === 'lifecycle')
           .map(e => ({
             ...e,
-            date:getDate(e)
-          }) 
+            date:getEventDate(e)
+          })
         ),
         periods: timeline
           .map((e, eventIndex) => Object.assign(e, {eventIndex}))
           .filter(e => e.eventType === 'period')
           .map(e => ({
             ...e,
-            from: getEarliestDate(e),
-            to: getLatestDate(e),
+            from: getEarliestEventDate(e),
+            to: getLatestEventDate(e),
           })
         ),
         styles: {}
       }
 
-      if (plants[track.plantId].appTheme){  
+      if (plants[track.plantId].appTheme) {
         track.styles.all = {
           stroke: plants[track.plantId].appTheme.timelineColor,
           fill: plants[track.plantId].appTheme.timelineColor
@@ -154,18 +162,18 @@ export const selectTimelineData = createSelector(
 
       if (last(timeline).eventType !== 'end') {
         let undefinedEndDate = moment(getLatestTimelineDate(timeline)).add(1, 'month').toDate()
-        track.markers.push({ 
+        track.markers.push({
           date: undefinedEndDate,
           appearance: 'rightArrow'
         })
         track.lines.push({
-          from: getLatestDate(last(timeline)),
+          from: getLatestEventDate(last(timeline)),
           to: undefinedEndDate,
           appearance: 'dashed'
         })
       }
 
-      return track;
+      return track
     })
     .groupBy('placeId')
     .map((group, id) => ({name: id, tracks: group}))
