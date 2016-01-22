@@ -1,34 +1,38 @@
 import {earliest, latest} from './reduce.js'
 
+export function coerceToDate (date) {
+  return date instanceof Date ? date : new Date(date)
+}
+
 // return the date of a planting event, not caring whether it's
 // an estimate of an actual date
 // returns a Date object or an Array of Date objects for a date range
-export function getDate (event) {
+export function getEventDate (event) {
   return event.eventType === 'period'
-    ? (event.actualDateRange || event.estimateDateRange).map(string => new Date(string))
-    : new Date(event.actualDate || event.estimateDate)
+    ? (event.actualDateRange || event.estimateDateRange).map(coerceToDate)
+    : coerceToDate(event.actualDate || event.estimateDate)
 }
 
 // get the earliest date for an event
 // returns a Date object
-export function getEarliestDate (event) {
+export function getEarliestEventDate (event) {
   return event.eventType === 'period'
-    ? getDate(event)[0]
-    : getDate(event)
+    ? getEventDate(event)[0]
+    : getEventDate(event)
 }
 
 // get the latest defined date for an event
 // returns a Date object
-export function getLatestDate (event) {
+export function getLatestEventDate (event) {
   return event.eventType === 'period'
-    ? getDate(event)[1]
-    : getDate(event)
+    ? getEventDate(event)[1]
+    : getEventDate(event)
 }
 
 // get the latest date from a timeline of Planting Events
 // returns a Date object
 export function getLatestTimelineDate (timeline) {
-  return timeline.map(event => getLatestDate(event)).reduce(latest)
+  return timeline.map(event => getLatestEventDate(event)).reduce(latest)
 }
 
 // check whether an event is an estimate or actual
