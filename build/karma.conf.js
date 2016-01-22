@@ -11,27 +11,41 @@ const karmaConfig = {
     require('karma-webpack'),
     require('karma-mocha'),
     require('karma-tap'),
+    require('karma-sourcemap-loader'),
     require('karma-chrome-launcher'),
+    require('karma-firefox-launcher'),
     require('karma-phantomjs-launcher'),
     require('karma-coverage'),
     require('karma-tap-reporter')
   ],
   files: [
     './node_modules/phantomjs-polyfill/bind-polyfill.js',
+    // {
+    //   pattern: `./${config.dir_test}/views/*.js`,
+    //   watched: false,
+    //   served: true,
+    //   included: true
+    // },
+    // {
+    //   pattern: `./${config.dir_test}/layouts/*.js`,
+    //   watched: false,
+    //   served: true,
+    //   included: true
+    // },
     {
-      pattern: `./${config.dir_test}/**/*.js`,
+      pattern: `./${config.dir_test}/unit/index.js`,
       watched: false,
       served: true,
       included: true
     }
   ],
   singleRun: !argv.watch,
-  frameworks: ['tap', 'mocha'],// 'chai-sinon', 'chai-as-promised', 'chai', ],
+  frameworks: ['tap', 'mocha'], // 'chai-sinon', 'chai-as-promised', 'chai', ],
   preprocessors: {
-    [`${config.dir_test}/**/*.js`]: ['webpack']
+    [`${config.dir_test}/**/*.js`]: ['webpack', 'sourcemap']
   },
-  reporters: ['tap'],//, 'spec'],
-  browsers: ['PhantomJS'],//, 'Chrome'],
+  reporters: ['tap', 'dots', 'progress'], //, 'spec'],
+  browsers: ['PhantomJS'], //, 'Chrome'],
   webpack: {
     devtool: 'inline-source-map',
     resolve: webpackConfig.resolve,
@@ -69,7 +83,7 @@ if (config.coverage_enabled) {
   //   include: new RegExp(config.dir_client),
   //   loader: 'isparta'
   // }]
-  // 
+  //
 }
 
 export default (cfg) => cfg.set(karmaConfig)

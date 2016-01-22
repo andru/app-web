@@ -1,0 +1,97 @@
+{
+    "planting/one": {
+      "timeline": [
+        {
+          "eventType": "activity",
+          "eventName": "plant",
+          "estimateDate": "2015-03-22T00:11:54.732Z",
+          "plantId": "plant/one",
+          "placeId": "place/one",
+          "from": "seed",
+          "notes": "Sowed thickly in a plastic fruit crate; next to stove until germination."
+        },
+        {
+          "eventType": "lifecycle",
+          "eventName": "germination",
+          "estimateDate": "2015-04-01T00:11:54.732Z",
+          "actualDate": "2015-04-01T00:11:54.732Z",
+          "from": "seed",
+          "notes": "Lots came up."
+        },
+        {
+          "estimateDate": "2015-05-08T01:35:26.514Z",
+          "notes": "Transplanted out into modules",
+          "eventType": "activity",
+          "eventName": "transplant",
+          "placeId": "place/8E02D1BA-756C-355C-8D49-DAA1AA9EF6C2"
+        },
+        {
+          "estimateDateRange": ["2015-05-01", "2015-07-01"],
+          "actualDateRange": ["2015-05-08", "2015-08-09"],
+          "eventType": "period",
+          "eventName": "harvest"
+        },
+        {
+          "estimateDate": "2015-11-08T01:35:26.514Z",
+          "notes": "Transplanted out into modules",
+          "eventType": "activity",
+          "eventName": "remove"
+        }
+      ],
+      "_rev": "1-dfe6d0f133c406168de50451819a3d69",
+      "name": "Avoa de Osedo",
+      "createdAt": "2015-05-07T23:11:54.732Z",
+      "plantId": "plant/one",
+      "version": 2,
+      "id": "planting/one",
+      "type": "planting"
+    },
+    "planting/two": {
+      "timeline": [
+        {
+          "eventType": "activity",
+          "eventName": "plant",
+          "estimateDate": "2015-03-05",
+          "plantId": "plant/two",
+          "placeId": "place/two",
+          "from": "seed"
+        },
+        {
+          "estimateDateRange": ["2015-04-01", "2015-09-01"],
+          "eventType": "period",
+          "eventName": "harvest"
+        },
+        {
+          "eventType": "activity",
+          "eventName": "harvest",
+          "estimateDate": "2015-05-12",
+          "quantity": 10,
+          "unit": "heads"
+        }
+      ],
+      "_rev": "1-af4e510cfe36cd3d8e721bd68f53cb23",
+      "name": "Tomatillo",
+      "createdAt": "2015-05-07T11:22:36.518Z",
+      "version": 2,
+      "id": "planting/two",
+      "type": "planting"
+    },
+    "planting/three": {
+      "timeline": [
+        {
+          "eventType": "activity",
+          "eventName": "plant",
+          "estimateDate": "2015-03-05",
+          "plantId": "plant/three",
+          "placeId": "place/three",
+          "from": "seed"
+        }
+      ],
+      "_rev": "1-af4e510cfe36cd3d8e721bd68f53cb23",
+      "name": "Tomatillo",
+      "createdAt": "2015-05-07T11:22:36.518Z",
+      "version": 2,
+      "id": "planting/three",
+      "type": "planting"
+    }
+}
