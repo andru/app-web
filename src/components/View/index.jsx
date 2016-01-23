@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { PropTypes, StyleSheet, View } from 'react-native-web'
+import { StyleSheet, View } from 'react-native-web'
 
 export default class CustomView extends Component {
   render() {
