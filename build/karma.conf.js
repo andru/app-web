@@ -44,8 +44,8 @@ const karmaConfig = {
   preprocessors: {
     [`${config.dir_test}/**/*.js`]: ['webpack', 'sourcemap']
   },
-  reporters: ['tap', 'dots', 'progress'], //, 'spec'],
-  browsers: ['PhantomJS'], //, 'Chrome'],
+  reporters: ['tap'], //, 'progress', 'spec'],
+  browsers: ['PhantomJS', 'Chrome', 'ChromeCanary', 'Firefox'],
   webpack: {
     devtool: 'inline-source-map',
     resolve: webpackConfig.resolve,
