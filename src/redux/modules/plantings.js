@@ -1,4 +1,6 @@
 import { createAction, handleActions } from 'redux-actions'
+import _ from 'lodash'
+
 import { createSelector } from 'reselect'
 import { selectPlaces } from './places'
 import { selectPlants } from './plants'
@@ -109,13 +111,23 @@ export function selectPlantings (state) {
 // select plantings which have been trashed
 export const selectTrashedPlantings = createSelector(
   selectPlantings,
-  (plantings) => plantings.filter(p => !!p.isTrashed)
+  (plantings) => {
+    let trashed = _.filter(plantings, p => !!p.isTrashed)
+    return _.zipObject(
+      trashed.map(p => p.id),
+      trashed
+    )
+  }
 )
 // select plantings which have not been trashed
 export const selectActivePlantings = createSelector(
   selectPlantings,
   (plantings) => {
-    return plantings.filter(p => !p.isTrashed)
+    let trashed = _.filter(plantings, p => !p.isTrashed)
+    return _.zipObject(
+      trashed.map(p => p.id),
+      trashed
+    )
   }
 )
 // select plantings which are active for the current date

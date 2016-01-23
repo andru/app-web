@@ -15,6 +15,7 @@ const stateCopy = Object.freeze(Object.assign({}, state))
 
 test('selectPlantings', function (t) {
   t.plan(2)
+
   t.equal(selectPlantings(state), state.plantings, 'should return plantings from the state object')
   t.deepEqual(stateCopy, state, 'should not mutate the state object')
 })
@@ -30,7 +31,7 @@ test('handleSetPlantingEvent', function (t) {
 
     const newPlantings = handleSetPlantingEvent(
       plantingsCopy,
-      payload
+      {payload}
     )
 
     t.deepEqual(

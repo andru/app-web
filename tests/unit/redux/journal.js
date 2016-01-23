@@ -14,94 +14,99 @@ import {
   selectLogData
 } from 'redux/modules/journal'
 
-const plantings = Object.freeze(require('../../fixtures/plantings.json'))
-const places = Object.freeze(require('../../fixtures/places.json'))
-const plants = Object.freeze(require('../../fixtures/plants.json'))
-const journal = Object.freeze({
-  activePlantingId: 'planting/one'
-})
+const plantings = require('../../fixtures/plantings.json')
+const places = require('../../fixtures/places.json')
+const plants = require('../../fixtures/plants.json')
+const journal = {
+  selectedPlantingId: 'planting/one'
+}
 
 const state = {plantings, places, plants, journal}
-const stateCopy = Object.freeze(Object.assign({}, state))
+const stateCopy = Object.freeze(_.cloneDeep(state))
 
 test('handleSetActivePlanting', function (t) {
-    t.plan(2)
+    t.plan(3)
 
-    const activePlantingId = 'planting/one'
-    const payload = {plantingId: activePlantingId}
-    const plantingsCopy = {...plantings}
+    const selectedPlantingId = 'planting/one'
+    const action = {payload:{plantingId: selectedPlantingId}}
+    const stateCopy = {...journal}
 
-    const newPlantings = handleSetActivePlanting(
-      plantingsCopy,
-      payload
+    const newState = handleSetActivePlanting(
+      stateCopy,
+      action
     )
 
-    t.equal(newPlantings.journal.activePlantingId, activePlantingId,
-      'sets state.journal.activePlantingId to value of payload.plantingId'
+    t.equal(newState && newState.selectedPlantingId, selectedPlantingId,
+      'sets state.journal.selectedPlantingId to value of payload.plantingId'
     )
 
-    t.throws(handleSetActivePlanting(plantingsCopy),
+    t.throws(()=>handleSetActivePlanting(plantingsCopy),
       'throws error if payload doesn\'t contain plantingId'
     )
 
-    t.deepEqual(plantingsCopy, plantings, 
+    t.deepEqual(stateCopy, journal, 
       'must not mutate state')
 
 });
 
 test('selectLogData', function (t) {
-    t.plan(4)
+    t.plan(7)
 
-    const activePlantingId = 'planting/one'
-    const _pl = plantings[activePlantingId]
-    const _tl = _pl.timeline.slice().filter(e => e.eventType==='activity')
+    const selectedPlantingId = 'planting/one'
+    const _pl = plantings[selectedPlantingId]
+    const _tl = _pl.timeline
+    const stateCopy = {...state}
 
     const expectedData = {
-      range: [moment(getEventDate(_pl.timeline[0])).startOf('month'), moment(getEventDate(_.last(_pl.timeline))).endOf('month')],
+      range: [
+        moment(getEventDate(_pl.timeline[0])).startOf('month').toDate(),  
+        moment(getEventDate(_.last(_pl.timeline))).endOf('month').toDate()
+      ],
       months: [
         {
-          month: moment(getEventDate(_pl.timeline[0])).startOf('month'),
+          month: moment(getEventDate(_pl.timeline[0])).startOf('month').toDate(),
           events: [
             _pl.timeline[0]
           ]
         },
+        // timeline[2] is a lifecycle event so it's skipped
         {
-          month: moment(getEventDate(_pl.timeline[1])).startOf('month'),
+          month: moment(getEventDate(_pl.timeline[1])).startOf('month').toDate(),
           events: [
-            _pl.timeline[1]
+            _pl.timeline[2]
           ]
         },
-        // timeline[3 is a period event so it's skipped]
+        // timeline[3] is a period event so it's skipped
         {
-          month: moment(getEventDate(_pl.timeline[3])).startOf('month'),
+          month: moment(getEventDate(_pl.timeline[3])).startOf('month').toDate(),
           events: [
-            _pl.timeline[3]
+            _pl.timeline[4]
           ]
         }
       ]
     }
 
-    // selectLogData expects an active planting
-    let logState = { 
-      ...state, 
-      ...{
-        ...{
-          ...state.journal,
-          ...{
-            activePlantingId
-          }
-        }
-      }
-    }
+    let noSelectedPlantingState = _.cloneDeep(state)
+    noSelectedPlantingState.journal.selectedPlantingId = undefined
 
-    const logDataWithoutActivePlanting = selectLogData(state)
-    const logData = selectLogData(logState)
+    const logDataWithoutActivePlanting = selectLogData(noSelectedPlantingState)
+    const logData = selectLogData(state)
+
+
+    t.assert(state.journal.selectedPlantingId,
+      'state has selectedPlantingId')
 
     t.equal( logDataWithoutActivePlanting, false,
-      'returns false if there is no active planting')
+      'returns false if there is no selected planting')
 
     t.deepEqual(logData.range, expectedData.range,
       'defines the start and end date range')
+
+    t.assert(!!logData.months,
+      'defines a months property')
+
+    t.equal(logData.months.length, expectedData.months.length,
+      'groups events by month')
 
     t.assert(
       logData.months[0].events.length === expectedData.months[0].events.length
@@ -110,7 +115,7 @@ test('selectLogData', function (t) {
       'grabs all single-date events from timeline'
       )
 
-    t.deepEqual(stateCopy, logState, 
+    t.deepEqual(stateCopy, state, 
       'must not mutate state')
 
 });

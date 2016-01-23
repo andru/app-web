@@ -39,3 +39,7 @@ export function getLatestTimelineDate (timeline) {
 export function isEstimate (event) {
   return (event.actualDate || event.actualDateRange)
 }
+
+export function eventIsRange (event) {
+  return event.eventType === 'period'
+}

@@ -1,6 +1,12 @@
 import { createAction, handleActions } from 'redux-actions'
 import { createSelector } from 'reselect'
 import moment from 'moment'
+import _ from 'lodash'
+
+import {
+  getEventDate, 
+  getLatestTimelineDate
+} from 'utils/plantings.js'
 
 import {selectPlantings, selectActivePlantings} from './plantings'
 import {selectPlants} from './plants'
@@ -30,7 +36,7 @@ export const actions = {
 // Reducer
 // ------------------------------------
 
-export function handleSetActivePlanting (state, payload) {
+export function handleSetActivePlanting (state, {payload}) {
   return {...state, ...{activePlantingId: payload.plantingId}}
 }
 
@@ -43,8 +49,8 @@ export const reducer = handleActions({
 // Selector
 // ------------------------------------
 
-export function selectActivePlanting (state) {
-  return state.journal.activePlantingId || undefined
+export function selectSelectedPlanting (state) {
+  return state.journal.selectedPlantingId || undefined
 }
 
 export function selectOptions (state) {
@@ -53,14 +59,40 @@ export function selectOptions (state) {
   }
 }
 
+const defaultLogDataRange = [
+  moment().startOf('month').toDate(),
+  moment().startOf('month').add(1, 'month').toDate()
+]
 export const selectLogData = createSelector(
   selectPlantings,
   selectPlants,
   selectPlaces,
-  selectActivePlantings,
+  selectSelectedPlanting,
   selectOptions,
-  (plantings, plants, places, activePlantingId, options) => {
-
+  (plantings, plants, places, selectedPlantingId, options) => {
+    if (!selectedPlantingId) {
+      return false
+    }
+    let selectedPlanting = plantings[selectedPlantingId] 
+    let timeline = selectedPlanting.timeline.filter(e => e.eventDateType==='day' && e.eventType==='activity')
+    return {
+      range: timeline.length 
+      ? [
+          moment(getEventDate(timeline[0])).startOf('month').toDate(),
+          moment(timeline.length > 1 
+            ? getEventDate(_.last(timeline)) 
+            : getEventDate(timeline[0])
+          ).endOf('month').toDate(),
+        ]
+      : defaultLogDataRange,
+      months: _(timeline)
+        .groupBy(ev => moment(getEventDate(ev)).startOf('month').format('YYYY-MM-DD'))
+        .map((events, date) => ({
+          date: new Date(date),
+          events
+        }))
+        .value()
+    }
   }
 )
 

@@ -1,2 +1,2 @@
-require('./plantings')
+// require('./plantings')
 require('./reduce')

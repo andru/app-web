@@ -3,8 +3,9 @@
     "planting/86F34440-2C85-F2BE-8877-421E0FC02496": {
       "timeline": [
         {
+          "eventDateType": "day",
           "eventType": "activity",
-          "eventName": "plant",
+          "activityType": "plant",
           "estimateDate": "2015-03-22T00:11:54.732Z",
           "plantId": "plant/465D3397-0381-DB73-A251-9C4CB8F4A5BF",
           "placeId": "place/EB0574A3-FB49-2F54-A707-82CC2EC28B3D",
@@ -12,8 +13,9 @@
           "notes": "Sowed thickly in a plastic fruit crate; next to stove until germination."
         },
         {
+          "eventDateType": "day",
           "eventType": "lifecycle",
-          "eventName": "germination",
+          "lifecycleStage": "germination",
           "estimateDate": "2015-04-01T00:11:54.732Z",
           "actualDate": "2015-04-01T00:11:54.732Z",
           "from": "seed",
@@ -22,21 +24,24 @@
         {
           "estimateDate": "2015-05-08T01:35:26.514Z",
           "notes": "Transplanted out into modules",
+          "eventDateType": "day",
           "eventType": "activity",
-          "eventName": "transplant",
+          "activityType": "transplant",
           "placeId": "place/8E02D1BA-756C-355C-8D49-DAA1AA9EF6C2"
         },
         {
           "estimateDateRange": ["2015-05-01", "2015-07-01"],
           "actualDateRange": ["2015-05-08", "2015-08-09"],
-          "eventType": "period",
-          "eventName": "harvest"
+          "eventDateType": "range",
+          "eventType": "activity",
+          "activityType": "harvest"
         },
         {
           "estimateDate": "2015-11-08T01:35:26.514Z",
           "notes": "Transplanted out into modules",
+          "eventDateType": "day",
           "eventType": "activity",
-          "eventName": "remove"
+          "activityType": "remove"
         }
       ],
       "_rev": "1-dfe6d0f133c406168de50451819a3d69",
@@ -50,8 +55,9 @@
     "planting/75909B27-E31E-AE3A-91B4-DB52A2F8C635": {
       "timeline": [
         {
+          "eventDateType": "day",
           "eventType": "activity",
-          "eventName": "plant",
+          "activityType": "plant",
           "estimateDate": "2015-03-05",
           "plantId": "plant/723D61D3-F1A9-CFE7-9322-402928C6995D",
           "placeId": "place/EB0574A3-FB49-2F54-A707-82CC2EC28B3D",
@@ -59,12 +65,14 @@
         },
         {
           "estimateDateRange": ["2015-04-01", "2015-09-01"],
-          "eventType": "period",
-          "eventName": "harvest"
+          "eventDateType": "range",
+          "eventType": "activity",
+          "activityType": "harvest"
         },
         {
+          "eventDateType": "day",
           "eventType": "activity",
-          "eventName": "harvest",
+          "activityType": "harvest",
           "estimateDate": "2015-05-12",
           "quantity": 10,
           "unit": "heads"
@@ -81,8 +89,9 @@
     "planting/4CF31BD4-66E7-36F1-BB00-02441BA29338": {
       "timeline": [
         {
+          "eventDateType": "day",
           "eventType": "activity",
-          "eventName": "plant",
+          "activityType": "plant",
           "estimateDate": "2015-04-05T23:28:34.080Z",
           "plantId": "plant/A543B24E-9437-0B87-8F92-48D202A7A0C7",
           "placeId": "place/E4E20F3E-8EC3-4DE5-ABAD-601A7E2D74DD",
@@ -100,8 +109,9 @@
     "planting/58DEC391-89F8-F4A7-8F3A-0C5D2AC8DB20": {
       "timeline": [
         {
+          "eventDateType": "day",
           "eventType": "activity",
-          "eventName": "plant",
+          "activityType": "plant",
           "estimateDate": "2015-05-07T11:27:53.918Z",
           "plantId": "plant/1618A046-A0CC-06FF-B4E1-277C7C71D6CC",
           "trashed": false
@@ -109,8 +119,9 @@
         {
           "estimateDate": "2015-05-08T01:35:26.514Z",
           "notes": "Transplented 2 into pots and remaining 4 into unreasonably small modules (all I had at the time)",
+          "eventDateType": "day",
           "eventType": "activity",
-          "eventName": "transplant",
+          "activityType": "transplant",
           "placeId": "place/8E02D1BA-756C-355C-8D49-DAA1AA9EF6C2",
           "trashed": false
         }
@@ -137,8 +148,9 @@
     "planting/86C49391-7F35-3525-8E34-717C90DB0E5B": {
       "timeline": [
         {
+          "eventDateType": "day",
           "eventType": "activity",
-          "eventName": "plant",
+          "activityType": "plant",
           "estimateDate": "2015-04-05T23:30:15.790Z",
           "plantId": "plant/723D61D3-F1A9-CFE7-9322-402928C6995D",
           "from": "seed",
@@ -178,8 +190,9 @@
     "planting/28B277B8-5886-BE27-8F41-572E00053996": {
       "timeline": [
         {
+          "eventDateType": "day",
           "eventType": "activity",
-          "eventName": "plant",
+          "activityType": "plant",
           "estimateDate": "2015-04-09T09:42:22.342Z",
           "plantId": "plant/542BAF99-C26B-6377-AF66-87A6E705D639",
           "from": "cutting",
@@ -187,8 +200,9 @@
           "notes": "Divided comfrey from around Apple tree. Planted above Jerusulem artichokes."
         },
         {
+          "eventDateType": "day",
           "eventType": "activity",
-          "eventName": "end",
+          "activityType": "end",
           "actualDate": "2015-05-15"
         }
       ],
@@ -203,8 +217,9 @@
     "planting/8844D57F-DD59-B57A-8980-40D562BE6B5C": {
       "timeline": [
         {
+          "eventDateType": "day",
           "eventType": "activity",
-          "eventName": "plant",
+          "activityType": "plant",
           "estimateDate": "2015-04-09T01:22:46.301Z",
           "plantId": "plant/8A390E68-3EB5-50B1-A325-4CDBE4EDC99A",
           "notes": "Not sure exactly where Paris planted these...",
@@ -223,8 +238,9 @@
     "planting/9CBA5F53-36B5-5D5A-98D1-65490A5EBD5C": {
       "timeline": [
         {
+          "eventDateType": "day",
           "eventType": "activity",
-          "eventName": "plant",
+          "activityType": "plant",
           "estimateDate": "2015-05-07T16:31:08.944Z",
           "plantId": "plant/69F02C9C-E59B-1676-B65B-D45245BA5072",
           "placeId": "place/4B6BA941-921B-F74D-B802-70213A10D437",
@@ -253,8 +269,9 @@
     "planting/1FB7FBF0-EE34-4DBA-8524-A927085F0A55": {
       "timeline": [
         {
+          "eventDateType": "day",
           "eventType": "activity",
-          "eventName": "plant",
+          "activityType": "plant",
           "estimateDate": "2015-05-07T23:17:04.286Z",
           "plantId": "plant/CE288335-8553-BA9D-8987-1ECE64CDAB27",
           "placeId": "place/043EDCA2-C671-04B9-8705-35D13B8CD300",
@@ -273,8 +290,9 @@
     "planting/F43C01B0-BE11-1624-BACF-B75811AD5486": {
       "timeline": [
         {
+          "eventDateType": "day",
           "eventType": "activity",
-          "eventName": "plant",
+          "activityType": "plant",
           "estimateDate": "2015-03-05T12:35:04.016Z",
           "plantId": "plant/D583F4AB-9F9B-7851-BA91-380281118817",
           "placeId": "place/EB0574A3-FB49-2F54-A707-82CC2EC28B3D",
@@ -285,8 +303,9 @@
         {
           "estimateDate": "2015-04-14T18:28:12.618Z",
           "notes": "Not a lot came up. Transplanted about 10 into medium modules with rich compost.",
+          "eventDateType": "day",
           "eventType": "activity",
-          "eventName": "transplant",
+          "activityType": "transplant",
           "placeId": "place/8E02D1BA-756C-355C-8D49-DAA1AA9EF6C2",
           "recipient": "modules"
         }
