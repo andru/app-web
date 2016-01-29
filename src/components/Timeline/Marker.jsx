@@ -36,12 +36,12 @@ export default class Marker extends React.Component {
     }
   }
 
-  circleMarker ({isEditing, radius, date, plotX, yPos, onMouseDown, styles={}}) {
+  circleMarker ({isEditing, radius, date, plotX, yPos, onMouseDown, onClick, styles={}}) {
     styles = {...defaultStyles.circle, ...styles.circle}
     if (isEditing) {
       styles.cursor = 'ew-resize'
     }
-    return <circle r={radius} cx={plotX(date)} cy={yPos} style={styles} onMouseDown={onMouseDown} />
+    return <circle r={radius} cx={plotX(date)} cy={yPos} style={styles} onMouseDown={onMouseDown} onClick={onClick}/>
   }
 
   leftArrowMarker ({radius, date, plotX, yPos, styles={}}) {

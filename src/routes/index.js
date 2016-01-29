@@ -14,6 +14,7 @@ import TimelineView from 'views/timeline'
 import PlotsView from 'views/plots'
 import JournalView from 'views/journal'
 import CalendarView from 'views/calendar'
+import PlantingsView from 'views/plantings'
 
 
 export default (
@@ -23,5 +24,8 @@ export default (
     <Route path='plots' component={PlotsView} />
     <Route path='calendar' component={CalendarView} />
     <Route path='journal' component={JournalView} />
+    <Route path='plantings' component={PlantingsView}>
+      <Route path='plantings/:planting_id' component={PlantingsView} />
+    </Route>
   </Route>
 )

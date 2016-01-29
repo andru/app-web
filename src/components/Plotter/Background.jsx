@@ -15,7 +15,7 @@ export default class Background extends Component {
 
     let styles = {
       bg: {
-        fill: '#F1BD54'
+        fill: '#E0DDC0'
       },
     }
 

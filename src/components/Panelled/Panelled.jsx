@@ -78,7 +78,7 @@ const Panelled = React.createClass({
 			,	MozTransform: 'translate('+clamp(100*(index-this.props.activePanel))+'%,0)'
 			};
 
-			return React.addons.cloneWithProps(child, childProps);
+			return React.cloneElement(child, childProps);
 		}, this);
 				
 		return (

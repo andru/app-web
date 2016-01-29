@@ -3,8 +3,14 @@ import View, { Cover } from 'components/View'
 import { StyleSheet } from 'react-native-web'
 import _ from 'lodash'
 
-import Event from './Event'
-import {eventComponents, lifecycleEventNames, actionEventNames} from './EventTypes'
+import {PlantingLogEvent as LogEvent} from './Event'
+import {eventComponents, lifecycleEventNames, actionEventNames} from './eventTypes'
+import {
+  orderEventsByDate,
+  getEarliestTimelineDate,
+  getLatestTimelineDate
+} from 'utils/plantings'
+import {formatPlantingForLog} from 'utils/plantings'
 
 const styles = StyleSheet.create({
   container: {
@@ -27,14 +33,21 @@ export default class EventForm extends Component {
   static defaultProps = {
   };
 
-  handleWindowKeyDown: (ev)=>{
+  handleWindowKeyDown = (ev) => {
     ev.stopPropagation()
     console.dir(ev)
-  }
+  };
+
+  handleAddClick = (ev) => {
+
+  };
+
+  handleEdit = (ev) => {
+
+  };
 
   render () {
-    const {plantingData} = this.props
-    const {timeline} = plantingData
+    const {planting, dateRange, monthEvents} = this.props
 
     return (
       <Cover styles={{...styles, ...this.props.styles.container}}>
@@ -43,10 +56,10 @@ export default class EventForm extends Component {
 
         {timeline && !!timeline.length &&
           <TimelineButton 
-          label={this.l10n('Planting-View-Timeline-button-addEvent')} 
+          label={this.props.l10n('Planting-View-Timeline-button-addEvent')} 
           icon="add" 
           keys={['cmd', '+']}
-          onClick={()=>this.getActions('planting').createEventUI.push([])}  />
+          onClick={this.handleAddClick}  />
         }
       </Cover>
     )
@@ -56,34 +69,22 @@ export default class EventForm extends Component {
    * Render list of events, grouped by month.
    * @return {array} Array of ReactElements
    */
-  renderItems(){
-    var events = this.$get(['selected', 'timeline'])
-      .sort((a,b)=>a.get('date')>b.get('date') ? 1 : a.get('date') < b.get('date') ? -1 : 0 )
-    ;
-    console.log('Rendering events, ranging from %s to %s', events.first().get('date'), events.last().get('date'), events.toJS());
+  renderItems () {
+    const {dateRange, monthEvents} = this.props
+    
+    let renderedMonths = []
+    let previousMonthWasEmpty = true
+    let monthNo = 0
 
-    var eventRange = moment.range(
-      moment(events.first().get('date')).startOf('month'), 
-      moment(events.last().get('date')).endOf('month')
-    );
-    
-    let activeEvents = events.filter(ev=>ev.get('status')!==EVENT_STATUSES.TRASHED);
-    var groupedEvents = activeEvents.groupBy(ev=>moment(ev.get('date')).format('YYYY MM'));
-    
-    var renderedMonths = [];
-    var previousMonthWasEmpty = true;
-    var monthNo = 0;
-    eventRange.by('months', moment => {
-      //console.log('rendering month', moment.format('LLLL'));
-      let 
-        monthEvents = groupedEvents.get( moment.format('YYYY MM') )
-      , isEmpty = !monthEvents
-      , monthClasses = cx(
+    dateRange.by('months', moment => {
+      const thisMonthEvents = monthEvents[moment.format('YYYY MM')]
+      const isEmpty = !thisMonthEvents
+      const monthClasses = cx(
         'Planting-View-Timeline-month'
         , {
             'Planting-View-Timeline-month--empty': isEmpty
         })
-      ;
+
       if(previousMonthWasEmpty && isEmpty){
         return;
       }
@@ -95,7 +96,7 @@ export default class EventForm extends Component {
         </div>
       }
       if(isEmpty){ 
-        renderedMonths.push(
+          renderedMonths.push(
           <div className={monthClasses} key={moment.format('YYYY-MM')}>
             <div className="Planting-View-Timeline-month-line">
               <svg width="30">
@@ -115,7 +116,7 @@ export default class EventForm extends Component {
             component="div" 
             transitionName="Plantings-animateTimeline"
             ref="timelineContent">*/}
-              {this.renderMonthEvents( monthEvents, monthNo )}
+              {this.renderMonthEvents( thisMonthEvents, monthNo )}
             {/*</TransitionGroup>*/}
           </div>
         );
@@ -139,29 +140,21 @@ export default class EventForm extends Component {
     return renderedMonths;
   }
   
-  renderMonthEvents( monthEvents, monthNo ){
-    var 
-      timeline = this.$get(['selected', 'timeline'])
-    ;
-    
-    //console.log('Rendering month events', monthEvents.toJS(), timeline.toJS(), monthEvents.map(ev=>timeline.indexOf(ev)).toArray());
+  renderMonthEvents (monthEvents, monthNo) {
+    const {activeEventIndex, planting} = this.props
 
     return monthEvents
-      .sort( (a, b)=>a.get('date') > b.get('date') ? 1 : a.get('date') < b.get('date') ? -1 : 0 )
-      .map( (event, i)=>{
-        //note: events have been grouped by month... i!=event index in month group, not original timeline
-        let timelineIndex = timeline.indexOf(event);
+      .map( (eventData, i)=>{
+        //note: events have been grouped by month... i!=eventData index in month group, not original timeline
+        let timelineIndex = planting.timeline.indexOf(eventData);
         return (
-          <TimelineEvent
-          model={event}
-          isActive={this.$get(['activeEventIndex'])===timelineIndex}
+          <LogEvent
+          eventData={eventData}
+          isSelected={activeEventIndex===timelineIndex}
           //showActions={true || this.$get('showActions')}
-          onEdit={()=>this.getActions('planting').editEventUI.push([timelineIndex])}
+          onEditIntent={()=>this.handleEdit(timelineIndex)}
           //onTrash={()=>this.getActions('planting').trashEvent.push([timelineIndex])}
-          key={this.$('planting').get('_id')
-            .concat(moment(event.get('date')).format('YYYY-MM-DD'))
-            .concat(i)
-          } />
+          key={timelineIndex} />
         )
       })
       .reverse().toArray();

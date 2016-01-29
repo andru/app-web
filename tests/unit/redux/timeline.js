@@ -1,9 +1,9 @@
 import {test} from 'tape'
 import {selectTimelineData} from 'redux/modules/timeline'
 
-const plantings = Object.freeze(require('../../fixtures/plantings.json'))
-const places = Object.freeze(require('../../fixtures/places.json'))
-const plants = Object.freeze(require('../../fixtures/plants.json'))
+const plantings = require('../../fixtures/plantings.json')
+const places = require('../../fixtures/places.json')
+const plants = require('../../fixtures/plants.json')
 
 test('Timeline data memoized selector', function (t) {
   t.plan(1)
@@ -13,3 +13,4 @@ test('Timeline data memoized selector', function (t) {
     // t.equal(selectTimelineData.recomputations(), 2, 'should be recalculated only when plantings change')
 
 });
+

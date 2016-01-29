@@ -1,12 +1,19 @@
-import React, {Component} from 'react'
+import React, {Component, PropTypes} from 'react'
 import View, { Cover } from 'components/View'
 import { StyleSheet } from 'react-native-web'
 
-import {SolidButton, ButtonPanel} from 'Buttons'
+import {SolidButton as Button, Panel as ButtonPanel} from 'components/Buttons'
+
+import EventForm from './EventForm'
 
 const styles = StyleSheet.create({
   container: {
-    background: '#F3F1DF'
+    backgroundColor: '#F3F1DF',
+    position: 'absolute',
+    height: '100vh',
+    width: '30vw',
+    left: 0,
+    top: 0
   }
 })
 
@@ -22,7 +29,11 @@ export default class EditEvent extends Component {
 
   static defaultProps = {
     styles
-  };
+  }; 
+
+  l10n (code) {
+    return code
+  }
 
   _change = (eventData) => {
     return this.props.onChange(eventData)
@@ -44,7 +55,7 @@ export default class EditEvent extends Component {
     let {wot} = this.props
 
     return (
-      <Cover styles={{...styles, ...this.props.styles.container}}>
+      <Cover style={{...styles, ...this.props.styles.container}}>
         <EventForm
         eventData={this.props.eventData}
         onChange={this._change} 

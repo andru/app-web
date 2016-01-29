@@ -50,7 +50,14 @@
       "plantId": "plant/465D3397-0381-DB73-A251-9C4CB8F4A5BF",
       "version": 2,
       "id": "planting/86F34440-2C85-F2BE-8877-421E0FC02496",
-      "type": "planting"
+      "type": "planting",
+      "plotter": {
+        "x": 100,
+        "y": 200,
+        "width": 200,
+        "height": 40,
+        "rotation": 0
+      }
     },
     "planting/75909B27-E31E-AE3A-91B4-DB52A2F8C635": {
       "timeline": [
@@ -84,7 +91,14 @@
       "plantId": "plant/723D61D3-F1A9-CFE7-9322-402928C6995D",
       "version": 2,
       "id": "planting/75909B27-E31E-AE3A-91B4-DB52A2F8C635",
-      "type": "planting"
+      "type": "planting",
+      "plotter": {
+        "x": 100,
+        "y": 250,
+        "width": 200,
+        "height": 40,
+        "rotation": 0
+      }
     },
     "planting/4CF31BD4-66E7-36F1-BB00-02441BA29338": {
       "timeline": [
@@ -104,7 +118,14 @@
       "plantId": "plant/A543B24E-9437-0B87-8F92-48D202A7A0C7",
       "version": 2,
       "id": "planting/4CF31BD4-66E7-36F1-BB00-02441BA29338",
-      "type": "planting"
+      "type": "planting",
+      "plotter": {
+        "x": 100,
+        "y": 300,
+        "width": 200,
+        "height": 40,
+        "rotation": 0
+      }
     },
     "planting/58DEC391-89F8-F4A7-8F3A-0C5D2AC8DB20": {
       "timeline": [
@@ -132,7 +153,14 @@
       "plantId": "plant/1618A046-A0CC-06FF-B4E1-277C7C71D6CC",
       "version": 2,
       "id": "planting/58DEC391-89F8-F4A7-8F3A-0C5D2AC8DB20",
-      "type": "planting"
+      "type": "planting",
+      "plotter": {
+        "x": 100,
+        "y": 350,
+        "width": 200,
+        "height": 40,
+        "rotation": 0
+      }
     },
     "planting/D8A6E05C-CC59-4C26-8660-5DCC4EF0A32A": {
       "timeline": [],
@@ -143,7 +171,14 @@
       "trashed": true,
       "version": 2,
       "id": "planting/D8A6E05C-CC59-4C26-8660-5DCC4EF0A32A",
-      "type": "planting"
+      "type": "planting",
+      "plotter": {
+        "x": 100,
+        "y": 400,
+        "width": 200,
+        "height": 40,
+        "rotation": 0
+      }
     },
     "planting/86C49391-7F35-3525-8E34-717C90DB0E5B": {
       "timeline": [
@@ -163,29 +198,14 @@
       "plantId": "plant/723D61D3-F1A9-CFE7-9322-402928C6995D",
       "version": 2,
       "id": "planting/86C49391-7F35-3525-8E34-717C90DB0E5B",
-      "type": "planting"
-    },
-    "planting/27C87A73-736F-AC38-867A-862F313FEE2A": {
-      "timeline": [],
-      "_rev": "2-0977186092a7731549a5134339c6fd8d",
-      "name": "Lovage",
-      "createdAt": "2015-05-07T23:28:47.276Z",
-      "plantId": "plant/88A40506-858C-8A62-B4CA-9D6279B35D9F",
-      "trashed": true,
-      "version": 2,
-      "id": "planting/27C87A73-736F-AC38-867A-862F313FEE2A",
-      "type": "planting"
-    },
-    "planting/6B03BEAE-E575-035B-B1DD-A995DB77F2EC": {
-      "timeline": [],
-      "_rev": "2-a37f7d8af981399be1028d82282f2584",
-      "name": "Lovage",
-      "createdAt": "2015-05-07T23:28:47.278Z",
-      "plantId": "plant/88A40506-858C-8A62-B4CA-9D6279B35D9F",
-      "trashed": true,
-      "version": 2,
-      "id": "planting/6B03BEAE-E575-035B-B1DD-A995DB77F2EC",
-      "type": "planting"
+      "type": "planting",
+      "plotter": {
+        "x": 100,
+        "y": 450,
+        "width": 200,
+        "height": 40,
+        "rotation": 0
+      }
     },
     "planting/28B277B8-5886-BE27-8F41-572E00053996": {
       "timeline": [
@@ -201,8 +221,7 @@
         },
         {
           "eventDateType": "day",
-          "eventType": "activity",
-          "activityType": "end",
+          "eventType": "end",
           "actualDate": "2015-05-15"
         }
       ],
@@ -212,7 +231,14 @@
       "plantId": "plant/542BAF99-C26B-6377-AF66-87A6E705D639",
       "version": 2,
       "id": "planting/28B277B8-5886-BE27-8F41-572E00053996",
-      "type": "planting"
+      "type": "planting",
+      "plotter": {
+        "x": 100,
+        "y": 500,
+        "width": 200,
+        "height": 40,
+        "rotation": 0
+      }
     },
     "planting/8844D57F-DD59-B57A-8980-40D562BE6B5C": {
       "timeline": [
@@ -233,7 +259,14 @@
       "plantId": "plant/8A390E68-3EB5-50B1-A325-4CDBE4EDC99A",
       "version": 2,
       "id": "planting/8844D57F-DD59-B57A-8980-40D562BE6B5C",
-      "type": "planting"
+      "type": "planting",
+      "plotter": {
+        "x": 100,
+        "y": 550,
+        "width": 200,
+        "height": 40,
+        "rotation": 0
+      }
     },
     "planting/9CBA5F53-36B5-5D5A-98D1-65490A5EBD5C": {
       "timeline": [
@@ -253,7 +286,14 @@
       "plantId": "plant/69F02C9C-E59B-1676-B65B-D45245BA5072",
       "version": 2,
       "id": "planting/9CBA5F53-36B5-5D5A-98D1-65490A5EBD5C",
-      "type": "planting"
+      "type": "planting",
+      "plotter": {
+        "x": 100,
+        "y": 600,
+        "width": 200,
+        "height": 40,
+        "rotation": 0
+      }
     },
     "planting/FAA68A4F-C95E-4A4E-BE35-008CBDC15FEA": {
       "timeline": [],
@@ -264,7 +304,14 @@
       "trashed": true,
       "version": 2,
       "id": "planting/FAA68A4F-C95E-4A4E-BE35-008CBDC15FEA",
-      "type": "planting"
+      "type": "planting",
+      "plotter": {
+        "x": 350,
+        "y": 200,
+        "width": 200,
+        "height": 40,
+        "rotation": 30
+      }
     },
     "planting/1FB7FBF0-EE34-4DBA-8524-A927085F0A55": {
       "timeline": [
@@ -285,7 +332,14 @@
       "plantId": "plant/CE288335-8553-BA9D-8987-1ECE64CDAB27",
       "version": 2,
       "id": "planting/1FB7FBF0-EE34-4DBA-8524-A927085F0A55",
-      "type": "planting"
+      "type": "planting",
+      "plotter": {
+        "x": 350,
+        "y": 250,
+        "width": 200,
+        "height": 40,
+        "rotation": 30
+      }
     },
     "planting/F43C01B0-BE11-1624-BACF-B75811AD5486": {
       "timeline": [
@@ -316,7 +370,14 @@
       "plantId": "plant/D583F4AB-9F9B-7851-BA91-380281118817",
       "version": 2,
       "id": "planting/F43C01B0-BE11-1624-BACF-B75811AD5486",
-      "type": "planting"
+      "type": "planting",
+      "plotter": {
+        "x": 350,
+        "y": 300,
+        "width": 200,
+        "height": 40,
+        "rotation": 30
+      }
     }
   },
   "plants": {
@@ -587,7 +648,6 @@
       "_rev": "1-77bd1519cdd026c647623280dd34d0d0"
     }
   },
-  "seed": {},
   "places": {
     "place/043EDCA2-C671-04B9-8705-35D13B8CD300": {
       "name": "Kitchen Garden",

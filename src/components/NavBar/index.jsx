@@ -8,8 +8,8 @@ import View from 'components/View'
 
 export default class NavBar extends Component{
 	render(){
-		var sections = ['timeline', 'plots', 'journal', 'plantings', 'seedbox', 'growspaces', 'plants'];
-		var icons = ['journal.svg', 'journal.svg', 'journal.svg', 'plantings.svg', 'seedbox.svg', 'growspaces.svg', 'plantings.svg']
+		var sections = ['timeline', 'plots', 'journal', 'plantings','growspaces', 'plants'];
+		var icons = ['journal.svg', 'journal.svg', 'journal.svg', 'plantings.svg', 'growspaces.svg', 'plantings.svg']
 		return (
 		<View style={styles.NavBar}>
     	<View style={styles.TabContainer}>

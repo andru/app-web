@@ -8,14 +8,16 @@ const paths = config.utils_paths
 const debug = _debug('app:webpack:_base')
 debug('Create configuration.')
 
-const CSS_LOADER = !config.compiler_css_modules
-  ? 'css?sourceMap'
-  : [
-    'css?modules',
-    'sourceMap',
-    'importLoaders=1',
-    'localIdentName=[name]__[local]___[hash:base64:5]'
-  ].join('&')
+// const CSS_LOADER = !config.compiler_css_modules
+//   ? 'css?sourceMap'
+//   : [
+//     'css?modules',
+//     'sourceMap',
+//     'importLoaders=1',
+//     'localIdentName=[name]__[local]___[hash:base64:5]'
+//   ].join('&')
+
+const CSS_LOADER = 'css?sourceMap'
 
 const excludes = [/node_modules/, '/Volumes/Files/Code/GitHub']
 
@@ -47,12 +49,14 @@ const webpackConfig = {
       inject: 'body',
       minify: {
         collapseWhitespace: false
-      }
+      },
+      __KARMA_IGNORE__: true
     }),
     new HtmlWebpackPlugin({
       title: 'Redirecting...',
       filename: '200.html',
-      template: paths.client('200.html')
+      template: paths.client('200.html'),
+      __KARMA_IGNORE__: true
     })
   ],
   resolve: {
@@ -105,6 +109,15 @@ const webpackConfig = {
         ]
       },
       {
+        test: /\.less$/,
+        loaders: [
+          'style',
+          CSS_LOADER,
+          'postcss',
+          'less'
+        ]
+      },  
+      {
         test: /\.css$/,
         loaders: [
           'style',
@@ -118,7 +131,7 @@ const webpackConfig = {
       { test: /\.ttf(\?.*)?$/,   loader: 'url?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=application/octet-stream' },
       { test: /\.eot(\?.*)?$/,   loader: 'file?prefix=fonts/&name=[path][name].[ext]' },
       { test: /\.svg(\?.*)?$/,   loader: 'url?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=image/svg+xml' },
-      { test: /\.(png|jpg)$/,    loader: 'url?limit=8192' }
+      { test: /\.(png|jpg|gif)$/,    loader: 'url?limit=8192' }
       /* eslint-enable */
     ]
   },

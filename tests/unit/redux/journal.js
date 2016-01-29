@@ -49,7 +49,7 @@ test('handleSetActivePlanting', function (t) {
 
 });
 
-test('selectLogData', function (t) {
+test.skip('selectLogData', function (t) {
     t.plan(7)
 
     const selectedPlantingId = 'planting/one'

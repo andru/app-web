@@ -9,6 +9,7 @@ import { reducer as places } from './places'
 // views
 import { reducer as timeline } from './timeline'
 import { reducer as journal } from './journal'
+import { reducer as plantingsList } from './plantingsList'
 
 
 export default combineReducers({
@@ -20,5 +21,6 @@ export default combineReducers({
   // views
   timeline,
   journal,
+  plantingsList,
   routing: routeReducer
 })

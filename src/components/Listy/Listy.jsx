@@ -8,7 +8,7 @@ const uncontrollable = require('uncontrollable');
 import ReactList from 'react-list';
 
 
-import Panelled, {Panel, Tab, TabSpacer} from 'Panelled/Panelled';
+import Panelled, {Panel, Tab, TabSpacer} from 'components/Panelled';
 import Item from './Item';
 
 import Filter from './Filter';
@@ -19,21 +19,18 @@ require('./Listy.css');
 const Listy = React.createClass({
 	
 	propTypes: {
-		data: React.PropTypes.oneOfType([
-			React.PropTypes.instanceOf(Immutable.Iterable)
-		,	React.PropTypes.array
-		]).isRequired
+		data: React.PropTypes.array.isRequired
 
 	/**
 	 * A list of predefined filters to show as tabs
 	 */
-	,	filters: React.PropTypes.instanceOf(Immutable.List)
+	,	filters: React.PropTypes.array
 	,	mutliple: React.PropTypes.bool
 
 	,	activePanel: React.PropTypes.number
 	,	onPanelChange: React.PropTypes.func
 		
-	,	selectedItems: React.PropTypes.instanceOf(Immutable.List)
+	,	selectedItems: React.PropTypes.array
 
 	,	showAddButton: React.PropTypes.bool
 	,	addComponent: React.PropTypes.element
@@ -76,7 +73,7 @@ const Listy = React.createClass({
 		return {
 			onItemClick: ()=>{}
 		,	multiple: false
-		,	selectedItems: Immutable.List()
+		,	selectedItems: []
 
 		,	itemRenderer: (i, props)=><Item {...props}>{props.item}</Item>
 		,	itemHeight: 65
@@ -111,39 +108,41 @@ const Listy = React.createClass({
 
 ,	_filterChange(i, filter){
 		console.log('Filter change %s', i, filter.toJS());
-		this.props.onFilterChange(this.props.filterValues.set(i, filter));
+		// this.props.onFilterChange(this.props.filterValues.set(i, filter));
 	}
 
 ,	_removeFilter(i){
-		this.props.onFilterChange(this.props.filterValues.delete(i));
+		this.props.onFilterChange(
+			this.props.filterValues.slice(0, i)
+			.concat(this.props.filterValues.slice(i+1)));
 	}
 
 ,	_panelChange(i){
 		this.props.onPanelChange(i);
-		console.warn('Panel change', i, this.props.filters.count());
-		if(this.props.searchFunction && i===this.props.filters.count()+1){
+		console.warn('Panel change', i, this.props.filters.length);
+		if(this.props.searchFunction && i===this.props.filters.length+1){
 			console.warn("FOCUS SEARCH");
 			this.refs.searchInput.focus();
 		}
 	}
 
 ,	_itemSelect(itemData){
-		var selected = this.props.selectedItems.toJS ? this.props.selectedItems : Immutable.fromJS(this.props.selectedItems);
+		let selected = this.props.selectedItems
 		
 		this.props.onItemClick( itemData );
 
 		if(this.props.multiple){
 			//if it's already selected, deselect it
 			if(selected.indexOf(itemData) > -1){
-				selected = selected.delete( selected.indexOf(itemData) );
+				selected = _.without(selected, itemData)
 			}else{
-				selected.push(itemData);
+				selected.slice().push(itemData);
 			}
 		}else{
-			selected = (selected.get(0) === itemData) ? selected.clear() : selected.clear().push(itemData);
+			selected = (selected[0] === itemData) ? [] : [itemData];
 		}
 
-		this.props.onChange( this.props.selectedItems.toJS ? selected : selected.toJS() );
+		this.props.onChange( selected );
 	}
 
 	/**
@@ -154,7 +153,7 @@ const Listy = React.createClass({
 	 * @return {ReactElement}
 	 */
 ,	itemRenderer(filteredData, i){
-		var item = filteredData instanceof Immutable.Iterable ? filteredData.get(i) : filteredData[i];
+		var item = filteredData[i];
 		return this.props.itemRenderer(i, {
 			onSelect: ev=>this._itemSelect(item)
 		,	isSelected: this.props.selectedItems.indexOf(item) > -1
@@ -179,11 +178,7 @@ const Listy = React.createClass({
 	}
 
 ,	getLength(data){
-		//console.log('Getting length of data', data, data.count ? data.count() : data.length);
-		return (data instanceof Immutable.Iterable)
-			? data.count()
-			: data.length
-		;
+		return data.length
 	}
 	
 ,	render(){	
@@ -264,8 +259,8 @@ const Listy = React.createClass({
 							<Filter 
 							fields={this.props.filterOptions} 
 							filter={Immutable.Map()}
-							onChange={newFilter=>this._filterChange(this.props.filterValues.count(), newFilter)} 
-							key={this.props.filterValues.count()} />
+							onChange={newFilter=>this._filterChange(this.props.filterValues.length, newFilter)} 
+							key={this.props.filterValues.length} />
 						</div>
 					<div className="Listy-List">
 						{!!this.getLength(filterData)

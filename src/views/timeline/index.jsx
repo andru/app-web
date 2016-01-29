@@ -10,6 +10,7 @@ import _ from 'lodash'
 
 import {Cover} from 'components/View'
 import Timeline, {TimeAxis, TrackGroup, Track, Line, Period, Marker} from 'components/Timeline'
+import {EditEvent} from 'components/PlantingEventForm'
 
 import { actions as timelineActions, selector as timelineSelector } from '../../redux/modules/timeline'
 import { actions as plantingsActions } from '../../redux/modules/plantings'
@@ -28,8 +29,6 @@ export class TimelineView extends React.Component {
   };
 
   componentWillMount = () => {
-
-    const {plantings, plants, places} = this.props
 
   };
 
@@ -55,8 +54,18 @@ export class TimelineView extends React.Component {
     // actions.go SET_PLANTING_EVENT_DATE
   };
 
+  handleMarkerEditIntent = (groupIndex, trackIndex, markerIndex, marker) => {
+    this.props.showEditEventForm({
+      plantingId: this.props.timelineData[groupIndex].tracks[trackIndex].plantingId,
+      eventIndex: marker.eventIndex
+    })
+  };
+
+  handleEventDataChange = (eventData) => {
+    this.setEventData(eventData)
+  };
+
   render () {
-    const {plantings, plants, places} = this.props
     const {width, height} = this.state.dimensions
 
     // ouch, this needs to be optimized with https://github.com/faassen/reselect
@@ -75,13 +84,18 @@ export class TimelineView extends React.Component {
           this.setState({dimensions})
         }}>
         <Cover style={{visibility: this.state.isMounted ? 'visible' : 'hidden'}}>
+          {this.props.editEventForm.show && 
+          <EditEvent 
+          onChange={this.handleEventDataChange}
+          eventData={this.props.editEventFormData} />}
           <Timeline 
           from={start_date} 
           to={end_date} 
           height={height}
           width={width}
           data={data}
-          onMarkerChange={this.handleMarkerChange} />
+          onMarkerChange={this.handleMarkerChange}
+          onMarkerEditIntent={this.handleMarkerEditIntent} />
         </Cover>
       </Measure>
     )

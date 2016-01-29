@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {Component, PropTypes} from 'react'
 import TransitionGroup from 'react-addons-css-transition-group'
 import scale from 'd3-scale'
 
@@ -11,27 +11,64 @@ const defaultStyles = {
     stroke: '#6bc25f',
     fill: '#6bc25f'
   },
+  container: {
+    fill: 'transparent'
+  },
+  background: {
+    fill: 'transparent',
+    stroke: 'none',
+    cursor: 'pointer'
+  },
   outer: {
 
+  },
+  hovered: {
+    background: {
+      // fill: 'rgba(255,255,255,.3)'
+    }
+  },
+  selected: {
+    background: {
+      fill: '#ffffff'
+    }
   }
 }
 
-export default class Track extends React.Component {
+export default class Track extends Component {
   static propTypes = {
-    // plotX: React.PropTypes.func.isRequired,
-    yPos: React.PropTypes.number,
-    from: React.PropTypes.instanceOf(Date).isRequired,
-    to: React.PropTypes.instanceOf(Date).isRequired,
-    styles: React.PropTypes.object,
-    height: React.PropTypes.number
+    plotX: React.PropTypes.func.isRequired,
+    yPos: PropTypes.number.isRequired,
+    from: PropTypes.instanceOf(Date).isRequired,
+    to: PropTypes.instanceOf(Date).isRequired,
+    styles: PropTypes.object,
+    height: PropTypes.number,
+    trackGroupIndex: PropTypes.number,
+    trackIndex: PropTypes.number,
+    isHovered: PropTypes.bool,
+    isSelected: PropTypes.bool
   };
 
   static defaultProps = {
-    styles: defaultStyles
+      styles: defaultStyles
   };
+
+  onMouseEnter = () => {
+    this.props.actions.hoverTrack(this.props.trackGroupIndex, this.props.trackIndex)
+  };
+
+  onClick = () => {
+    this.props.isSelected
+      ? this.props.actions.deselectTrack(this.props.trackGroupIndex, this.props.trackIndex)
+      : this.props.actions.selectTrack(this.props.trackGroupIndex, this.props.trackIndex)
+  };
+  
 
   startMarkerMove = (group, track, marker, e) => {
     this.props.actions.startMarkerMove(group, track, marker, e)
+  };
+
+  editMarker = (group, track, marker, e) => {
+    this.props.actions.editMarker(group, track, marker, e)
   };
 
   getSharedChildProps () {
@@ -42,17 +79,45 @@ export default class Track extends React.Component {
       yPos: height/2
     }
   }
-
+ 
   render () {
-    const {children, actions, isEditing, trackGroupIndex, trackIndex, plotX, yPos, from, to, height, styles } = this.props
+    const {
+      children,
+      actions,
+      isEditing,
+      trackGroupIndex,
+      trackIndex,
+      plotX,
+      yPos,
+      from,
+      to,
+      height,
+      styles,
+      isHovered,
+      isSelected
+    } = this.props
 
     const newChildren = this.props.assistedRender ? this.copyChildren() : this.renderChildren()
-
     const numChildren = React.Children.count(newChildren)
-
+    const style = {
+      ...defaultStyles.all,
+      ...styles.all,
+    }
+    const backgroundStyle = {
+      ...defaultStyles.background,
+      ...styles.background,
+      ...(isHovered ? defaultStyles.hovered.background : {}),
+      ...(isSelected ? defaultStyles.selected.background : {})
+    }
     return (
-      <g transform={`translate(0, ${yPos})`} style={{...defaultStyles.all, ...styles.all}}>
-        <g style={{...defaultStyles.inner, ...styles.inner}}>
+      <g
+      style={style}
+      onMouseEnter={this.onMouseEnter}
+      onClick={this.onClick} 
+      transform={`translate(0, ${yPos})`}>
+        <rect style={backgroundStyle} width="100%" height={height} />
+        <g  
+        style={{...defaultStyles.inner, ...styles.inner}}>
           {newChildren}
         </g>
       </g>
@@ -74,7 +139,8 @@ export default class Track extends React.Component {
         icon={true}
         key={`marker-${index}`}
         appearance={marker.appearance}
-        onMouseDown={e => this.startMarkerMove(trackGroupIndex, trackIndex, index, marker, e)}
+        onMouseDown={e => isEditing && this.startMarkerMove(trackGroupIndex, trackIndex, index, marker, e)}
+        onClick={e => isEditing || this.editMarker(trackGroupIndex, trackIndex, index, marker, e)}
         {...sharedProps} />
     ) ) 
 

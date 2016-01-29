@@ -1,6 +1,5 @@
 import React, {Component, PropTypes} from 'react'
 import View, { Cover } from 'components/View'
-import Immutable from 'immutable'
 import _ from 'lodash'
 
 import Fatty from 'components/Fatty'
@@ -14,8 +13,8 @@ export default class PlantEvent extends BaseEvent{
 			eventData = this.props.eventData,
 			eventDataObj = this.props.eventData.toJS(),
 			places = this.props.places.map(place=>{
-				return {value: place.get('_id'), text:this.format(place, 'name')}
-			}).toArray()
+				return {value: place.id, text:place.name}
+			})
 		;
 
 		var plantFromOptions = [
@@ -38,21 +37,21 @@ export default class PlantEvent extends BaseEvent{
 			data={ _.sortBy(places, 'text') } 
 			label={this.props.l10n('Plant.placeField-label', eventDataObj)}
 			hint={this.props.l10n('Plant.placeField-hint', eventDataObj)}
-			value={eventData.get('place_id')}
+			value={eventData.place_id}
 			onChange={item=>this.updateField('place_id', item.value)} />
 
 			<Fatty.Pills
 			data={plantFromOptions}
 			label={this.props.l10n('Plant.from-label', eventDataObj)}
 			hint={this.props.l10n('Plant.from-hint', eventDataObj)}
-			value={eventData.get('from')} 
+			value={eventData.from} 
 			onChange={value=>this.updateField('from', value[0])} />
 
 			<Fatty.Pills
 			data={recipientOptions}
 			label={this.props.l10n('Plant.recipient-label', eventDataObj)}
 			hint={this.props.l10n('Plant.recipient-hint', eventDataObj)}
-			value={eventData.get('recipient')} 
+			value={eventData.recipient} 
 			onChange={value=>this.updateField('recipient', value[0])} />
 
 
@@ -60,5 +59,3 @@ export default class PlantEvent extends BaseEvent{
 	}
 
 }
-
-module.exports = plantEvent;

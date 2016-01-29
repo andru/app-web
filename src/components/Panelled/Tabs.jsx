@@ -58,7 +58,7 @@ var Tabs = React.createClass({
 						return null;
 					}
 					if(child.type === Tab || child.type === TabSpacer){
-						return React.addons.cloneWithProps(child, {isActive: this.props.activeIndex===i});
+						return React.cloneElement(child, {isActive: this.props.activeIndex===i});
 					}
 				})}
 			</div>

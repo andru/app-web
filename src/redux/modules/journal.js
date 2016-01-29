@@ -59,49 +59,48 @@ export function selectOptions (state) {
   }
 }
 
-const defaultLogDataRange = [
-  moment().startOf('month').toDate(),
-  moment().startOf('month').add(1, 'month').toDate()
-]
-export const selectLogData = createSelector(
-  selectPlantings,
-  selectPlants,
-  selectPlaces,
-  selectSelectedPlanting,
-  selectOptions,
-  (plantings, plants, places, selectedPlantingId, options) => {
-    if (!selectedPlantingId) {
-      return false
-    }
-    let selectedPlanting = plantings[selectedPlantingId] 
-    let timeline = selectedPlanting.timeline.filter(e => e.eventDateType==='day' && e.eventType==='activity')
-    return {
-      range: timeline.length 
-      ? [
-          moment(getEventDate(timeline[0])).startOf('month').toDate(),
-          moment(timeline.length > 1 
-            ? getEventDate(_.last(timeline)) 
-            : getEventDate(timeline[0])
-          ).endOf('month').toDate(),
-        ]
-      : defaultLogDataRange,
-      months: _(timeline)
-        .groupBy(ev => moment(getEventDate(ev)).startOf('month').format('YYYY-MM-DD'))
-        .map((events, date) => ({
-          date: new Date(date),
-          events
-        }))
-        .value()
-    }
-  }
-)
+// const defaultLogDataRange = [
+//   moment().startOf('month').toDate(),
+//   moment().startOf('month').add(1, 'month').toDate()
+// ]
+// export const selectLogData = createSelector(
+//   selectPlantings,
+//   selectPlants,
+//   selectPlaces,
+//   selectSelectedPlanting,
+//   selectOptions,
+//   (plantings, plants, places, selectedPlantingId, options) => {
+//     if (!selectedPlantingId) {
+//       return false
+//     }
+//     let selectedPlanting = plantings[selectedPlantingId] 
+//     let timeline = selectedPlanting.timeline.filter(e => e.eventDateType==='day' && e.eventType==='activity')
+//     return {
+//       range: timeline.length 
+//       ? [
+//           moment(getEventDate(timeline[0])).startOf('month').toDate(),
+//           moment(timeline.length > 1 
+//             ? getEventDate(_.last(timeline)) 
+//             : getEventDate(timeline[0])
+//           ).endOf('month').toDate(),
+//         ]
+//       : defaultLogDataRange,
+//       months: _(timeline)
+//         .groupBy(ev => moment(getEventDate(ev)).startOf('month').format('YYYY-MM-DD'))
+//         .map((events, date) => ({
+//           date: new Date(date),
+//           events
+//         }))
+//         .value()
+//     }
+//   }
+// )
 
 export const selector = createSelector(
   selectPlantings,
   selectPlants,
   selectPlaces,
-  selectLogData,
-  (plantings, plants, places, logData) => ({
-    plantings, plants, places, logData
+  (plantings, plants, places) => ({
+    plantings, plants, places
   })
 )

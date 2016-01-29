@@ -21,17 +21,6 @@ function last (arr) {
   return arr[arr.length-1]
 }
 
-function addLine (lines=[], line) {
-  // extend the previous line if the new line is of the same type
-  lines.length
-    ? last(lines).appearance === line.appearance
-      ? lines[lines.length-1] = {...last(lines), to: line.to}
-      : lines.push(line)
-    : lines.push(line)
-
-  return lines
-}
-
 export class PlotsView extends React.Component {
   static propTypes = {
     // counter: React.PropTypes.number.isRequired,
@@ -52,30 +41,11 @@ export class PlotsView extends React.Component {
     const {plantings, plants, places} = this.props
     const {width, height} = this.state.dimensions
 
-    let testData = [
-      {
-        _id: 'rhubarb',
-        name: 'Rhubarb',
-        progress: .4,
-        x: 100,
-        y: 200,
-        width: 200,
-        height: 50,
-        rotation: 0,
-        zIndex: 1
-      },
-      { 
-        _id: 'kale',
-        name: 'Kale',
-        progress: .7,
-        x: 300,
-        y: 200,
-        width: 140,
-        height: 60,
-        rotation: 20,
-        zIndex: 2
-      }
-    ]
+    let plottedPlantings = _.values(plantings).filter(p => !!p.plotter).map(p => ({
+      ...p.plotter,
+      name: p.name,
+      id: p.id
+    }))
 
     return (
         <Measure
@@ -84,7 +54,7 @@ export class PlotsView extends React.Component {
           this.setState({dimensions})
         }}>
           <Cover style={{visibility: this.state.isMounted ? 'visible' : 'hidden'}}>
-            <Plotter {...{width, height, plantings:testData}} />
+            <Plotter {...{width, height, plantings:plottedPlantings}} />
           </Cover>
 
         </Measure>

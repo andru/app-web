@@ -19,10 +19,7 @@ const Filter = uncontrollable(React.createClass({
 	propTypes: {
 		onChange: React.PropTypes.func
 	,	onRemove: React.PropTypes.func
-	,	fields: React.PropTypes.oneOfType([
-			React.PropTypes.instanceOf(Immutable.Iterable)
-		,	React.PropTypes.array
-		]).isRequired
+	,	fields: React.PropTypes.array.isRequired
 	,	filter: React.PropTypes.instanceOf(Immutable.Map).isRequired
 	}
 
@@ -60,7 +57,7 @@ const Filter = uncontrollable(React.createClass({
 					<div className="Listy-Filter-property">
 						<DropdownList 
 						placeholder="..."
-						data={ this.props.fields.toArray() }
+						data={ this.props.fields}
 						value={ currentFilter } 
 						textField={item=>item.get('label')}
 						onChange={this._propertyChange}  />

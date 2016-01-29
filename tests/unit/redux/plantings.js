@@ -6,9 +6,9 @@ import {
   handleSetPlantingEvent
 } from 'redux/modules/plantings'
 
-const plantings = Object.freeze(require('../../fixtures/plantings.json'))
-const places = Object.freeze(require('../../fixtures/places.json'))
-const plants = Object.freeze(require('../../fixtures/plants.json'))
+const plantings = require('../../fixtures/plantings.json')
+const places = require('../../fixtures/places.json')
+const plants = require('../../fixtures/plants.json')
 
 const state = {plantings, places, plants}
 const stateCopy = Object.freeze(Object.assign({}, state))

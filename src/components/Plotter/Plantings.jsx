@@ -15,6 +15,17 @@ let debouncedMouseMoveLogger = _.debounce((ev) => console.log(ev), 200)
 let minWidth = 100
 let minHeight = 20
 
+function angleBetweenPoints(p1, p2) {
+    if (p1[0] == p2[0] && p1[1] == p2[1])
+        return Math.PI / 2;
+    else
+        return Math.atan2(p2[1] - p1[1], p2[0] - p1[0] );
+}
+
+function distanceBetweenPoints(p1, p2) {
+    return Math.sqrt( Math.pow( p2[1] - p1[1], 2 ) + Math.pow( p2[0] - p1[0], 2 ) );
+}
+
 export default class Plotter extends React.Component {
   static propTypes = {
     height: React.PropTypes.number,
@@ -45,6 +56,7 @@ export default class Plotter extends React.Component {
     updateState({
       isTranslating: false,
       isScaling: false,
+      isRotating: false,
       transformParams: false,
       transformStart: false
     })
@@ -101,7 +113,7 @@ export default class Plotter extends React.Component {
     }
 
     let svgEl = ReactDOM.findDOMNode(this.props.getSVG())
-    let currentEl = ReactDOM.findDOMNode(this.refs[current._id])
+    let currentEl = ReactDOM.findDOMNode(this.refs[current.id])
     //mouse point
     let mouseP = this.makePoint(e.clientX, e.clientY)
     let mouseToCanvasTM = this.props.getSVG().getScreenCTM().inverse().multiply(svgEl.getCTM())
@@ -126,11 +138,11 @@ export default class Plotter extends React.Component {
       //console.log({difX, difY}, transformStart, {x, y})
       //setCurrentPosition(x + deltaX, y + deltaY)
       updateState({
-        plantings: plantings.map(p => p._id===current._id ? Object.assign(p, { x: p.x+difX, y:p.y+difY }) : p),
+        plantings: plantings.map(p => p.id===current.id ? Object.assign({}, p, { x: p.x+difX, y:p.y+difY }) : p),
         transformStart: { x, y }
       })
     } else if (isScaling) {
-      //console.dir(ReactDOM.findDOMNode(this.refs[current._id].refs.bodyRect))
+      //console.dir(ReactDOM.findDOMNode(this.refs[current.id].refs.bodyRect))
       let {width, height, surface} = transformStart
       let newX = transformStart.x
       let newY = transformStart.y
@@ -160,14 +172,37 @@ export default class Plotter extends React.Component {
       })
 
     } else if (isRotating) {
-      // dx = resistor_x - mouse_x
-      // dy = resistor_y - mouse_y
-      // theta = 90+Math.atan2(dy, dx)*180/Math.PI
+      let dx = transformStart.x - mouseCanvasP.x + width/2;
+      let dy = transformStart.y - mouseCanvasP.y + height/2;
+            
+      let d = Math.sqrt(dx*dx + dy*dy);
+      let theta = 90 + Math.atan2(dy, dx)*180/Math.PI;
+
+      // let angle = transformStart.rotation + angleBetweenPoints(
+      //   [transformStart.x, transformStart.y], 
+      //   [mouseCanvasP.x, mouseCanvasP.y] 
+      // );
+
+      // let angle = Math.atan2( transformStart.y - mouseCurrentP.y, transformStart.x - mouseCurrentP.x )*180/Math.PI;
+
+      // let angle = Math.tan((mouseCanvasP.x - transformStart.x)/(mouseCanvasP.y - transformStart.y)) 
+      
+      let angle = transformStart.rotation + theta
+
+      console.log('rotate', dx, dy, angle)
+
+      if(angle===NaN)
+        return
+
+      updateCurrent({
+        rotation: angle
+      })      
+
     }
   };
 
-  handleTranslate = (planting_id, e) => {
-    const planting = this.props.plantings.find(p => p._id === planting_id)
+  handleTranslate = (plantingid, e) => {
+    const planting = this.props.plantings.find(p => p.id === plantingid)
     const ev = e.nativeEvent
     this.selectPlanting(planting)
 
@@ -179,7 +214,7 @@ export default class Plotter extends React.Component {
     } = this.props
 
     let svgEl = ReactDOM.findDOMNode(this.props.getSVG())
-    let currentEl = ReactDOM.findDOMNode(this.refs[planting._id])
+    let currentEl = ReactDOM.findDOMNode(this.refs[planting.id])
     //mouse point
     let mouseP = this.makePoint(e.clientX, e.clientY)
     let mouseToCanvasTM = this.props.getSVG().getScreenCTM().inverse().multiply(svgEl.getCTM())
@@ -205,8 +240,8 @@ export default class Plotter extends React.Component {
     })
   };
 
-  handleScale = (planting_id, surface, e) => {
-    const planting = this.props.plantings.find(p => p._id === planting_id)
+  handleScale = (plantingid, surface, e) => {
+    const planting = this.props.plantings.find(p => p.id === plantingid)
 
     this.selectPlanting(planting)
 
@@ -236,13 +271,16 @@ export default class Plotter extends React.Component {
     })
   };
 
-  handleRotate = (planting, e) => {
+  handleRotate = (plantingid, e) => {
     const {
       updateState
     } = this.props
 
+    const planting = this.props.plantings.find(p => p.id === plantingid)
+
     updateState({
-      isRotating: true
+      isRotating: true,
+      transformStart: { x: planting.x, y: planting.y, rotation: planting.rotation || 0 }
     })
   };
 
@@ -263,7 +301,7 @@ export default class Plotter extends React.Component {
     if (!current) {
       return
     }
-    let {x, y} = plantings.find(p => p._id === current._id)
+    let {x, y} = plantings.find(p => p.id === current.id)
     switch (e.keyCode) {
       case 38: // Up
         e.preventDefault()
@@ -304,8 +342,8 @@ export default class Plotter extends React.Component {
       <g>
         {plantings
           .map(planting => <Planting
-            ref={planting._id} 
-            key={planting._id}
+            ref={planting.id} 
+            key={planting.id}
             onMouseMove={this.handleMouseMove}
             onTranslate={this.handleTranslate}
             onScale={this.handleScale}
@@ -314,7 +352,7 @@ export default class Plotter extends React.Component {
             onMouseOver={this.handleMouseOver}
             onMouseOut={this.handleMouseOut}
             setCursor={setCursor}
-            isSelected={current && current._id === planting._id} 
+            isSelected={current && current.id === planting.id} 
             planting={planting} />
           )
         }

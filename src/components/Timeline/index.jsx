@@ -51,7 +51,9 @@ export default class Timeline extends Component {
     height: PropTypes.number.isRequired,
     from: PropTypes.instanceOf(Date).isRequired,
     to: PropTypes.instanceOf(Date).isRequired,
-    topGutterHeight: PropTypes.number
+    topGutterHeight: PropTypes.number,
+    onMarkerChange: PropTypes.func,
+    onMarkerEditIntent: PropTypes.func
   };
 
   static defaultProps = {
@@ -62,13 +64,37 @@ export default class Timeline extends Component {
     topGutterHeight: 20
   };
 
+  // todo: move state to 'uncontrollable' component props
   state = {
-    isEditing: true
+    isEditing: false,
+    hoveredTrackIndex: [undefined, undefined],
+    selectedTrackIndex: [undefined, undefined]
   };
 
   componentDidMount(){
    // var width = this.refs.svg.offsetWidth;
   }
+
+  componentDidUpdate () {
+  }
+
+  hoverTrack = (groupIndex, trackIndex) => {
+    this.setState({
+      hoveredTrackIndex: [groupIndex, trackIndex]
+    })
+  };
+
+  selectTrack = (groupIndex, trackIndex) => {
+    this.setState({
+      selectedTrackIndex: [groupIndex, trackIndex]
+    })
+  };
+
+  deselectTrack = (groupIndex, trackIndex) => {
+    this.setState({
+      selectedTrackIndex: [undefined, undefined]
+    })
+  };  
 
   startMarkerMove = (groupIndex, trackIndex, markerIndex, marker, e) => {
     this.setState({
@@ -127,6 +153,10 @@ export default class Timeline extends Component {
     })
   };
 
+  editMarker = (groupIndex, trackIndex, markerIndex, marker) => {
+    this.props.onMarkerEditIntent(groupIndex, trackIndex, markerIndex, marker)
+  };
+
   getScale = () => {
     const {from, to, width} = this.props
     if(from !== this.cachedFrom && to !== this.cachedTo){
@@ -153,6 +183,9 @@ export default class Timeline extends Component {
 
   controlledRender (props) {
     const {data, from, to, trackHeight, styles, topGutterHeight} = props
+    const {hoveredTrackIndex, selectedTrackIndex} = this.state
+
+    console.log(this.state)
 
     const viewScale = this.getScale()
     const timeAxisTicks = viewScale.ticks()
@@ -169,7 +202,11 @@ export default class Timeline extends Component {
       actions: {
         startMarkerMove: this.startMarkerMove,
         setMarkerDate: this.setMarkerDate,
-        setPeriodDates: this.setPeriodDates
+        setPeriodDates: this.setPeriodDates,
+        editMarker: this.editMarker,
+        hoverTrack: this.hoverTrack,
+        selectTrack: this.selectTrack,
+        deselectTrack: this.deselectTrack
       },
       plotX, 
       format: formatDate,
@@ -189,6 +226,8 @@ export default class Timeline extends Component {
           from={tracks.map( ({from}) => from ).reduce(earliest)}
           to={tracks.map( ({to}) => to ).reduce(latest)} 
           tracks={tracks}
+          isHovered={hoveredTrackIndex[0]===groupIndex}
+          isSelected={selectedTrackIndex[0]===groupIndex}
           isEven={groupIndex%2}
           trackGroupIndex={groupIndex}
           {...sharedProps}>
@@ -220,7 +259,8 @@ export default class Timeline extends Component {
           actions: {
             startMarkerMove: this.startMarkerMove,
             setMarkerDate: this.setMarkerDate,
-            setPeriodDates: this.setPeriodDates
+            setPeriodDates: this.setPeriodDates,
+            editMarker: this.editMarker
           },
           plotX, 
           format: formatDate,

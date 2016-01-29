@@ -66,7 +66,10 @@ export default class Plotter extends React.Component {
 
   deselectAll = () => this.setState({
     selected: false,
-    current: undefined
+    current: undefined,
+    isTranslating: false,
+    isScaling: false,
+    isRotating: false
   }); 
 
   setCurrent = (planting) => {
@@ -79,11 +82,11 @@ export default class Plotter extends React.Component {
   setCurrentPosition = (x, y) => this.updateCurrent({x, y}); 
 
   updateCurrent = change => {
-    let planting = this.state.plantings.find(p => p._id === this.state.current._id)
+    let planting = this.state.plantings.find(p => p.id === this.state.current.id)
     let changed = Object.assign({}, planting, change)
 
     this.setState({
-      plantings: this.state.plantings.map(p => p._id===this.state.current._id ? changed : p),
+      plantings: this.state.plantings.map(p => p.id===this.state.current.id ? changed : p),
       current: planting
     })
   }; 

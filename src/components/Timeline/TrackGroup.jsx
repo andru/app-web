@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {Component, PropTypes} from 'react'
 import TransitionGroup from 'react-addons-css-transition-group'
 
 import Track from './Track'
@@ -22,18 +22,20 @@ const defaultStyles = {
   }
 }
 
-export default class TrackGroup extends React.Component {
+export default class TrackGroup extends Component {
   static propTypes = {
-    state: React.PropTypes.object,
-    actions: React.PropTypes.object,
-    plotX: React.PropTypes.func,
-    from: React.PropTypes.instanceOf(Date).isRequired,
-    to: React.PropTypes.instanceOf(Date).isRequired,
-    plotY: React.PropTypes.func,
-    styles: React.PropTypes.object,
-    trackHeight: React.PropTypes.number,
-    ticks: React.PropTypes.object,
-    showTicks: React.PropTypes.bool
+    state: PropTypes.object,
+    actions: PropTypes.object,
+    plotX: PropTypes.func,
+    from: PropTypes.instanceOf(Date).isRequired,
+    to: PropTypes.instanceOf(Date).isRequired,
+    plotY: PropTypes.func,
+    styles: PropTypes.object,
+    trackHeight: PropTypes.number,
+    ticks: PropTypes.object,
+    showTicks: PropTypes.bool,
+    hoveredTrackIndex: PropTypes.number,
+    selectedTrackIndex: PropTypes.number
   };
 
   static defaultProps = {
@@ -56,6 +58,8 @@ export default class TrackGroup extends React.Component {
       ticks,
       showTicks,
       isEven,
+      isHovered,
+      isSelected,
       ...childProps 
     } = this.props
 
@@ -73,8 +77,24 @@ export default class TrackGroup extends React.Component {
   }
 
   render () {
-    const {children, actions, isEditing, trackGroupIndex, plotX, plotY, from, to, trackHeight, styles, ticks,
-    showTicks, isEven, ...childProps } = this.props
+    const {
+      children,
+      actions,
+      isEditing,
+      trackGroupIndex,
+      plotX,
+      plotY,
+      from,
+      to,
+      trackHeight,
+      styles,
+      ticks,
+      showTicks,
+      isEven,
+      isHovered,
+      isSelected,
+      ...childProps 
+    } = this.props
 
     const newChildren = this.props.assistedRender ? this.copyChildren() : this.renderChildren()
 
@@ -99,7 +119,11 @@ export default class TrackGroup extends React.Component {
     const {
       tracks,
       trackHeight,
-      styles
+      styles,
+      isHovered,
+      isSelected,
+      hoveredTrackIndex,
+      selectedTrackIndex
     } = this.props
 
     const sharedProps = this.getSharedChildProps()
@@ -115,6 +139,8 @@ export default class TrackGroup extends React.Component {
         lines={lines}
         periods={periods}
         markers={markers}
+        isHovered={isHovered && hoveredTrackIndex[1]===trackIndex}
+        isSelected={isSelected && selectedTrackIndex[1]===trackIndex}        
         {...sharedProps}>
       </Track>)
     ))
@@ -130,7 +156,9 @@ export default class TrackGroup extends React.Component {
         return child;
 
       let props = Object.assign(this.getSharedChildProps(), {
-        yPos: trackHeight*trackIndex
+        yPos: trackHeight*trackIndex,
+        isHovered: hoveredTrackIndex===trackIndex,
+        isSelected: selectedTrackIndex===trackIndex
       })
 
       return React.cloneElement(child, props);

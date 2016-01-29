@@ -1,2 +1,3 @@
 export Event from './Event'
-export default Log from './Log'
+import Log from './Log'
+export default Log

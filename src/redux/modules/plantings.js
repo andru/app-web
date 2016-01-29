@@ -130,6 +130,7 @@ export const selectActivePlantings = createSelector(
     )
   }
 )
+ 
 // select plantings which are active for the current date
 // export const selectCurrentPlantings = createSelector(
 //   selectCurrentDate,
@@ -139,11 +140,11 @@ export const selectActivePlantings = createSelector(
 //   }
 // )
 
-// export const selector = createSelector(
-//   selectPlantings,
-//   selectTrashedPlantings,
-//   selectPlaces,
-//   (plantings, plants, places, logData) => ({
-//     plantings, plants, places, logData
-//   })
-// )
+export const selector = createSelector(
+  selectPlantings,
+  selectTrashedPlantings,
+  selectActivePlantings,
+  (plantings, trashedPlantings, activePlantings, places, plants) => ({
+    plantings, trashedPlantings, activePlantings
+  })
+)
