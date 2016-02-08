@@ -54,13 +54,21 @@ export function isEventDateRange (event) {
 }
 
 export function orderTimelineByDate (events) {
-  return events.sort((a,b) => getEarliestEventDate(a)>getEarliestEventDate(b) ? 1 : getEarliestEventDate(a) < getEarliestEventDate(b) ? -1 : 0 )
+  return events.sort((a, b) => {
+    return getEarliestEventDate(a) > getEarliestEventDate(b)
+      ? 1
+        : getEarliestEventDate(a) < getEarliestEventDate(b)
+          ? -1
+          : 0
+  })
 }
 
 export function getPlaceIdFromTimeline (timeline) {
-  return timeline 
-  && timeline.length 
-  && timeline.reduceRight((placeId, ev) => placeId || ev.placeId, undefined)
+  return (
+    timeline &&
+    timeline.length &&
+    timeline.reduceRight((placeId, ev) => placeId || ev.placeId, undefined)
+  )
 }
 
 function addLine (lines = [], line) {
@@ -76,7 +84,7 @@ function addLine (lines = [], line) {
 
 // transform planting data to the format the Timeline compenent expects
 export function formatPlantingForTimeline (plants, places, planting) {
-  const {name, id, plantId, placeId, timeline} = planting
+  const {name, id, plantId, timeline} = planting
 
   let track = {
     from: getEarliestTimelineDate(timeline),
@@ -96,7 +104,6 @@ export function formatPlantingForTimeline (plants, places, planting) {
       let previousEventDate = getLatestEventDate(accum.previousEvent)
 
       if (isEstimate(accum.previousEvent) && isEstimate(ev)) {
-
         addLine(accum.lines, {
           from: previousEventDate,
           to: earliestDate,
@@ -104,7 +111,6 @@ export function formatPlantingForTimeline (plants, places, planting) {
         })
         // if the event is a range/period, draw a line between the two dates
         if (!moment(latestDate).isSame(earliestDate)) {
-
           // draw a dotted line between the two range dates if the latter is undefined...
           if (ev.estimateDateRange[1] === undefined) {
             addLine(accum.lines, {
@@ -137,7 +143,7 @@ export function formatPlantingForTimeline (plants, places, planting) {
       .filter(e => e.eventDateType === 'day')
       .map(e => ({
         ...e,
-        date:getEventDate(e)
+        date: getEventDate(e)
       })
     ),
     periods: timeline
@@ -146,16 +152,16 @@ export function formatPlantingForTimeline (plants, places, planting) {
       .map(e => ({
         ...e,
         from: getEarliestEventDate(e),
-        to: getLatestEventDate(e),
+        to: getLatestEventDate(e)
       })
     ),
     styles: {}
   }
 
-  if (plants[track.plantId].appTheme) {
+  if (plants.get(track.plantId).appTheme) {
     track.styles.all = {
-      stroke: plants[track.plantId].appTheme.timelineColor,
-      fill: plants[track.plantId].appTheme.timelineColor
+      stroke: plants.get(track.plantId).appTheme.timelineColor,
+      fill: plants.get(track.plantId).appTheme.timelineColor
     }
   }
 
@@ -179,14 +185,20 @@ export function formatPlantingForLog (plants, places, planting) {
   const timeline = orderTimelineByDate(planting.timeline)
 
   const dateRange = moment.range(
-    moment(getEarliestTimelineDate(timeline)).startOf('month'), 
+    moment(getEarliestTimelineDate(timeline)).startOf('month'),
     moment(getLatestTimelineDate(timeline)).endOf('month')
-  );
+  )
 
   // const activeEvents = events.filter(ev=>ev.get('status')!==EVENT_STATUSES.TRASHED);
   const monthEvents = _(timeline)
-    .filter(ev => ev.eventDateType!=='range')
-    .groupBy(ev=>moment(getEarliestEventDate(ev)).format('YYYY MM'))
+    .map((ev, i) => ({
+      ...ev,
+      date: getEventDate(ev),
+      indexInTimeline: i,
+      id: ev.id || i
+    }))
+    .filter(ev => ev.eventDateType !== 'range')
+    .groupBy(ev => moment(getEarliestEventDate(ev)).format('YYYY MM'))
     .value()
 
   return {
