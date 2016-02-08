@@ -74,28 +74,31 @@ export class TimelineView extends React.Component {
     // const plantingsForTimeline = plantings.filter()
     let start_date = new Date('2015-01-01')
     let end_date = new Date('2016-01-01')
- 
+
     //console.log(data)
 
     return (
       <Measure
         onMeasure={(dimensions, mutations, target) => {
-          console.log('Dimensions: ', dimensions);
-          this.setState({dimensions})
+        console.log('Dimensions: ', dimensions);
+        this.setState({dimensions})
         }}>
         <Cover style={{visibility: this.state.isMounted ? 'visible' : 'hidden'}}>
-          {this.props.editEventForm.show && 
-          <EditEvent 
-          onChange={this.handleEventDataChange}
-          eventData={this.props.editEventFormData} />}
-          <Timeline 
-          from={start_date} 
-          to={end_date} 
-          height={height}
-          width={width}
-          data={data}
-          onMarkerChange={this.handleMarkerChange}
-          onMarkerEditIntent={this.handleMarkerEditIntent} />
+          {this.props.editEventForm.show &&
+            <EditEvent
+              onChange={this.handleEventDataChange}
+              eventData={this.props.editEventFormData} />
+          }
+          <div style={{overflowY: 'scroll'}}>
+            <Timeline
+              from={start_date}
+              to={end_date}
+              height={height}
+              width={width}
+              data={data}
+              onMarkerChange={this.handleMarkerChange}
+              onMarkerEditIntent={this.handleMarkerEditIntent} />
+          </div>
         </Cover>
       </Measure>
     )
