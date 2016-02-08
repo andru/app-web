@@ -41,15 +41,15 @@ export default class PlantingList extends Component{
       filterFunction
     } = this.props
 
-    let data = _.values(currentPlantings)
+    let data = Array.from(currentPlantings.values())
 
     return (
-        <Listy 
+        <Listy
         theme="green"
         data={data}
         selectedItems={data.filter(p => p.id === selectedPlantingId)}
-        onChange={this.handleSelectionChange} 
-        maintainItemSelection={true} 
+        onChange={this.handleSelectionChange}
+        maintainItemSelection={true}
 
         activePanel={activePanelIndex}
         onPanelChange={this.handlePanelChange}
@@ -61,16 +61,14 @@ export default class PlantingList extends Component{
 
         /*filterValues={}*/
         onFilterChange={filters=>{
-          console.log('Filters change', filters.toJS()); 
           this.$set('listFilters', filters)
         }}
-        
         filters={[
           {
             label: 'Current'
           , filter: item=>true
           }
-        ]} 
+        ]}
         onItemClick={this.handleItemClick} />
       )
 
