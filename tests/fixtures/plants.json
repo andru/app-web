@@ -1,5 +1,5 @@
-{
-  "plant/one": {
+[
+  {
     "name": "Tomato",
     "species": "Solanum lycopersicum",
     "cultivar": "Rose de Berne",
@@ -8,7 +8,7 @@
     "id": "plant/one",
     "_rev": "1-01c7fe0ebcd87b5a1fd93074037d21cf"
   },
-  "plant/two": {
+  {
     "name": "Okra",
     "species": "Abelmoschus esculentus",
     "cultivar": "Clemson's Spineless",
@@ -17,7 +17,7 @@
     "id": "plant/two",
     "_rev": "1-6d456a8375417d65787b8882d0cdcdc8"
   },
-  "plant/three": {
+  {
     "name": "Cabbage",
     "species": "Brassica oleracea var. capitata",
     "cultivar": "January King",
@@ -26,4 +26,4 @@
     "id": "plant/three",
     "_rev": "1-f7e6e3f96ba5088ff805e50e938796a6"
   }
-}
+]

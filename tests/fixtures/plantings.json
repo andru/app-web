@@ -1,5 +1,5 @@
-{
-    "planting/one": {
+[
+  {
       "timeline": [
         {
           "eventDateType": "day",
@@ -50,7 +50,7 @@
       "id": "planting/one",
       "type": "planting"
     },
-    "planting/two": {
+    {
       "timeline": [
         {
           "eventDateType": "day",
@@ -83,7 +83,7 @@
       "id": "planting/two",
       "type": "planting"
     },
-    "planting/three": {
+    {
       "timeline": [
         {
           "eventDateType": "day",
@@ -102,4 +102,4 @@
       "id": "planting/three",
       "type": "planting"
     }
-}
+]

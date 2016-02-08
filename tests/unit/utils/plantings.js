@@ -3,6 +3,9 @@ import moment from 'moment'
 import momentRange from 'moment-range'
 import _ from 'lodash'
 
+import cloneMap from 'utils/cloneMap'
+import modelArrayToMap from 'utils/modelArrayToMap'
+
 import {
   getEventDate,
   getEarliestEventDate,
@@ -15,17 +18,17 @@ import {
   getPlaceIdFromTimeline
 } from 'utils/plantings'
 
-const plantings = require('../../fixtures/plantings.json')
-const places = require('../../fixtures/places.json')
-const plants = require('../../fixtures/plants.json')
+const plantings = modelArrayToMap(require('../../fixtures/plantings.json'))
+const places = modelArrayToMap(require('../../fixtures/places.json'))
+const plants = modelArrayToMap(require('../../fixtures/plants.json'))
 
-const estimate = Object.freeze({ 
+const estimate = Object.freeze({
   eventDateType: 'day',
   eventType: 'activity',
   estimateDate: new Date('2015-01-01')
 })
 
-const actual = Object.freeze({ 
+const actual = Object.freeze({
   eventDateType: 'day',
   eventType: 'activity',
   actualDate: new Date('2015-01-01')
@@ -132,7 +135,7 @@ test('getLatestTimelineDate', function (t) {
   const timelineOne = [
     {
       eventDateType: 'day',
-      actualDate: new Date('2014-01-01') 
+      actualDate: new Date('2014-01-01')
     },
     {
       eventDateType: 'day',
@@ -142,7 +145,7 @@ test('getLatestTimelineDate', function (t) {
   const timelineTwo = [
     {
       eventDateType: 'day',
-      estimateDate: new Date('2014-01-01') 
+      estimateDate: new Date('2014-01-01')
     },
     {
       eventDateType: 'day',
@@ -152,7 +155,7 @@ test('getLatestTimelineDate', function (t) {
   const timelineThree = [
     {
       eventDateType: 'day',
-      estimateDate: new Date('2014-01-01') 
+      estimateDate: new Date('2014-01-01')
     },
     {
       eventDateType: 'range',
@@ -282,38 +285,38 @@ test('formatPlantingForTimeline', function (t) {
     plantingId: 'planting/one',
     styles: {},
     name: 'Avoa de Osedo',
-    from: new Date(fixture.timeline[0].actualDate), 
+    from: new Date(fixture.timeline[0].actualDate),
     to: new Date(fixture.timeline[4].estimateDate),
-    lines: [ 
-      { 
-        appearance: 'solid', 
-        from: new Date(fixture.timeline[0].actualDate), 
-        to: new Date(fixture.timeline[4].estimateDate) 
+    lines: [
+      {
+        appearance: 'solid',
+        from: new Date(fixture.timeline[0].actualDate),
+        to: new Date(fixture.timeline[4].estimateDate)
       }
-    ], 
-    markers: [ 
+    ],
+    markers: [
       {...fixture.timeline[0], date: new Date(fixture.timeline[0].actualDate)},
       {...fixture.timeline[1], date: new Date(fixture.timeline[1].actualDate)},
       {...fixture.timeline[3], date: new Date(fixture.timeline[3].estimateDate)},
       {...fixture.timeline[4], date: new Date(fixture.timeline[4].estimateDate)}
     ],
-    periods: [ 
-      { ...fixture.timeline[2], from: new Date(fixture.timeline[2].estimateDateRange[0]), to: new Date(fixture.timeline[2].estimateDateRange[1]) } 
+    periods: [
+      { ...fixture.timeline[2], from: new Date(fixture.timeline[2].estimateDateRange[0]), to: new Date(fixture.timeline[2].estimateDateRange[1]) }
     ]
   }
   const formatted = formatPlantingForTimeline(plants, places, fixture)
 
-  t.deepEqual(fixture, fixtureCopy, 
+  t.deepEqual(fixture, fixtureCopy,
     'does not mutate data')
 
   // t.deepEqual(formatted, expected,
   //   'formats data as needed by Timeline component')
-  
+
   t.equal(formatted.from.toString(), expected.from.toString(),
     'selects first timeline date as `from` property')
   t.equal(formatted.to.toString(), expected.to.toString(),
     'selects first timeline date as `to` property')
-  t.equal(formatted.placeId, expected.placeId, 
+  t.equal(formatted.placeId, expected.placeId,
     'selects last defined `placeId` from timeline')
   t.equal(formatted.plantId, expected.plantId,
     'selects `plantId`')
@@ -323,30 +326,36 @@ test('formatPlantingForTimeline', function (t) {
     'selects `name`')
   t.equal(formatted.lines.length, expected.lines.length,
     'creates the correct number of lines')
-  t.equal(formatted.markers.length, expected.markers.length, 
+  t.equal(formatted.markers.length, expected.markers.length,
     'creates the correct number of markers')
-  t.equal(formatted.periods.length, expected.periods.length, 
+  t.equal(formatted.periods.length, expected.periods.length,
     'creates the correct number of periods')
-
-
 })
-
 
 test('formatPlantingForLog', function (t) {
   t.plan(3)
+
+  const addPropsToEvent = function (ev, i) {
+    return {
+      ...ev,
+      date: getEventDate(ev),
+      id: i,
+      indexInTimeline: i
+    }
+  }
 
   const expected = {
     dateRange: moment.range(moment('2015-03-01').startOf('month'), moment('2015-12-01').endOf('month')),
     monthEvents: {
       '2015 03': [
-        fixture.timeline[0],
-        fixture.timeline[1]
+        addPropsToEvent(fixture.timeline[0], 0),
+        addPropsToEvent(fixture.timeline[1], 1)
       ],
       '2015 11': [
-        fixture.timeline[3]
+        addPropsToEvent(fixture.timeline[3], 3)
       ],
       '2015 12': [
-        fixture.timeline[4]
+        addPropsToEvent(fixture.timeline[4], 4)
       ]
     }
   }
@@ -355,11 +364,8 @@ test('formatPlantingForLog', function (t) {
 
   t.deepEqual(fixture, fixtureCopy,
     'does not mutate data')
-
   t.assert(expected.dateRange.isSame(formatted.dateRange),
     'creates a date range spanning the full timeline, rounded to month start/end')
-
   t.deepEqual(formatted.monthEvents, expected.monthEvents,
     'groups events by month')
-
 })

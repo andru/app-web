@@ -1,5 +1,5 @@
-{
-  "place/one": {
+[
+  {
     "name": "Kitchen Garden",
     "environment": "outdoor",
     "type": "place",
@@ -7,7 +7,7 @@
     "id": "place/one",
     "_rev": "1-3f29e2135518854d10fb4262601206a3"
   },
-  "place/two": {
+  {
     "name": "Main Garden",
     "environment": "outdoor",
     "type": "place",
@@ -15,7 +15,7 @@
     "id": "place/two",
     "_rev": "1-26531c82adf814a3be3525a868f0bdad"
   },
-  "place/three": {
+  {
     "name": "Propagating Greenhouse",
     "environment": "protected",
     "type": "place",
@@ -23,4 +23,4 @@
     "id": "place/three",
     "_rev": "1-43b2fb75324c73b12de727f7b49af720"
   }
-}
+]
