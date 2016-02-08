@@ -6,11 +6,15 @@ import {
 } from 'constants/plantingEvents'
 
 import PlantEvent from './Plant'
+import TransplantEvent from './Transplant'
 import GenericEvent from './Generic'
 
-export actionEventNames;
-export lifecycleEventNames;
-export default const eventComponents = {
-    [PLANT]: PlantEvent,
-    Generic: GenericEvent
+export const eventComponents = {
+  [PLANT]: PlantEvent,
+  [TRANSPLANT]: TransplantEvent,
+  Generic: GenericEvent
 }
+
+export {actionEventNames as actionEventNames}
+export {lifecycleEventNames as lifecycleEventNames}
+export default eventComponents

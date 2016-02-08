@@ -1,15 +1,15 @@
 import React, {Component, PropTypes} from 'react'
 import {StyleSheet} from 'react-native-web'
+import moment from 'moment'
 
-import {View, Cover} from 'components/View'
+import {View, Cover, Row} from 'components/View'
 
 import {eventComponents, lifecycleEventNames, actionEventNames} from './EventTypes'
 
 const defaultStyles = StyleSheet.create({
   container: {
     alignItems: 'stretch',
-    flexShrink: 0,
-    flexDirecton: 'row'
+    flexShrink: 0
   },
   containerSelected: {
     backgroundColor: 'rgba(255,255,255,.3)'
@@ -18,7 +18,7 @@ const defaultStyles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,.2)'
   },
   date: {
-    flexDirecton: 'column',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
     flexBasis: 80
@@ -26,19 +26,19 @@ const defaultStyles = StyleSheet.create({
   dateDay: {
     fontSize: 32,
     fontWeight: 700,
-    lineHeight: 32,
-    flexBasis: 32, 
+    lineHeight: '32px',
+    flexBasis: 32,
     order: 2
   },
   dateMonth: {
     fontSize: 18,
     fontWeight: 700,
-    lineHeight: 18,
+    lineHeight: '18px',
     flexBasis: 18,
     order: 1
   },
   details: {
-    userSelect: initial,
+    userSelect: 'initial',
     paddingTop: 10,
     paddingRight: 20,
     paddingBottom: 10,
@@ -61,37 +61,52 @@ export default class PlantingLogEvent extends Component{
   };
 
   handleClick = (ev) => {
-    return this.onEditIntent(ev)
+    return this.props.onEditIntent(ev)
+  };
+
+  handleDateClick = (ev) => {
+
   };
 
   render () {
     const {eventData} = this.props
-    const EventRenderer = eventComponents[ eventData.eventName ] || eventComponents.Generic
+    const EventRenderer = eventComponents[ eventData.activityType || eventData.lifecycleStage ]
+      || eventComponents.Generic
 
     return (
-      <View onClick={this.handleClick} style={defaultStyles.container} >
-        <View style={defaultStyles.date} onClick={this.handleDateClick.bind(this, eventData.date)}>
-          <span style={defaultStyles.dateDay}>{moment(eventData.date).format('DD')}</span>
-          <span style={defaultStyles.dateMonth}>{moment(eventData.date).format('MMM')}</span>
+      <Row
+        onClick={this.handleClick}
+        style={defaultStyles.container} >
+        <View
+          style={defaultStyles.date}
+          onClick={() => this.handleDateClick(eventData.date)}>
+          <span style={defaultStyles.dateDay}>
+            {moment(eventData.date).format('DD')}
+          </span>
+          <span style={defaultStyles.dateMonth}>
+            {moment(eventData.date).format('MMM')}
+          </span>
         </View>
         <View className="Planting-Timeline-Event-marker">
           <svg width="30">
-          <circle cx="10" cy="50%" r="6" />
+            <circle cx="10" cy="50%" r="6" />
           </svg>
         </View>
 
         <View style={defaultStyles.details} key="view">
-          <Renderer model={this.props.model} />
+          <EventRenderer
+            eventData={eventData}
+            l10n={(code) => code} />
           <View className="Planting-Timeline-Event-actions">
             {/*this.props.showActions &&
               (<View>
-                <IconButton icon="edit" size="tiny" onClick={this.props.onEdit} />
-                <IconButton icon="trash" size="tiny" onClick={this.props.onTrash} />
+              <IconButton icon="edit" size="tiny" onClick={this.props.onEdit} />
+              <IconButton icon="trash" size="tiny" onClick={this.props.onTrash} />
               </View>)
-            */}
+              */}
+            </View>
           </View>
-        </View>
-      </View>
+        </Row>
     )
   }
 }

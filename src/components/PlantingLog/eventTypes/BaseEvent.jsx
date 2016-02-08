@@ -9,17 +9,14 @@ export default class BaseEvent extends Component{
 
   static propTypes = {
     eventData: PropTypes.object.isRequired,
-    l10n: PropTypes.func.isRequired,
-    places: PropTypes.object.isRequired,
-    plants: PropTypes.object.isRequired,
-    plantings: PropTypes.object.isRequired
+    l10n: PropTypes.func.isRequired
   };
 
   static defaultProps = {
   };
 
   l10n (label, data) {
-    return this.props.l10n(`PlantingEventForm.${label}`, data)
+    return this.props.l10n(`PlantingLogEvent.${label}`, data)
   }
 
   updateField (field, value) {
