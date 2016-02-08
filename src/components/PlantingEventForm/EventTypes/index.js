@@ -8,10 +8,11 @@ import {
 	lifecycleEventNames
 } from 'constants/plantingEvents'
 
-export actionEventNames;
-export lifecycleEventNames;
-
-export default const eventComponents = {
-	  [PLANT]: PlantEvent,
-	  [TRANSPLANT]: TransplantEvent
+export const eventComponents = {
+    [PLANT]: PlantEvent,
+    [TRANSPLANT]: TransplantEvent
 }
+export {actionEventNames as actionEventNames}
+export {lifecycleEventNames as lifecycleEventNames}
+
+export default eventComponents

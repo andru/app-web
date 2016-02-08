@@ -8,18 +8,14 @@ import EventForm from './EventForm'
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#F3F1DF',
-    position: 'absolute',
-    height: '100vh',
-    width: '30vw',
-    left: 0,
-    top: 0
+    backgroundColor: '#F3F1DF'
   }
 })
 
 export default class EditEvent extends Component {
 
   static propTypes = {
+    l10n: PropTypes.func.isRequired,
     eventData: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
@@ -29,20 +25,20 @@ export default class EditEvent extends Component {
 
   static defaultProps = {
     styles
-  }; 
+  };
 
-  l10n (code) {
-    return code
-  }
+  l10n = (key, data) => {
+    return this.props.l10n(key, data)
+  };
 
   _change = (eventData) => {
     return this.props.onChange(eventData)
   };
 
   _save = () => {
-    return this.props.onSave()  
+    return this.props.onSave()
   };
-  
+
   _cancel = () => {
     return this.props.onCancel()
   };
@@ -57,28 +53,29 @@ export default class EditEvent extends Component {
     return (
       <Cover style={{...styles, ...this.props.styles.container}}>
         <EventForm
-        eventData={this.props.eventData}
-        onChange={this._change} 
-        busy={this.props.isSaving}
-        initialFocus={this.props.isFocused}
-        key="EditEventPanel" />
+          l10n={this.l10n}
+          eventData={this.props.eventData}
+          onChange={this._change}
+          busy={this.props.isSaving}
+          initialFocus={this.props.isFocused}
+          key="EditEventPanel" />
 
-        <ButtonPanel className="Planting-EventForm-buttonPanel">
-          <Button 
-          onClick={this._cancel}
-          label={this.l10n('Planting-EventForm-button-cancel')} />
+        <ButtonPanel>
+          <Button
+            onClick={this._cancel}
+            label={this.l10n('CancelButton')} />
 
-          <Button 
-          onClick={this._trash}
-          iconClass="fa fa-trash" />
-          
-          <Button 
-          onClick={this._save}
-          label={this.l10n('Planting-EventForm-button-save')} 
-          iconClass="fa fa-check" 
-          color="green"
-          kind="raised"
-          align="right" />
+          <Button
+            onClick={this._trash}
+            iconClass="fa fa-trash" />
+
+          <Button
+            onClick={this._save}
+            label={this.l10n('SaveButton')}
+            iconClass="fa fa-check"
+            color="green"
+            kind="raised"
+            align="right" />
         </ButtonPanel>
       </Cover>
     )

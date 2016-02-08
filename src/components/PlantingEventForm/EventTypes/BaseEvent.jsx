@@ -6,7 +6,7 @@ import _ from 'lodash'
 import Fatty from 'components/Fatty'
 
 export default class BaseEvent extends Component{
-  
+
   static propTypes = {
     eventData: PropTypes.object.isRequired,
     l10n: PropTypes.func.isRequired,
@@ -21,8 +21,8 @@ export default class BaseEvent extends Component{
     isEditing: false
   };
 
-  l10n (label, data) {
-    return this.props.l10n(`PlantingEventForm.${label}`, data)
+  l10n (key, data) {
+    return this.props.l10n(`Event.${key}`, data)
   }
 
   updateField (field, value) {
@@ -32,7 +32,7 @@ export default class BaseEvent extends Component{
   render () {
     return (
       <View style={{}}>
-        
+
       </View>
     )
   }

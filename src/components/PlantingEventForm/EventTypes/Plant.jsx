@@ -7,51 +7,49 @@ import Fatty from 'components/Fatty'
 import BaseEvent from './BaseEvent'
 
 export default class PlantEvent extends BaseEvent{
-	
+
 	render(){
-		var 
-			eventData = this.props.eventData,
-			eventDataObj = this.props.eventData.toJS(),
-			places = this.props.places.map(place=>{
-				return {value: place.id, text:place.name}
-			})
-		;
+		const {eventData, places} = this.props
+
+		const placeNames = places.map(place=>{
+			return {value: place.id, text: place.name}
+		})
 
 		var plantFromOptions = [
-			{value: 'seed', text: this.props.l10n('Plant.material-seed')},
-			{value: 'plantlet', text: this.props.l10n('Plant.material-plantlet')},
-			{value: 'cutting', text: this.props.l10n('Plant.material-cutting')},
-			{value: 'tuber', text: this.props.l10n('Plant.material-tuber')}
+			{value: 'seed', text: this.props.l10n('Plant.Material.Seed')},
+			{value: 'plantlet', text: this.props.l10n('Plant.Material.Plantlet')},
+			{value: 'cutting', text: this.props.l10n('Plant.Material.Cutting')},
+			{value: 'tuber', text: this.props.l10n('Plant.Material.Tuber')}
 		];
 
 		var recipientOptions = [
-			{value: 'earth', text: this.props.l10n('Plant.recipient-option-earth')},
-			{value: 'tray', text: this.props.l10n('Plant.recipient-option-tray')},
-			{value: 'modules', text: this.props.l10n('Plant.recipient-option-modules')},
-			{value: 'pot', text: this.props.l10n('Plant.recipient-option-pots')},
-			{value: 'other', text: this.props.l10n('Plant.recipient-option-other')}
+			{value: 'earth', text: this.props.l10n('Plant.Recipient.Earth')},
+			{value: 'tray', text: this.props.l10n('Plant.Recipient.Tray')},
+			{value: 'modules', text: this.props.l10n('Plant.Recipient.Modules')},
+			{value: 'pot', text: this.props.l10n('Plant.Recipient.Pots')},
+			{value: 'other', text: this.props.l10n('Plant.Recipient.Other')}
 		];
-		
+
 		return (<View>
-			<Fatty.Dropdown 
-			data={ _.sortBy(places, 'text') } 
-			label={this.props.l10n('Plant.placeField-label', eventDataObj)}
-			hint={this.props.l10n('Plant.placeField-hint', eventDataObj)}
-			value={eventData.place_id}
-			onChange={item=>this.updateField('place_id', item.value)} />
+			<Fatty.Dropdown
+				data={ _.sortBy(placeNames, 'text') }
+				label={this.props.l10n('Plant.PlaceLabel', eventDataObj)}
+				hint={this.props.l10n('Plant.PlaceHint', eventDataObj)}
+				value={eventData.placeId}
+			onChange={item=>this.updateField('placeId', item.value)} />
 
 			<Fatty.Pills
-			data={plantFromOptions}
-			label={this.props.l10n('Plant.from-label', eventDataObj)}
-			hint={this.props.l10n('Plant.from-hint', eventDataObj)}
-			value={eventData.from} 
+				data={plantFromOptions}
+				label={this.props.l10n('Plant.FromLabel', eventDataObj)}
+				hint={this.props.l10n('Plant.FromHint', eventDataObj)}
+				value={eventData.from}
 			onChange={value=>this.updateField('from', value[0])} />
 
 			<Fatty.Pills
-			data={recipientOptions}
-			label={this.props.l10n('Plant.recipient-label', eventDataObj)}
-			hint={this.props.l10n('Plant.recipient-hint', eventDataObj)}
-			value={eventData.recipient} 
+				data={recipientOptions}
+				label={this.props.l10n('Plant.RecipientLabel', eventDataObj)}
+				hint={this.props.l10n('Plant.RecipientHint', eventDataObj)}
+				value={eventData.recipient}
 			onChange={value=>this.updateField('recipient', value[0])} />
 
 
