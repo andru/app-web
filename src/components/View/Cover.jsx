@@ -5,18 +5,19 @@ export default class Cover extends Component {
   render() {
     let {children, style, ...props} = this.props
     return (
-      <View style={{...styles.view, ...style}} {...props}>
+      <View style={{...defaultStyles.view, ...style}} {...props}>
         {children}
       </View>
     );
   }
 }
 
-const styles = StyleSheet.create({
+const defaultStyles = StyleSheet.create({
   view: {
   	display: 'flex',
     flexGrow: 1,
-    flexShrink: 1
+    flexShrink: 1,
+    overflow: 'hidden'
   }
 })
 

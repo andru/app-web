@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
 import { StyleSheet, View } from 'react-native-web'
 
-export default class CustomView extends Component {
+export default class Row extends Component {
   render() {
     let {children, style, ...props} = this.props
     return (
-      <View style={{...defaultStyles.view, ...style}} {...props}>
+      <View style={{...defaultStyles.row, ...style}} {...props}>
         {children}
       </View>
     );
@@ -13,12 +13,10 @@ export default class CustomView extends Component {
 }
 
 const defaultStyles = StyleSheet.create({
-  view: {
-    overflow: 'hidden'
+  row: {
+    display: 'flex',
+    flexDirection: 'column',
+    flexGrow: 1,
+    flexShrink: 1
   }
 })
-
-export { CustomView as View }
-export Cover from './Cover'
-export Row from './Row'
-export Col from './Col'
