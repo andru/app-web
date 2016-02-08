@@ -40,7 +40,7 @@ export const actions = {
 // ------------------------------------
 export function handleShowEditEventForm (state, {payload}) {
   return {
-    ...state, 
+    ...state,
     ...{
       editEventForm: {
         show: true,
@@ -72,7 +72,7 @@ export const selectTimelineData = createSelector(
     let start_date = new Date('2015-01-01')
     let end_date = new Date('2016-01-01')
 
-    return _(plantings)
+    return _([...plantings.values()])
     // only plantings with a timeline
     .filter(p => p.timeline && p.timeline.length)
     // only plantings that exist within or span the current date range
@@ -106,13 +106,13 @@ export const selectEditEventFormData = createSelector(
   selectEditEventForm,
   (plantings, editEventForm) => {
     if (editEventForm.show === true) {
-      let eventData = _.cloneDeep(plantings[editEventForm.selectedPlantingId].timeline[editEventForm.selectedEventIndex])
+      let eventData = _.cloneDeep(plantings.get(editEventForm.selectedPlantingId).timeline[editEventForm.selectedEventIndex])
       eventData.date = getEventDate(eventData)
       return eventData
     } else {
       return {}
     }
-    
+
   }
 )
 
