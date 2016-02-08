@@ -34,7 +34,7 @@ const defaultStyles = {
 const PERIOD = 'period'
 const MARKER = 'marker'
 
-let debouncedMouseMoveLogger = _.debounce((ev) => console.log(ev), 50) 
+let debouncedMouseMoveLogger = _.debounce((ev) => console.log(ev), 50)
 
 // array reducer. given an unsorted array of dates, reduce to the earliest
 function earliest (earliest, value, i) {
@@ -94,7 +94,7 @@ export default class Timeline extends Component {
     this.setState({
       selectedTrackIndex: [undefined, undefined]
     })
-  };  
+  };
 
   startMarkerMove = (groupIndex, trackIndex, markerIndex, marker, e) => {
     this.setState({
@@ -131,7 +131,7 @@ export default class Timeline extends Component {
       // let canvasToCurrentTM = currentEl.getCTM().inverse().multiply(mouseToCanvasTM)
       let mouseCanvasP = mouseP.matrixTransform(mouseToCanvasTM)
       // let mouseCurrentP = mouseP.matrixTransform(canvasToCurrentTM)
-      // 
+      //
       const scale = this.getScale()
       const date = scale.invert(mouseCanvasP.x)
       const {groupIndex, trackIndex, markerIndex, marker} = this.state.dragParams
@@ -182,7 +182,7 @@ export default class Timeline extends Component {
   }
 
   controlledRender (props) {
-    const {data, from, to, trackHeight, styles, topGutterHeight} = props
+    const {data, width, height, from, to, trackHeight, styles, topGutterHeight} = props
     const {hoveredTrackIndex, selectedTrackIndex} = this.state
 
     console.log(this.state)
@@ -197,6 +197,10 @@ export default class Timeline extends Component {
       cumulativeY += trackHeight * numChildren
       return y
     }
+    let totalHeight = data.reduce((totalHeight, {tracks}) => {
+      return totalHeight + tracks.length*trackHeight
+    }, topGutterHeight)
+
 
     const sharedProps = {
       actions: {
@@ -208,34 +212,43 @@ export default class Timeline extends Component {
         selectTrack: this.selectTrack,
         deselectTrack: this.deselectTrack
       },
-      plotX, 
+      plotX,
       format: formatDate,
       plotY,
       trackHeight,
       ticks: timeAxisTicks,
       ...this.state
     }
-
+    const svgStyles = {
+      ...defaultStyles.svg,
+      width,
+      minHeight: height,
+      height: totalHeight,
+      ...styles.svg
+    }
     return (
-      <svg style={{...defaultStyles.svg, ...styles.svg}} ref="svg" onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp}>
+      <svg
+        style={svgStyles}
+        ref="svg"
+        onMouseMove={this.handleMouseMove}
+        onMouseUp={this.handleMouseUp}
+      >
         <rect x={0} y={0} width="100%" height="100%" style={{...defaultStyles.backdrop, ...styles.backdrop}} />
         <TimeAxis {...sharedProps} />
         {data.map( ({name, tracks}, groupIndex) => (
           <TrackGroup
-          key={groupIndex}
-          from={tracks.map( ({from}) => from ).reduce(earliest)}
-          to={tracks.map( ({to}) => to ).reduce(latest)} 
-          tracks={tracks}
-          isHovered={hoveredTrackIndex[0]===groupIndex}
-          isSelected={selectedTrackIndex[0]===groupIndex}
-          isEven={groupIndex%2}
-          trackGroupIndex={groupIndex}
-          {...sharedProps}>
-            
-          </TrackGroup>
+            key={groupIndex}
+            from={tracks.map( ({from}) => from ).reduce(earliest)}
+            to={tracks.map( ({to}) => to ).reduce(latest)}
+            tracks={tracks}
+            isHovered={hoveredTrackIndex[0]===groupIndex}
+            isSelected={selectedTrackIndex[0]===groupIndex}
+            isEven={groupIndex%2}
+            trackGroupIndex={groupIndex}
+            {...sharedProps} />
         ))}
       </svg>
-    )  
+    )
   }
 
   assistedRender (props) {
@@ -262,7 +275,7 @@ export default class Timeline extends Component {
             setPeriodDates: this.setPeriodDates,
             editMarker: this.editMarker
           },
-          plotX, 
+          plotX,
           format: formatDate,
           plotY,
           trackHeight,
@@ -279,7 +292,6 @@ export default class Timeline extends Component {
         <rect x={0} y={0} width="100%" height="100%" style={{...defaultStyles.backdrop, ...styles.backdrop}} />
         {newChildren}
       </svg>
-    )    
+    )
   }
 }
-
