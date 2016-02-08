@@ -15,18 +15,14 @@ export const TRASH_EVENT = 'trashEvent'
 export const UPDATE_EVENT = 'updateEvent'
 export const ADD_TIMELINE_EVENT = 'addTimelineEvent'
     */
-export const CREATE_PLANT = 'create' //create a new planting document
-export const UPDATE_PLANT = 'update' //updating a planting document
-export const DESTROY_PLANT = 'destroy' //permanently destroy a planting document
-
-
+// export const CREATE_PLANT = 'create' //create a new planting document
+// export const UPDATE_PLANT = 'update' //updating a planting document
+// export const DESTROY_PLANT = 'destroy' //permanently destroy a planting document
 
 // ------------------------------------
 // Actions
 // ------------------------------------
 // export const addPlanting = createAction(SHOW_CREATE_PLANT_UI, () => value)
-
-
 
 export const actions = {
   // addPlanting
@@ -35,12 +31,6 @@ export const actions = {
 // ------------------------------------
 // Reducer
 // ------------------------------------
-//
-
-function showPlantingUI (state) {
-	    return state
-}
-
 export const reducer = handleActions({
   // [SHOW_CREATE_PLANT_UI]: showPlantingUI
 }, [])
@@ -48,8 +38,6 @@ export const reducer = handleActions({
 // ------------------------------------
 // Selectors
 // ------------------------------------
-//
-
 export function selectPlants (state) {
   return state.plants
 }

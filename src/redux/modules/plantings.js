@@ -1,110 +1,114 @@
 import { createAction, handleActions } from 'redux-actions'
 import _ from 'lodash'
+import cloneMap from 'utils/cloneMap'
 
 import { createSelector } from 'reselect'
-import { selectPlaces } from './places'
-import { selectPlants } from './plants'
+// import { selectPlaces } from './places'
+// import { selectPlants } from './plants'
 
 // ------------------------------------
 // Constants
 // ------------------------------------
 //
 export const SHOW_CREATE_PLANTING_UI = 'createPlantingUI'
-/*
-export const SHOW_CREATE_EVENT_UI = 'createEventUI'
-export const UPDATE_EVENT = 'updateEvent'
-export const EDIT_EVENT_UI = 'editEventUI'
-export const SAVE_EDIT_EVENT_UI = 'saveEditEventUI'
-export const CLOSE_EDIT_EVENT_UI = 'closeEditEventUI'
-export const CANCEL_EDIT_EVENT = 'cancelEditEventUI'
 
-export const TRASH_EVENT = 'trashEvent'
-export const UPDATE_EVENT = 'updateEvent'
-export const ADD_TIMELINE_EVENT = 'addTimelineEvent'
-    */
+// overwrite with new data
+export const SET_PLANTING = 'setPlanting'
+export const SET_PLANTING_EVENT = 'setPlantingEvent'
+export const SET_PLANTING_EVENT_DATE = 'setPlantingEventDate'
 
-export const SET_PLANTING_EVENT_DATE = 'SET_PLANTING_EVENT_DATE'
-export const SET_PLANTING_EVENT = 'SET_PLANTING_EVENT'
+// merge new data over existing
+export const UPDATE_PLANTING = 'updatePlanting'
+export const UPDATE_PLANTING_EVENT = 'updatePlantingEvent'
 
-export const TRASH_PLANTING = 'TRASH_PLANTING'
-
-export const CREATE_PLANTING = 'create' //create a new planting document
-export const UPDATE_PLANTING = 'update' //updating a planting document
-export const DESTROY_PLANTING = 'destroy' //permanently destroy a planting document
-
-
+export const TRASH_PLANTING = 'trashPlanting'
 
 // ------------------------------------
 // Actions
 // ------------------------------------
-export const addPlanting = createAction(SHOW_CREATE_PLANTING_UI, () => value)
-export const setPlantingEvent = createAction(SET_PLANTING_EVENT)
+export const addPlanting = createAction(SHOW_CREATE_PLANTING_UI)
 export const setPlantingEventDate = createAction(SET_PLANTING_EVENT_DATE)
-
+export const setPlanting = createAction(SET_PLANTING)
+export const setPlantingEvent = createAction(SET_PLANTING_EVENT)
+export const updatePlanting = createAction(UPDATE_PLANTING)
+export const updatePlantingEvent = createAction(UPDATE_PLANTING_EVENT)
 
 export const actions = {
-  setPlantingEventDate
+  setPlantingEventDate,
+  setPlanting,
+  setPlantingEvent,
+  updatePlanting,
+  updatePlantingEvent
 }
 
 // ------------------------------------
 // Reducer
 // ------------------------------------
-
-function showPlantingUI (state) {
-	    return state
+export function showPlantingUI (state) {
+  return state
 }
 
+export function handleSetPlanting (state, {payload}) {
+  const {plantingId, plantingData} = payload
+  const newState = cloneMap(state)
+  return newState.set(plantingId, plantingData)
+}
 
 export function handleSetPlantingEvent (state, {payload}) {
   const { plantingId, eventIndex, eventData } = payload
 
-  let newState = {...state}
-  newState[plantingId] = {
-    ...state[plantingId],
-    timeline: state[plantingId].timeline.slice(0, eventIndex)
-      .concat(eventData)
-      .concat(state[plantingId].timeline.slice(eventIndex + 1))
-  }
+  // TODO... look into using Immutable to make this easier
+  const newState = cloneMap(state)
+  newState.get(plantingId).timeline[eventIndex] = eventData
   return newState
 }
 
-function handleSetPlantingEventDate (state, {payload}) {
+export function handleSetPlantingEventDate (state, {payload}) {
   // console.log('setPlantingEventDate', state, payload, arguments)
   const { plantingId, eventIndex, date, dateType } = payload
-  // return (
-  //   {
-  //     ...state,
-  //     {[plantingId]: {
-  //       ...state[plantingId],
-  //       timeline: state[plantingId].timeline.slice(0, eventIndex)
-  //         .concat({...state[plantingId].timeline[eventIndex], actualDate: date})
-  //         .concat(state[plantingId].timeline.slice(eventIndex+1))
-  //       }
-  //     }
-  //   }
-  // )
 
-  let newState = {...state}
-  newState[plantingId] = {
-    ...state[plantingId],
-    timeline: state[plantingId].timeline.slice(0, eventIndex)
-      .concat({...state[plantingId].timeline[eventIndex], actualDate: date})
-      .concat(state[plantingId].timeline.slice(eventIndex + 1))
+  const newState = cloneMap(state)
+  const newEvent = {
+    ...newState.get(plantingId).timeline[eventIndex],
+    actualDate: date
+  }
+  newState.get(plantingId).timeline[eventIndex] = newEvent
+  return newState
+}
+
+export function handleUpdatePlanting (state, {payload}) {
+  const {plantingId, plantingData} = payload
+  const newState = cloneMap(state)
+  return newState.set(plantingId, {
+    ...newState.get(plantingId),
+    ...plantingData
+  })
+}
+
+export function handleUpdatePlantingEvent (state, {payload}) {
+  const { plantingId, eventIndex, eventData } = payload
+
+  // TODO... look into using Immutable to make this easier
+  const newState = cloneMap(state)
+  newState.get(plantingId).timeline[eventIndex] = {
+    ...newState.get(plantingId).timeline[eventIndex],
+    ...eventData
   }
   return newState
 }
 
 export const reducer = handleActions({
   [SHOW_CREATE_PLANTING_UI]: showPlantingUI,
-  [SET_PLANTING_EVENT_DATE]: handleSetPlantingEventDate
+  [SET_PLANTING_EVENT_DATE]: handleSetPlantingEventDate,
+  [SET_PLANTING]: handleSetPlanting,
+  [SET_PLANTING_EVENT]: handleSetPlantingEvent,
+  [UPDATE_PLANTING]: handleUpdatePlanting,
+  [UPDATE_PLANTING_EVENT]: handleUpdatePlantingEvent
 }, [])
-
-
 
 // ------------------------------------
 // Selectors
 // ------------------------------------
-
 export function selectPlantings (state) {
   return state.plantings
 }
@@ -112,25 +116,17 @@ export function selectPlantings (state) {
 export const selectTrashedPlantings = createSelector(
   selectPlantings,
   (plantings) => {
-    let trashed = _.filter(plantings, p => !!p.isTrashed)
-    return _.zipObject(
-      trashed.map(p => p.id),
-      trashed
-    )
+    return new Map([...plantings].filter(([key, value]) => !!value.isTrashed))
   }
 )
 // select plantings which have not been trashed
 export const selectActivePlantings = createSelector(
   selectPlantings,
   (plantings) => {
-    let trashed = _.filter(plantings, p => !p.isTrashed)
-    return _.zipObject(
-      trashed.map(p => p.id),
-      trashed
-    )
+    return new Map([...plantings].filter(([key, value]) => !value.isTrashed))
   }
 )
- 
+
 // select plantings which are active for the current date
 // export const selectCurrentPlantings = createSelector(
 //   selectCurrentDate,
