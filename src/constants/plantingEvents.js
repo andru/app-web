@@ -30,4 +30,4 @@ export const lifecycleEventNames = [
     DIEBACK
 ]
 
-export default const events = [].concat(actionEventNames, lifecycleEventNames)
+export default [].concat(actionEventNames, lifecycleEventNames)
