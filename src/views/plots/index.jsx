@@ -41,7 +41,7 @@ export class PlotsView extends React.Component {
     const {plantings, plants, places} = this.props
     const {width, height} = this.state.dimensions
 
-    let plottedPlantings = _.values(plantings).filter(p => !!p.plotter).map(p => ({
+    let plottedPlantings = [...plantings.values()].filter(p => !!p.plotter).map(p => ({
       ...p.plotter,
       name: p.name,
       id: p.id
