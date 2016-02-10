@@ -61,7 +61,7 @@ export default class Track extends Component {
       ? this.props.actions.deselectTrack(this.props.trackGroupIndex, this.props.trackIndex)
       : this.props.actions.selectTrack(this.props.trackGroupIndex, this.props.trackIndex)
   };
-  
+
 
   startMarkerMove = (group, track, marker, e) => {
     this.props.actions.startMarkerMove(group, track, marker, e)
@@ -79,7 +79,7 @@ export default class Track extends Component {
       yPos: height/2
     }
   }
- 
+
   render () {
     const {
       children,
@@ -113,10 +113,10 @@ export default class Track extends Component {
       <g
       style={style}
       onMouseEnter={this.onMouseEnter}
-      onClick={this.onClick} 
+      onClick={this.onClick}
       transform={`translate(0, ${yPos})`}>
         <rect style={backgroundStyle} width="100%" height={height} />
-        <g  
+        <g
         style={{...defaultStyles.inner, ...styles.inner}}>
           {newChildren}
         </g>
@@ -134,15 +134,15 @@ export default class Track extends Component {
     let renderedLines = lines.map( ({from, to, appearance}) => (
       <Line from={from} to={to} appearance={appearance} {...sharedProps} />) )
     let renderedMarkers = markers.map( (marker, index) => (
-      <Marker 
+      <Marker
         date={marker.date}
-        icon={true}
+        icon={marker.icon}
         key={`marker-${index}`}
         appearance={marker.appearance}
         onMouseDown={e => isEditing && this.startMarkerMove(trackGroupIndex, trackIndex, index, marker, e)}
         onClick={e => isEditing || this.editMarker(trackGroupIndex, trackIndex, index, marker, e)}
         {...sharedProps} />
-    ) ) 
+    ) )
 
     return [].concat(renderedPeriods, renderedLines, renderedMarkers)
   }

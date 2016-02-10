@@ -9,6 +9,7 @@ export default class Marker extends React.Component {
   static propTypes = {
     plotX: React.PropTypes.func,
     date: React.PropTypes.instanceOf(Date).isRequired,
+    icon: React.PropTypes.string,
     radius: React.PropTypes.number,
     style: React.PropTypes.object,
     appearance: React.PropTypes.oneOf(['circle', 'rightArrow', 'leftArrow'])
@@ -16,7 +17,8 @@ export default class Marker extends React.Component {
 
   static defaultProps = {
     radius: 5.5,
-    appearance: 'circle'
+    appearance: 'circle',
+    icon: undefined
   };
 
   render () {
@@ -25,6 +27,9 @@ export default class Marker extends React.Component {
       styles
     } = this.props
 
+    if (this.props.icon) {
+      return this.iconMarker(this.props)
+    }
     switch (this.props.appearance) {
       default:
       case 'circle':
@@ -53,10 +58,15 @@ export default class Marker extends React.Component {
     let baseX = plotX(date)
     return <polygon points={`${baseX},${yPos-radius} ${baseX+radius*2},${yPos}, ${baseX},${yPos+radius}`} style={{...defaultStyles.arrow, ...styles.arrow}} />
   }
+
+  iconMarker ({icon, date, plotX, yPos}) {
+    const xPos = plotX(date)
+    return <g transform={`translate(${xPos-12} ${yPos-12})`}>{React.createElement(icon)}</g>
+  }
 }
 
 
-const defaultStyles = { 
+const defaultStyles = {
   circle: {
     strokeWidth: 3,
     fill: '#fff'

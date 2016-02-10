@@ -53,7 +53,8 @@ export default class Timeline extends Component {
     to: PropTypes.instanceOf(Date).isRequired,
     topGutterHeight: PropTypes.number,
     onMarkerChange: PropTypes.func,
-    onMarkerEditIntent: PropTypes.func
+    onMarkerEditIntent: PropTypes.func,
+    onDateRangeChange: PropTypes.func
   };
 
   static defaultProps = {
@@ -153,6 +154,21 @@ export default class Timeline extends Component {
     })
   };
 
+  handleMouseWheel = (e) => {
+    // console.log(e)
+    if (e.deltaX !== 0) {
+      // console.log(e.deltaX)
+      const {from, to} = this.props
+      const scale = this.getScale()
+      const fromPos = scale(from)
+      const toPos = scale(to)
+      let fromDate = scale.invert(fromPos + e.deltaX)
+      let toDate = scale.invert(toPos + e.deltaX)
+      // console.log(fromDate, toDate)
+      this.props.onDateRangeChange(fromDate, toDate)
+    }
+  };
+
   editMarker = (groupIndex, trackIndex, markerIndex, marker) => {
     this.props.onMarkerEditIntent(groupIndex, trackIndex, markerIndex, marker)
   };
@@ -160,10 +176,12 @@ export default class Timeline extends Component {
   getScale = () => {
     const {from, to, width} = this.props
     if(from !== this.cachedFrom && to !== this.cachedTo){
+      this.cachedFrom = from
+      this.cachedTo = to
       this.cachedScale = scale.scaleTime()
       .domain([from, to])
-      .range([0, width])
-      .nice()
+      .range([-100, width+100])
+      // .nice()
     }
     return this.cachedScale
   };
@@ -184,8 +202,6 @@ export default class Timeline extends Component {
   controlledRender (props) {
     const {data, width, height, from, to, trackHeight, styles, topGutterHeight} = props
     const {hoveredTrackIndex, selectedTrackIndex} = this.state
-
-    console.log(this.state)
 
     const viewScale = this.getScale()
     const timeAxisTicks = viewScale.ticks()
@@ -232,6 +248,7 @@ export default class Timeline extends Component {
         ref="svg"
         onMouseMove={this.handleMouseMove}
         onMouseUp={this.handleMouseUp}
+        onWheel={this.handleMouseWheel}
       >
         <rect x={0} y={0} width="100%" height="100%" style={{...defaultStyles.backdrop, ...styles.backdrop}} />
         <TimeAxis {...sharedProps} />

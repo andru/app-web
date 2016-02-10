@@ -8,8 +8,9 @@ import Measure from 'react-measure'
 import moment from 'moment'
 import _ from 'lodash'
 
-import {Cover} from 'components/View'
+import {Cover, Col} from 'components/View'
 import Timeline, {TimeAxis, TrackGroup, Track, Line, Period, Marker} from 'components/Timeline'
+import YearNav from 'components/YearNav'
 import {EditEvent} from 'components/PlantingEventForm'
 
 import { actions as timelineActions, selector as timelineSelector } from '../../redux/modules/timeline'
@@ -23,6 +24,7 @@ export class TimelineView extends React.Component {
     timelineData: React.PropTypes.array
   };
 
+  // TODO move state to redux
   state = {
     dimensions: {},
     isMounted: false
@@ -34,6 +36,10 @@ export class TimelineView extends React.Component {
 
   componentDidMount = () => {
     setTimeout(() => this.setState({isMounted: true}), 20)
+  };
+
+  l10n = (key, data) => {
+    return key
   };
 
   handleMarkerChange = (groupIndex, trackIndex, markerIndex, marker) => {
@@ -62,20 +68,19 @@ export class TimelineView extends React.Component {
   };
 
   handleEventDataChange = (eventData) => {
-    this.setEventData(eventData)
+    this.props.setEventData(eventData)
+  };
+
+  handleSelectedDateRangeChange = (from, to) => {
+    this.props.setDateRange({from, to})
   };
 
   render () {
     const {width, height} = this.state.dimensions
+    const {viewState} = this.props
 
-    // ouch, this needs to be optimized with https://github.com/faassen/reselect
+    // grab data from memoized selector
     let data = this.props.timelineData
-
-    // const plantingsForTimeline = plantings.filter()
-    let start_date = new Date('2015-01-01')
-    let end_date = new Date('2016-01-01')
-
-    //console.log(data)
 
     return (
       <Measure
@@ -84,21 +89,40 @@ export class TimelineView extends React.Component {
         this.setState({dimensions})
         }}>
         <Cover style={{visibility: this.state.isMounted ? 'visible' : 'hidden'}}>
-          {this.props.editEventForm.show &&
+          {this.props.viewState.editEventForm.show &&
             <EditEvent
               onChange={this.handleEventDataChange}
-              eventData={this.props.editEventFormData} />
+              eventData={this.props.editEventFormData}
+              l10n={this.l10n}
+            />
           }
-          <div style={{overflowY: 'scroll'}}>
-            <Timeline
-              from={start_date}
-              to={end_date}
-              height={height}
-              width={width}
-              data={data}
-              onMarkerChange={this.handleMarkerChange}
-              onMarkerEditIntent={this.handleMarkerEditIntent} />
-          </div>
+          {this.state.isMounted &&
+            <Col>
+              <div style={{overflowY: 'scroll', flexGrow:1, flexShrink:1}} >
+                <Timeline
+                  from={viewState.from}
+                  to={viewState.to}
+                  height={height}
+                  width={width}
+                  data={data}
+                  onMarkerChange={this.handleMarkerChange}
+                  onMarkerEditIntent={this.handleMarkerEditIntent}
+                  onDateRangeChange={this.handleSelectedDateRangeChange}
+                />
+              </div>
+              <div style={{flexGrow:0, flexShrink:0, flexBasis:40, overflowY:'hidden'}}>
+                <YearNav
+                  width={width}
+                  height={40}
+                  from={moment(viewState.from).subtract(400, 'days').toDate()}
+                  to={moment(viewState.to).add(400, 'days').toDate()}
+                  selectedFrom={viewState.from}
+                  selectedTo={viewState.to}
+                  onChange={this.handleSelectedDateRangeChange}
+                />
+              </div>
+            </Col>
+          }
         </Cover>
       </Measure>
     )

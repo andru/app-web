@@ -1,8 +1,19 @@
 import _ from 'lodash'
 import moment from 'moment'
-import momentRange from 'moment-range'
+import momentRange from 'moment-range' // used as moment.range
 
 import {earliest, latest} from './reduce.js'
+import eventIcons from 'components/TimelineIcons'
+
+// import {
+//   PLANT,
+//   TRANSPLANT,
+//   HARVEST
+// } from 'constants/plantingEvents'
+
+export function getEventIcon (event) {
+  return eventIcons[event.activityType || event.lifecycleStage] || undefined
+}
 
 export function coerceToDate (date) {
   return date instanceof Date ? date : new Date(date)
@@ -139,14 +150,17 @@ export function formatPlantingForTimeline (plants, places, planting) {
       previousEvent: undefined
     }).lines,
     markers: timeline
+      // TODO squash this into a single reduce
       .map((e, eventIndex) => ({...e, eventIndex}))
       .filter(e => e.eventDateType === 'day')
       .map(e => ({
         ...e,
-        date: getEventDate(e)
+        date: getEventDate(e),
+        icon: getEventIcon(e)
       })
     ),
     periods: timeline
+      // TODO squash this into a single reduce
       .map((e, eventIndex) => ({...e, eventIndex}))
       .filter(isEventDateRange)
       .map(e => ({
