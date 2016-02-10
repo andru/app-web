@@ -1,16 +1,15 @@
-import { combineReducers } from 'redux'
-import { routeReducer } from 'redux-simple-router'
+import {combineReducers} from 'redux'
+import {routeReducer} from 'redux-simple-router'
 
 // data models
-import { reducer as plantings } from './plantings'
-import { reducer as plants } from './plants'
-import { reducer as places } from './places'
+import {reducer as plantings} from './plantings'
+import {reducer as plants} from './plants'
+import {reducer as places} from './places'
 
 // views
-import { reducer as timeline } from './timeline'
-import { reducer as journal } from './journal'
-import { reducer as plantingsList } from './plantingsList'
-
+import {reducer as timeline} from './timeline'
+import {reducer as journal} from './journal'
+import {reducer as plantingsList} from './plantingsList'
 
 export default combineReducers({
   // app data
