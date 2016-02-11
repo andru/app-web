@@ -1,5 +1,12 @@
-import React, { Component } from 'react'
-import { StyleSheet, View } from 'react-native-web'
+import React, {Component} from 'react'
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  ScrollView,
+  TextInput
+} from 'react-native-web'
 
 export default class CustomView extends Component {
   render() {
@@ -22,3 +29,8 @@ export { CustomView as View }
 export Cover from './Cover'
 export Row from './Row'
 export Col from './Col'
+
+export {Text}
+export {Image}
+export {ScrollView}
+export {TextInput}
