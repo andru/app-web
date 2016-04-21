@@ -8,18 +8,23 @@ import moment from 'moment'
 import _ from 'lodash'
 import translate from 'counterpart'
 
+import {SAVING, SAVED, FAILED} from 'constants/status'
 import {Cover} from 'components/View'
 import PlantingList from 'components/PlantingList'
 import PlantingLog from 'components/PlantingLog'
-import {EditEvent} from 'components/PlantingEventForm'
+
 import {actions as plantingsActions } from '../../redux/modules/plantings'
+import {actions as editEventUIActions } from '../../redux/modules/editEventUI'
 import {selector, actions as listActions } from '../../redux/modules/plantingsList'
+import {getEventAtIndex} from 'utils/plantings'
+import createGetStyle from 'utils/getStyle'
 
 const defaultStyles = StyleSheet.create({
   container: {
     flexDirection: 'row'
   }
 })
+
 
 const l10n = {
   'PlantingLog.AddEventButton': 'Add New Event',
@@ -35,7 +40,7 @@ const l10n = {
 
   'PlantingEventForm.DatePickerLabel': 'Date',
   'PlantingEventForm.EventNameLabel': 'Event Name',
-  'PlantingEventForm.EventNameHint': '',
+  'PlantingEventForm.EventNameHint': ' ',
   'PlantingEventForm.NotesLabel': 'Notes',
   'PlantingEventForm.CancelButton': 'Cancel',
   'PlantingEventForm.SaveButton': 'Save',
@@ -69,6 +74,28 @@ const l10n = {
 translate.setSeparator('*')
 translate.registerTranslations('en', l10n)
 
+var plantingLogStyles = {
+  container:{
+    flexBasis:'60%',
+    flexGrow: 1
+  }
+}
+
+const plantingListStyles = {
+  container: {
+    flexBasis: '40%',
+    flexGrow: 1,
+    flexShrink: 1
+  },
+  closed: {
+    container: {
+      marginLeft:'-40%'
+    }
+  }
+}
+
+const getListStyle = createGetStyle(plantingListStyles)
+
 export class PlantingsView extends React.Component {
   static propTypes = {
     viewState: PropTypes.object,
@@ -98,8 +125,20 @@ export class PlantingsView extends React.Component {
     return translate(key, data)
   }
 
+  handleAddEventIndent = () => {
+    this.props.showEditEventUI({
+      plantingId: this.props.viewState.selectedPlantingId,
+      eventIndex: -1,
+      eventData: {}
+    })
+  };
+
   handleEventEditIntent = (eventIndex) => {
-    this.props.showEditEventUI({eventIndex})
+    this.props.showEditEventUI({
+      plantingId: this.props.viewState.selectedPlantingId,
+      eventIndex,
+      eventData: getEventAtIndex(this.props.selectedPlanting, eventIndex)
+    })
   };
 
   handleEventDataChange = (eventData) => {
@@ -115,7 +154,16 @@ export class PlantingsView extends React.Component {
   };
 
   handleEventUISave = () => {
-
+    const {
+      selectedPlantingId,
+      selectedEventIndex,
+      eventData
+    } = this.props.viewState
+    this.props.saveEvent({
+      plantingId: selectedPlantingId,
+      eventIndex: selectedEventIndex,
+      eventData
+    })
   };
 
   handleEventUICancel = () => {
@@ -146,30 +194,26 @@ export class PlantingsView extends React.Component {
         this.setState({dimensions})
         }}>
         <Cover style={{...styles.container, visibility: this.state.isMounted ? 'visible' : 'hidden'}}>
-          <PlantingList
-            currentPlantings={activePlantings}
-            filterFunction={() => true}
-            selectedPlantingId={selectedPlanting ? selectedPlanting.id : undefined}
-            onPlantingChange={(id) => this.props.setSelectedPlanting({id})}
-            onPanelChange={() => true} />
-
+          <Cover style={getListStyle('container', {closed: viewState.isEditingEvent})}>
+            <PlantingList
+              currentPlantings={activePlantings}
+              filterFunction={() => true}
+              selectedPlantingId={selectedPlanting ? selectedPlanting.id : undefined}
+              onPlantingChange={(id) => this.props.setSelectedPlanting({id})}
+              onPanelChange={() => true}
+            />
+          </Cover>
           {selectedPlanting &&
             <PlantingLog
               l10n={(key, data) => this.l10n(`PlantingLog.${key}`, data)}
               planting={selectedPlanting}
               dateRange={logData.dateRange}
               monthEvents={logData.monthEvents}
+              onAddEventIntent={this.handleAddEventIndent}
               onEventEditIntent={this.handleEventEditIntent}
-              selectedEventIndex={viewState.selectedEventIndex}/>
-          }
-
-          {selectedPlanting && selectedEvent && viewState.isEditingEvent &&
-            <EditEvent
-              l10n={(key, data) => this.l10n(`PlantingEventForm.${key}`, data)}
-              onChange={this.handleEventDataChange}
-              onCancel={this.handleEventUICancel}
-              onSave={this.handleEventUISave}
-              eventData={selectedEvent} />
+              selectedEventIndex={viewState.selectedEventIndex}
+              styles={plantingLogStyles}
+            />
           }
         </Cover>
       </Measure>
@@ -177,4 +221,11 @@ export class PlantingsView extends React.Component {
   }
 }
 
-export default connect((state, props) => ({...selector(state, props), location: props.location}), {...plantingsActions, ...listActions})(PlantingsView)
+export default connect((state, props) => ({
+  ...selector(state, props),
+  location: props.location
+}), {
+  ...plantingsActions,
+  ...editEventUIActions,
+  ...listActions
+})(PlantingsView)

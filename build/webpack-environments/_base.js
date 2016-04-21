@@ -37,7 +37,7 @@ const webpackConfig = {
   },
   plugins: [
     new webpack.DefinePlugin(config.globals),
-    new webpack.optimize.OccurrenceOrderPlugin(),
+    new webpack.optimize.OccurrenceOrderPlugin(true),
     new webpack.optimize.DedupePlugin(),
     new HtmlWebpackPlugin({
       title: 'Hortomatic is loading...',
@@ -45,7 +45,7 @@ const webpackConfig = {
       // hash: false,
       // favicon: paths.client('static/favicon.ico'),
       filename: 'index.html',
-      //chunks: ['entry'],
+      // chunks: ['entry'],
       inject: 'body',
       minify: {
         collapseWhitespace: false
@@ -57,7 +57,8 @@ const webpackConfig = {
       filename: '200.html',
       template: paths.client('200.html'),
       __KARMA_IGNORE__: true
-    })
+    }),
+    new webpack.optimize.CommonsChunkPlugin("common.js")
   ],
   resolve: {
     root: paths.base(config.dir_client),
@@ -78,7 +79,10 @@ const webpackConfig = {
         loader: 'babel',
         query: {
           cacheDirectory: true,
-          plugins: ['transform-runtime', 'add-module-exports'],
+          plugins: [
+            'add-module-exports',
+            'transform-runtime'
+          ],
           presets: ['es2015', 'react', 'stage-0'],
           env: {
             development: {
@@ -116,7 +120,7 @@ const webpackConfig = {
           'postcss',
           'less'
         ]
-      },  
+      },
       {
         test: /\.css$/,
         loaders: [
@@ -130,7 +134,7 @@ const webpackConfig = {
       { test: /\.woff2(\?.*)?$/, loader: 'url?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=application/font-woff2' },
       { test: /\.ttf(\?.*)?$/,   loader: 'url?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=application/octet-stream' },
       { test: /\.eot(\?.*)?$/,   loader: 'file?prefix=fonts/&name=[path][name].[ext]' },
-      { test: /\.svg(\?.*)?$/,   loader: 'url?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=image/svg+xml' },
+      { test: /\.svg(\?.*)?$/,   loader: 'file?prefix=svg/&name=[path][name].[ext]' },
       { test: /\.(png|jpg|gif)$/,    loader: 'url?limit=8192' }
       /* eslint-enable */
     ]
@@ -155,15 +159,5 @@ const webpackConfig = {
     configFile: paths.base('.eslintrc')
   }
 }
-
-// NOTE: this is a temporary workaround. I don't know how to get Karma
-// to include the vendor bundle that webpack creates, so to get around that
-// we remove the bundle splitting when webpack is used with Karma.
-const commonChunkPlugin = new webpack.optimize.CommonsChunkPlugin({
-  names: ['vendor']
-})
-commonChunkPlugin.__KARMA_IGNORE__ = true
-
-webpackConfig.plugins.push(commonChunkPlugin)
 
 export default webpackConfig

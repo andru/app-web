@@ -1,40 +1,91 @@
 import React, {Component, PropTypes} from 'react'
 import {StyleSheet} from 'react-native-web'
+import uncontrollable from 'uncontrollable'
+import createGetStyle from 'utils/getStyle'
 
-import {View} from 'components/View'
+import {View, Text} from 'components/View'
 
 const styles = StyleSheet.create({
   container: {
-    height: 65
+    height: 65,
+    cursor: 'pointer',
+    padding: 10
+  },
+  containerSelected: {
+
+  },
+  text: {
+    color: '#5E5D55'
+  },
+  selected: {
+    container: {
+      backgroundColor: '#44B9F0'
+    },
+    text: {
+      color: '#FFFFFF'
+    }
+  },
+  hovered: {
+    container: {
+      backgroundColor: '#FCFBF0'
+    },
+    text: {
+      color: '#44B9F0'
+    }
   }
 })
 
-export default class PlantingListItem extends Component{
+// partially apply styles to getStyle function
+const getStyle = createGetStyle(styles)
+
+class PlantingListItem extends Component{
   static propTypes = {
     item: PropTypes.object.isRequired,
     isSelected: PropTypes.bool,
-    onSelect: React.PropTypes.func,
+    onSelect: PropTypes.func,
+    isHovered: PropTypes.bool,
+    onHoverChange: PropTypes.func,
     onPlaceClick: React.PropTypes.func
   };
   static defaultProps = {
     isSelected: false
   };
+
+  handleMouseEnter = (ev) => {
+    this.props.onHoverChange(true)
+  };
+
+  handleMouseLeave = (ev) => {
+    this.props.onHoverChange(false)
+  };
+
   render () {
-    const {item, onSelect, onPlaceClick} = this.props
+    const {item, onSelect, isSelected, isHovered, onPlaceClick} = this.props
+    const uiState = {selected: isSelected, hovered: isHovered}
+    const textStyle = getStyle('text', uiState)
     return (
-      <div onClick={onSelect} style={styles.container}>
-        <div className="Planting-List-Item-name">{item.name}</div>
-        <div className="Planting-List-Item-details">
-          <span className="Planting-List-Item-plantName">
+      <View
+        onClick={onSelect} style={getStyle('container', uiState)}
+        onMouseEnter={this.handleMouseEnter}
+        onMouseLeave={this.handleMouseLeave}
+      >
+        <Text style={textStyle}>{item.name}</Text>
+        <Text style={textStyle}>
+          <Text>
             {item.plantName}
-          </span>
+          </Text>
           {item.place_id &&
-          <span className="Planting-List-Item-placeName" onClick={onPlaceClick}>
+            <Text onClick={onPlaceClick}>
             {item.placeName}
-          </span>
+          </Text>
           }
-        </div>
-      </div>
+        </Text>
+      </View>
     );
   }
 }
+
+export default uncontrollable(
+	PlantingListItem,
+	{isHovered: 'onHoverChange'}
+)

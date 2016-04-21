@@ -4,6 +4,8 @@ import _ from 'lodash'
 import moment from 'moment'
 
 import {
+  getPlanting,
+  getEventAtIndex,
   getEventDate,
   getEarliestEventDate,
   getLatestEventDate,
@@ -12,7 +14,7 @@ import {
   // isEventDateRange,
   formatPlantingForTimeline
 } from 'utils/plantings.js'
-import {selectPlantings} from './plantings'
+import {selectActivePlantings} from './plantings'
 import {selectPlants} from './plants'
 import {selectPlaces} from './places'
 
@@ -46,7 +48,8 @@ export function handleShowEditEventForm (state, {payload}) {
       editEventForm: {
         show: true,
         selectedPlantingId: payload.plantingId,
-        selectedEventIndex: payload.eventIndex
+        selectedEventIndex: payload.eventIndex,
+        eventData: payload.eventData
       }
     }
   }
@@ -68,7 +71,8 @@ export const reducer = handleActions({
   [SET_TIMELINE_DATE_RANGE]: handleSetDateRange
 }, {
   editEventForm: {
-    show: false
+    show: false,
+    eventData: undefined
   },
   from: moment().startOf('year').toDate(),
   to: moment().startOf('year').add(1, 'year').toDate()
@@ -79,7 +83,7 @@ export const reducer = handleActions({
 // ------------------------------------
 
 export const selectTimelineData = createSelector(
-  selectPlantings,
+  selectActivePlantings,
   selectPlants,
   selectPlaces,
   (plantings, plants, places) => {
@@ -155,11 +159,16 @@ export function selectEditEventForm (state) {
 }
 
 export const selectEditEventFormData = createSelector(
-  selectPlantings,
+  selectActivePlantings,
   selectEditEventForm,
   (plantings, editEventForm) => {
     if (editEventForm.show === true) {
-      let eventData = _.cloneDeep(plantings.get(editEventForm.selectedPlantingId).timeline[editEventForm.selectedEventIndex])
+      let eventData = _.cloneDeep(
+        getEventAtIndex(
+          getPlanting(plantings, editEventForm.selectedPlantingId),
+          editEventForm.selectedEventIndex
+        )
+      )
       eventData.date = getEventDate(eventData)
       return eventData
     } else {
@@ -169,15 +178,14 @@ export const selectEditEventFormData = createSelector(
 )
 
 export const selector = createSelector(
+  selectActivePlantings,
   selectTimelineState,
   selectedTimelineDataForRange,
-  selectEditEventFormData,
-  (viewState,
-    timelineData,
-    editEventForm,
-    editEventFormData) => ({
+  (plantings,
+    viewState,
+    timelineData) => ({
+      plantings,
       viewState,
-      timelineData,
-      editEventFormData
+      timelineData
     })
 )

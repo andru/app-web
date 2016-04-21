@@ -12,21 +12,21 @@ export default class NavBar extends Component{
 		var icons = ['journal.svg', 'journal.svg', 'journal.svg', 'plantings.svg', 'growspaces.svg', 'plantings.svg']
 		return (
 		<View style={styles.NavBar}>
-    	<View style={styles.TabContainer}>
-    		{sections.map( (s, i)=>(
-    			<Link to={`/${s}`} style={styles.Tab} key={s}>
-    				<View style={{...styles.TabIcon, backgroundImage: 'url('+require(`file!static/icons/modules/${icons[i]}`)+')'}}></View>
-    				<View className="NavBar-Tab-label">{/*this.l10n('NavBar-SectionTab-'+s)*/ s}</View>
-    			</Link>
-	    	))}
-    	</View>  
-    	<View className="App-NavBar-export">
-    		<i className="fa fa-arrow-down" onClick={()=>this.handleNavClick('export')} />
-    	</View>
-    	<View className="App-NavBar-info">
-    		<i className="fa fa-ellipsis-h" onClick={()=>this.handleNavClick('info')} />
-    	</View>
-    </View>)
+			<View style={styles.TabContainer}>
+				{sections.map( (s, i)=>(
+					<Link to={`/${s}`} style={styles.Tab} key={s}>
+						<View style={{...styles.TabIcon, backgroundImage: 'url('+require(`file!static/icons/modules/${icons[i]}`)+')'}}></View>
+						<View className="NavBar-Tab-label">{/*this.l10n('NavBar-SectionTab-'+s)*/ s}</View>
+					</Link>
+				))}
+			</View>
+			<View className="App-NavBar-export">
+				<i className="fa fa-arrow-down" onClick={()=>this.handleNavClick('export')} />
+			</View>
+			<View className="App-NavBar-info">
+				<i className="fa fa-ellipsis-h" onClick={()=>this.handleNavClick('info')} />
+			</View>
+		</View>)
 	}
 }
 
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   	flexDirection: 'row',
    	backgroundColor: 'white',
    	justifyContent: 'space-between'
-  }, 
+  },
   TabContainer: {
   	display: 'flex',
     flexDirection: 'row',

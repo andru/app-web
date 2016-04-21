@@ -1,7 +1,12 @@
 import React from 'react'
-import View from 'components/View'
+import {StyleSheet} from 'react-native-web'
+import {View, Text} from 'components/View'
 
-import BaseEvent from './BaseEvent'
+import BaseEvent, {baseStyles} from './BaseEvent'
+
+const styles = StyleSheet.create({
+
+})
 
 export default class TransplantEvent extends BaseEvent {
 
@@ -18,8 +23,9 @@ export default class TransplantEvent extends BaseEvent {
 
     return (
       <View>
-        <View>Transplant to {eventData.placeId}</View>
-        <View>{recipientLabels[eventData.recipient]}</View>
+        <Text style={{...baseStyles.text}}>Transplant to {eventData.placeName}</Text>
+        <Text style={{...baseStyles.text}}>{recipientLabels[eventData.recipient]}</Text>
+        <Text style={{...baseStyles.text, ...baseStyles.notes}}>{eventData.notes}</Text>
       </View>
     )
   }

@@ -1,3 +1,6 @@
+// require('babel-core/register')
+// import "babel-polyfill";
+
 import React from 'react'
 import {render} from 'react-native-web'
 import {createHistory} from 'history'

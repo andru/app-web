@@ -35,11 +35,12 @@ const config = {
   compiler_quiet           : false,
   compiler_public_path     : '/',
   compiler_stats           : {
-    chunks : false,
-    chunkModules : false,
+    chunks : true,
+    chunkModules : true,
     colors : true
   },
   compiler_vendor : [
+    "babel-polyfill",
     "counterpart",
     "d3-scale",
     "d3-time-format",
@@ -58,13 +59,13 @@ const config = {
     "react-router",
     "redux",
     "redux-actions",
-    // "redux-saga",
+    "redux-saga",
     "redux-simple-router",
     "redux-thunk",
     "reselect",
     "uncontrollable"
   ],
-  
+
   //compiler_vendor: Object.keys(pkg.dependencies),
 
   // ----------------------------------
@@ -107,7 +108,7 @@ config.globals = {
 
 config.compiler_vendor = config.compiler_vendor
   .filter(dep => {
-    if (pkg.dependencies[dep]) return true
+    if (pkg.dependencies[dep] || pkg.devDependencies[dep]) return true
 
     debug(
       `Package "${dep}" was not found as an npm dependency in package.json; ` +

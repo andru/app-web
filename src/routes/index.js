@@ -21,11 +21,11 @@ export default (
   <Route path='/' component={CoreLayout}>
     <IndexRoute component={Home} />
     <Route path='timeline' component={TimelineView} />
-    <Route path='plots' component={PlotsView} />
+    <Route path='plotter' component={PlotsView} />
     <Route path='calendar' component={CalendarView} />
     <Route path='journal' component={JournalView} />
     <Route path='plantings' component={PlantingsView}>
-      <Route path='plantings/:planting_id' component={PlantingsView} />
+      <Route path='planting/:planting_id' component={PlantingsView} />
     </Route>
   </Route>
 )

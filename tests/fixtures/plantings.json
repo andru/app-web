@@ -25,7 +25,7 @@
           "eventDateType": "day",
           "eventType": "activity",
           "activityType": "transplant",
-          "placeId": "place/8E02D1BA-756C-355C-8D49-DAA1AA9EF6C2"
+          "placeId": "place/two"
         },
         {
           "estimateDateRange": ["2015-05-01", "2015-07-01"],

@@ -1,10 +1,13 @@
-import { createAction, handleActions } from 'redux-actions'
+import {createAction, handleActions} from 'redux-actions'
 import _ from 'lodash'
 import cloneMap from 'utils/cloneMap'
 
-import { createSelector } from 'reselect'
-// import { selectPlaces } from './places'
-// import { selectPlants } from './plants'
+import {createSelector} from 'reselect'
+import {selectPlaces} from './places'
+import {selectPlants} from './plants'
+import {getPlace, getPlaceName} from 'utils/places.js'
+import {getPlant, getPlantName} from 'utils/plants.js'
+import {getPlanting, getPlantingName, getPlaceIdFromTimeline} from 'utils/plantings.js'
 
 // ------------------------------------
 // Constants
@@ -59,7 +62,11 @@ export function handleSetPlantingEvent (state, {payload}) {
 
   // TODO... look into using Immutable to make this easier
   const newState = cloneMap(state)
-  newState.get(plantingId).timeline[eventIndex] = eventData
+  if (eventIndex === -1) {
+    newState.get(plantingId).timeline.push(eventData)
+  }else{
+    newState.get(plantingId).timeline[eventIndex] = eventData
+  }
   return newState
 }
 
@@ -109,19 +116,41 @@ export const reducer = handleActions({
 // ------------------------------------
 // Selectors
 // ------------------------------------
-export function selectPlantings (state) {
+export const selectPlantings = function (state) {
   return state.plantings
 }
+
+export const selectPlantingsWithRelations = createSelector(
+  selectPlantings,
+  selectPlaces,
+  selectPlants,
+  (plantings, places, plants) => {
+    return new Map([...plantings].map(([plantingId, planting]) => {
+      const placeId = getPlaceIdFromTimeline(planting)
+      const place = placeId && getPlace(places, getPlaceIdFromTimeline(planting))
+      const plant = getPlant(plants, planting.plantId)
+      // beware! this is not a deep clone. mutating timeline will
+      // mutate state
+      return [plantingId, {
+        ...planting,
+        plant,
+        place,
+        plantName: getPlantName(plant),
+        currentPlaceName: place && getPlaceName(place)
+      }]
+    }))
+  }
+)
 // select plantings which have been trashed
 export const selectTrashedPlantings = createSelector(
-  selectPlantings,
+  selectPlantingsWithRelations,
   (plantings) => {
     return new Map([...plantings].filter(([key, value]) => !!value.isTrashed))
   }
 )
 // select plantings which have not been trashed
 export const selectActivePlantings = createSelector(
-  selectPlantings,
+  selectPlantingsWithRelations,
   (plantings) => {
     return new Map([...plantings].filter(([key, value]) => !value.isTrashed))
   }
@@ -137,7 +166,7 @@ export const selectActivePlantings = createSelector(
 // )
 
 export const selector = createSelector(
-  selectPlantings,
+  selectPlantingsWithRelations,
   selectTrashedPlantings,
   selectActivePlantings,
   (plantings, trashedPlantings, activePlantings, places, plants) => ({

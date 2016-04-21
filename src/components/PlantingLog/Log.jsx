@@ -1,8 +1,9 @@
 import React, {Component, PropTypes} from 'react'
-import View, { Cover, Row, Col } from 'components/View'
-import { StyleSheet } from 'react-native-web'
+import View, {Cover, Row, Col, ScrollView, Text} from 'components/View'
+import {StyleSheet} from 'react-native-web'
 import _ from 'lodash'
 
+import Header from './Header'
 import LogEvent from './Event'
 import AddButton from './AddButton'
 import {eventComponents, lifecycleEventNames, actionEventNames} from './EventTypes'
@@ -12,31 +13,64 @@ import {
   getLatestTimelineDate
 } from 'utils/plantings'
 import {formatPlantingForLog} from 'utils/plantings'
+import createGetStyle from 'utils/getStyle'
 
 const defaultStyles = StyleSheet.create({
   container: {
-    overflowY: 'scroll',
-    backgroundColor: '#f8d454',
+    backgroundColor: '#78C76D',
     flexDirection: 'column'
   },
-  yearBoundary: {
+  header: {
 
+  },
+  timelineContainer: {
+    overflowY: 'scroll',
+    backgroundColor: '#78C76D',
+    flexDirection: 'column',
+  },
+  yearBoundary: {
+    flexShrink: 0
   },
   yearBoundaryLabel: {
 
   },
   month: {
-    paddingTop: 10,
-    paddingBottom: 10
+    paddingTop: 0,
+    paddingBottom: 0,
+    flexShrink: 0,
+    flexGrow: 0,
+    alignItems: 'center'
   },
-  solidTimelineSegment: {
-    borderColor: '#818076'
+  emptyMonth: {
+    backgroundColor: "#76C36B"
+  },
+  emptyMonthLabel: {
+    marginLeft: 140,
+    alignItems: 'center',
+  },
+  emptyMonthLabelText: {
+    color: '#fff',
+    fontSize: 14,
+    opacity: .7,
+    fontWeight: 300
+  },
+  solidTimelineSegmentContainer: {
+    position: 'absolute',
+    left: 68,
+    height: '100%',
+    justifyContent: 'center'
   },
   event: {
-
   }
 })
 
+const svgStyles = {
+  baseLine: {
+    stroke: '#FFF',
+    strokeWidth: 5,
+    strokeLinejoin: 'round'
+  }
+}
 export default class Log extends Component {
 
   static propTypes = {
@@ -44,10 +78,11 @@ export default class Log extends Component {
     planting: PropTypes.object.isRequired,
     dateRange: PropTypes.object.isRequired,
     monthEvents: PropTypes.object.isRequired,
-    onEventClick: PropTypes.func,
-    onEventEditIntent: PropTypes.func,
+    onAddEventIntent: PropTypes.func.isRequired,
+    onEventEditIntent: PropTypes.func.isRequired,
     eventTypes: PropTypes.object,
-    selectedEventIndex: PropTypes.number
+    selectedEventIndex: PropTypes.number,
+    styles: PropTypes.object
   };
 
   static defaultProps = {
@@ -59,8 +94,8 @@ export default class Log extends Component {
     console.dir(ev)
   };
 
-  handleAddClick = (ev) => {
-
+  handleAddIntent = (ev) => {
+    this.props.onAddEventIntent()
   };
 
   handleEdit = (eventIndex) => {
@@ -69,20 +104,21 @@ export default class Log extends Component {
 
   render () {
     const {planting, dateRange, monthEvents, styles} = this.props
-
+    const getStyle = createGetStyle({...defaultStyles, ...styles})
     return (
-      <Cover style={styles.container}>
-
-        {this.renderItems()}
-
-        {monthEvents &&
-          <AddButton
-            label={this.props.l10n('AddEventButton')}
-          icon="add"
-          keys={['cmd', '+']}
-          onClick={this.handleAddClick}  />
-        }
-      </Cover>
+      <View style={getStyle('container')}>
+        <Header
+          plantingData={planting}
+          showAddButton={true}
+          onAddIntent={this.handleAddIntent}
+          styles={getStyle('header')}
+          l10n={this.props.l10n}
+        />
+        <ScrollView style={getStyle('timelineContainer')}>
+          {this.renderItems(getStyle)}
+          <View style={{flexGrow:1}}></View>
+        </ScrollView>
+      </View>
     )
   }
 
@@ -90,53 +126,65 @@ export default class Log extends Component {
    * Render list of events, grouped by month.
    * @return {array} Array of ReactElements
    */
-  renderItems () {
+  renderItems (getStyle) {
     const {dateRange, monthEvents, styles} = this.props
 
     let renderedMonths = []
     let previousMonthWasEmpty = true
+    let consecutiveEmptyMonths = 0
     let monthNo = 0
 
     dateRange.by('months', moment => {
       const thisMonthEvents = monthEvents[moment.format('YYYY MM')]
       const isEmpty = !thisMonthEvents
 
-      if(previousMonthWasEmpty && isEmpty){
+      if(isEmpty){
+        consecutiveEmptyMonths++
         return;
       }
-      previousMonthWasEmpty=isEmpty;
-      //output a year boundary if needed
+      // output a year boundary if needed
       if(moment.get('month')===0){
-        <Row style={styles.yearBoundary}>
-          <View style={styles.yearBoundaryLabel}>{moment.format('YYYY')}</View>
-        </Row>
+        renderedMonths.push(<Row style={getStyle('yearBoundary')}>
+          <View style={getStyle('yearBoundaryLabel')}>{moment.format('YYYY')}</View>
+        </Row>)
       }
-      if(isEmpty){
+      // this month has events, so dump an empty placeholder for previous empty months
+      if(consecutiveEmptyMonths > 0){
           renderedMonths.push(
-          <Row style={styles.month} key={moment.format('YYYY-MM')}>
-            <View style={styles.solidTimelineSegment}>
-              <svg width="30">
-                <line x1="10" y1="0" x2="10" y2="100%" />
+          <Row style={{...getStyle('month'), ...getStyle('emptyMonth'), height:80}} key={moment.format('YYYY-MM')}>
+            <View style={getStyle('solidTimelineSegmentContainer')}>
+              <svg width="45" height="80">
+                <line x1="22" y1="0" x2="22" y2="27" style={svgStyles.baseLine}/>
+                <line x1="22" y1="58" x2="22" y2="80" style={svgStyles.baseLine}/>
+                <path d="M17.5,32 L17.5,27.4727695 L3,20.2278646 L31.5,12.580465 L17.5,5.33556008 L17.5,0.5"
+                  style={svgStyles.baseLine}
+                  transform="translate(4.5,26)"
+                  fill="none"
+                />
               </svg>
             </View>
-          </Row>);
-      }else{
-        renderedMonths.push(
-          <Row style={styles.month}/*key={moment.format('YYYY-MM')}*/>
-            <View style={styles.solidTimelineSegment}>
-              <svg width="30">
-                <line x1="10" y1="0" x2="10" y2="100%"  />
-              </svg>
-            </View>
-            {/*<TransitionGroup
-            component="View"
-            transitionName="Plantings-animateTimeline"
-            ref="timelineContent">*/}
-              {this.renderMonthEvents( thisMonthEvents, monthNo )}
-            {/*</TransitionGroup>*/}
-          </Row>
-        );
+            <Row style={getStyle('emptyMonthLabel')}>
+              <Text style={getStyle('emptyMonthLabelText')}>No activity for {consecutiveEmptyMonths} months</Text>
+            </Row>
+          </Row>)
       }
+
+      renderedMonths.push(
+        <Row style={getStyle('month')}/*key={moment.format('YYYY-MM')}*/>
+          <View style={getStyle('solidTimelineSegmentContainer')}>
+            <svg width="45" height="100%">
+              <line x1="22" y1="0" x2="22" y2="100%" style={svgStyles.baseLine} />
+            </svg>
+          </View>
+          {/*<TransitionGroup
+          component="View"
+          transitionName="Plantings-animateTimeline"
+          ref="timelineContent">*/}
+          {this.renderMonthEvents( getStyle, thisMonthEvents, monthNo )}
+          {/*</TransitionGroup>*/}
+        </Row>
+      )
+
 
       monthNo++;
     });
@@ -146,9 +194,9 @@ export default class Log extends Component {
     //add a final month on the end to pad the timeline out to
     //full height
     renderedMonths.push(<Row key="fillerMonth">
-      <View style={{...styles.solidTimelineSegment}}>
+      <View style={{...getStyle('solidTimelineSegmentContainer')}}>
         <svg width="30" style={{flex:1}}>
-          <line x1="10" y1="0" x2="10" y2="100%" />
+          <line x1="22" y1="0" x2="22" y2="100%" style={svgStyles.baseLine} />
         </svg>
       </View>
     </Row>);
@@ -156,9 +204,8 @@ export default class Log extends Component {
     return renderedMonths;
   }
 
-  renderMonthEvents (monthEvents, monthNo) {
+  renderMonthEvents (getStyle, monthEvents, monthNo) {
     const {selectedEventIndex, planting} = this.props
-
     return (
       <Col>
         {monthEvents

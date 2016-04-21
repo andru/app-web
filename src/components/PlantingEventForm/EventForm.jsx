@@ -101,7 +101,7 @@ export default class EventForm extends Component {
           <Fatty.DatePicker
             label={this.l10n('DatePickerLabel')}
             date={eventData.actualDate || eventData.estimateDate}
-            onChange={() => this.handleFieldChange('date')}
+            onChange={(date) => this.handleFieldChange('date', date)}
             collapse={false}
             ref="DatePicker" />
 
@@ -170,17 +170,16 @@ export default class EventForm extends Component {
  renderNotes () {
     const event = this.props.eventData
     return (
-      <View>
-        <Fatty.Text
-          value={event.notes}
-          multiline={true}
-          autogrow={true}
-          initialHeight={150}
-          maxHeight={400}
-          id="addEvent-notes"
-          label={this.l10n('NotesLabel')}
-          onChange={ev=>this.handleNotesChange(ev.target.value)} />
-    </View>
+      <Fatty.Text
+        value={event.notes}
+        multiline={true}
+        autogrow={true}
+        initialHeight={150}
+        maxHeight={400}
+        id="addEvent-notes"
+        label={this.l10n('NotesLabel')}
+        onChange={ev=>this.handleNotesChange(ev.target.value)}
+      />
     )
   }
 

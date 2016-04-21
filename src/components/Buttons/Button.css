@@ -115,11 +115,13 @@ button.Button
 
     opacity: .5;
 }
-.Button--busy
+.Button--disabled .Button-inner
 {
     cursor: default;
-
-    opacity: .5;
+}
+.Button--busy .Button-inner
+{
+    cursor: wait;
 }
 
 
@@ -196,6 +198,3 @@ button.Button
     border: none;
     background: transparent;
 }
-
-
-

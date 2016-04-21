@@ -1,7 +1,12 @@
 import React from 'react'
-import View from 'components/View'
+import {StyleSheet} from 'react-native-web'
+import {View, Text} from 'components/View'
 
-import BaseEvent from './BaseEvent'
+import BaseEvent, {baseStyles} from './BaseEvent'
+
+const styles = StyleSheet.create({
+
+})
 
 export default class PlantEvent extends BaseEvent {
 
@@ -25,9 +30,10 @@ export default class PlantEvent extends BaseEvent {
 
     return (
       <View>
-        <View>Planted in {eventData.placeId}</View>
-        <View>Seed Material {eventData.from}</View>
-        <View>Planting Environment {eventData.recipient}</View>
+        <Text style={{...baseStyles.text}}>Planted in {eventData.placeName}</Text>
+        <Text style={{...baseStyles.text}}>Seed Material: {eventData.from}</Text>
+        <Text style={{...baseStyles.text}}>Planting Environment: {eventData.recipient}</Text>
+        <Text style={{...baseStyles.text, ...baseStyles.notes}}>{eventData.notes}</Text>
       </View>
     )
   }

@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react'
-import View, { Cover } from 'components/View'
+import View, { Cover, Text } from 'components/View'
 import { StyleSheet } from 'react-native-web'
 
 import {SolidButton as Button, Panel as ButtonPanel} from 'components/Buttons'
@@ -20,11 +20,15 @@ export default class EditEvent extends Component {
     onChange: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
-    onTrash: PropTypes.func.isRequired
+    onTrash: PropTypes.func.isRequired,
+    isSaving: PropTypes.bool,
+    isSaved: PropTypes.bool
   };
 
   static defaultProps = {
-    styles
+    styles,
+    isSaving: false,
+    isSaved: false
   };
 
   l10n = (key, data) => {
@@ -36,6 +40,10 @@ export default class EditEvent extends Component {
   };
 
   _save = () => {
+    const {isSaving, isSaved} = this.props
+    if (isSaved || isSaving) {
+      return
+    }
     return this.props.onSave()
   };
 
@@ -48,17 +56,21 @@ export default class EditEvent extends Component {
   };
 
   render () {
-    let {wot} = this.props
+    const {isSaving, isSaved} = this.props
 
     return (
       <Cover style={{...styles, ...this.props.styles.container}}>
-        <EventForm
-          l10n={this.l10n}
-          eventData={this.props.eventData}
-          onChange={this._change}
-          busy={this.props.isSaving}
-          initialFocus={this.props.isFocused}
-          key="EditEventPanel" />
+        {!isSaved ?
+          <EventForm
+            l10n={this.l10n}
+            eventData={this.props.eventData}
+            onChange={this._change}
+            busy={isSaving}
+            initialFocus={this.props.isFocused}
+            key="EditEventPanel"
+          />
+        : <View style={{flexGrow:1, alignItems:'center', justifyContent:'center'}}><Text>Saved!</Text></View>
+        }
 
         <ButtonPanel>
           <Button
@@ -74,6 +86,8 @@ export default class EditEvent extends Component {
             label={this.l10n('SaveButton')}
             iconClass="fa fa-check"
             color="green"
+            disabled={isSaved || false}
+            busy={isSaving || false}
             kind="raised"
             align="right" />
         </ButtonPanel>

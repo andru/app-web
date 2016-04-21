@@ -5,10 +5,10 @@
 	display:flex;
 	align-items:stretch;
 	justify-content:stretch;
-	
+
 	position:relative;
 	z-index:2;
-	
+
 }
 .Fatty-Field-DatePicker .Fatty-Field-controlWrapper{
 	transition: all .2s ease-in-out;
@@ -25,7 +25,7 @@
 	align-items:center;
 	justify-content: space-between;
 	cursor:pointer;
-	
+
 	padding: .85em .35em;
 
 	color: #45443A;
@@ -46,20 +46,17 @@
 	cursor:pointer;
 }
 .Fatty-Field-DatePicker-staticDate-part {
-	font-size: 24px;
+	font-size: 18px;
 	font-weight: 700;
 	margin-right: 10px;
 }
 .Fatty-Field-DatePicker-staticDate-dayName{
-	
-}
 
+}
 
 .Fatty-Field-DatePicker-calendarIcon{
-	
+
 }
-
-
 
 .Fatty-Field-DatePicker-Columns{
 	padding-bottom:10px;
@@ -70,7 +67,7 @@
 	flex:1;
 	overflow:hidden;
 	position:relative;
-	
+
 	display:flex;
 	flex-direction: column;
 	/*display:flex;
@@ -84,22 +81,22 @@
 	position: absolute;
 	top: 0;
 	bottom: 0;
-	right: 0; 
+	right: 0;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 }
 
 .Fatty-Field-DatePicker-formatted{
-	font-size: 24px;
+	font-size: 18px;
 	font-weight: 700;
 }
 
 .Fatty-Field-DatePicker-Column-dateWrapper{
-	height: 30px;
+	height: 22px;
 	position: relative;
 	z-index: 1;
-	
+
 	flex: 1;
 	display: flex;
 	align-items: center;
@@ -112,7 +109,7 @@
 	right:0;
 	bottom:0;
 	text-align:center;
-	
+
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -128,19 +125,19 @@
 .Fatty-Field-DatePicker-Column-input{
 	position:absolute;
 	z-index:4;
-	
+
 	top: 50%;
 	margin-top:-16px;
 	height: 32px;
 	width:100%;
-	
+
 	background-color: transparent;
 	border: none;
 	outline: none;
-	
-	font-size: 24px;
+
+	font-size: 22px;
 	font-weight: 700;
-	
+
 	text-align: center;
 }
 .Fatty-Field-DatePicker-Column--focused .Fatty-Field-DatePicker-formatted{
@@ -199,7 +196,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	
+
 	cursor: pointer;
 }
 .Fatty-Field-DatePicker-action:hover{
@@ -218,14 +215,14 @@
 
 
 /* .Fatty-Field-DatePicker-Column-downTransition .Fatty-Field-DatePicker-Transition-enter{
-	transition: transform 1s ease-in-out; 
+	transition: transform 1s ease-in-out;
 	transform: translate(0, -100px);
 }
 .Fatty-Field-DatePicker-Column-downTransition .Fatty-Field-DatePicker-Transition-enter.Fatty-Field-DatePicker-Transition-enter-active{
 	transform: translate(0, 0);
 }
 .Fatty-Field-DatePicker-Column-downTransition .Fatty-Field-DatePicker-Transition-leave{
-	transition: transform 1s ease-in-out; 
+	transition: transform 1s ease-in-out;
 	transform: translate(0, 0);
 }
 .Fatty-Field-DatePicker-Column-downTransition .Fatty-Field-DatePicker-Transition-leave.Fatty-Field-DatePicker-Transition-leave-active{
@@ -275,7 +272,7 @@
 .Fatty-Field-DatePicker-Column-downTransition .Fatty-Field-DatePicker-Transition-leave-active{
 	animation:Fatty-Field-DatePicker-slideDownOut .3s ease-in forwards;
 }
- 
+
 
 
 

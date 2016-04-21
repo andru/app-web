@@ -1,62 +1,69 @@
-import { createAction, handleActions } from 'redux-actions'
+import {createAction, handleActions} from 'redux-actions'
 // import _ from 'lodash'
-import { routeActions } from 'redux-simple-router'
+import {routeActions} from 'redux-simple-router'
+import {take, put, call} from 'redux-saga'
+import moment from 'moment'
 
-import { createSelector } from 'reselect'
-import { selectPlaces } from './places'
-import { selectPlants } from './plants'
 import {
-  selectPlantings,
+  INITIAL,
+  SAVING,
+  SAVED,
+  FAILED
+} from 'constants/status'
+import {createSelector} from 'reselect'
+import {selectPlaces} from './places'
+import {selectPlants} from './plants'
+import {
+  setPlantingEvent,
+  selectPlantingsWithRelations,
   selectActivePlantings,
   selectTrashedPlantings
 } from './plantings'
 import {
-  formatPlantingForLog
+  SHOW_EDIT_EVENT_UI,
+  HIDE_EDIT_EVENT_UI,
+  SAVE_EVENT,
+  SAVING_EVENT,
+  SAVED_EVENT
+} from './editEventUI'
+import {
+  formatPlantingForLog,
+  getPlanting,
+  getEventAtIndex
 } from 'utils/plantings'
+
 // ------------------------------------
 // Constants
 // ------------------------------------
-//
-export const SET_SELECTED_PLANTING = 'setSelectedPlanting'
-export const SET_SELECTED_EVENT = 'setSelectedEvent'
-export const SHOW_EDIT_EVENT_UI = 'showEditEventUI'
-export const HIDE_EDIT_EVENT_UI = 'hideEditEventUI'
-export const EDIT_EVENT = 'editEvent'
+export const SET_SELECTED_PLANTING = 'SET_SELECTED_PLANTING'
+export const SET_SELECTED_EVENT = 'SET_SELECTED_EVENT'
+
 
 // ------------------------------------
 // Actions
 // ------------------------------------
-export const setSelectedPlanting = createAction(SET_SELECTED_PLANTING, (value) => {
-  routeActions.replace(`/plantings/${value.id}`)
-  return value
-})
+// export const setSelectedPlanting = createAction(SET_SELECTED_PLANTING, (value) => {
+//   routeActions.replace(`/plantings/${value.id}`)
+//   return value
+// })
+export function setSelectedPlanting (payload) {
+  return (dispatch) => {
+    dispatch(routeActions.replace(`/plantings/${payload.id}`))
+    dispatch({
+      type: SET_SELECTED_PLANTING,
+      payload
+    })
+  }
+}
 
 export const setSelectedEvent = createAction(SET_SELECTED_EVENT, (value) => {
-  routeActions.replace(`/plantings/${value.id}/${value.index}`)
-  return value
-})
-
-export const showEditEventUI = createAction(SHOW_EDIT_EVENT_UI, (value) => {
-  // routeActions.replace(`/plantings/${value}`)
-  return value
-})
-
-export const hideEditEventUI = createAction(HIDE_EDIT_EVENT_UI, (value) => {
-  // routeActions.replace(`/plantings/${value}`)
-  return value
-})
-
-export const editEvent = createAction(EDIT_EVENT, (value) => {
-  // routeActions.replace(`/plantings/${value}`)
+  // TODO update URL
   return value
 })
 
 export const actions = {
   setSelectedPlanting,
-  setSelectedEvent,
-  showEditEventUI,
-  hideEditEventUI,
-  editEvent
+  setSelectedEvent
 }
 
 // ------------------------------------
@@ -82,22 +89,54 @@ function handleSetSelectedEvent (state, {payload}) {
 function handleShowEditEventUI (state, {payload}) {
   return {
     ...state,
-    selectedEventIndex: payload.eventIndex,
-    isEditingEvent: true
+    // selectedEventIndex: payload.eventIndex,
+    isEditingEvent: true,
+    // eventData: payload.eventData
   }
 }
 
 function handleHideEditEventUI (state, {payload}) {
   return {
     ...state,
-    selectedEventIndex: undefined,
-    isEditingEvent: false
+    // selectedEventIndex: undefined,
+    isEditingEvent: false,
+    // eventData: undefined,
+    // eventSaveStatus: INITIAL
   }
 }
 
 function handleEditEvent (state, {payload}) {
-  // call event on plantings module...?
+  let eventData = {...payload.eventData}
+  if (eventData.date) {
+    if (moment().isBefore(eventData.date) ) {
+      eventData.estimateDate = eventData.date
+    } else {
+      eventData.actualDate = eventData.date
+    }
+  }
+  return {
+    ...state,
+    eventData
+  }
+}
+// see the related saga for flow control. these reducers
+// just manage state
+function handleSaveEvent (state, {payload}) {
   return state
+}
+
+function handleSavingEvent (state, {payload}) {
+  return {
+    ...state,
+    eventSaveStatus: SAVING
+  }
+}
+
+function handleSavedEvent (state, {payload}) {
+  return {
+    ...state,
+    eventSaveStatus: SAVED
+  }
 }
 
 export const reducer = handleActions({
@@ -105,11 +144,15 @@ export const reducer = handleActions({
   [SET_SELECTED_EVENT]: handleSetSelectedEvent,
   [SHOW_EDIT_EVENT_UI]: handleShowEditEventUI,
   [HIDE_EDIT_EVENT_UI]: handleHideEditEventUI,
-  [EDIT_EVENT]: handleEditEvent
+  // [EDIT_EVENT]: handleEditEvent,
+  // [SAVE_EVENT]: handleSaveEvent,
+  // [SAVING_EVENT]: handleSavingEvent,
+  // [SAVED_EVENT]: handleSavedEvent
 }, {
   selectedPlantingId: undefined,
   selectedEventIndex: undefined,
-  isEditingEvent: false
+  isEditingEvent: false,
+  eventSaveStatus: INITIAL
 })
 
 // ------------------------------------
@@ -128,16 +171,16 @@ export const selectSelectedPlantingId = createSelector(
 
 export const selectSelectedPlanting = createSelector(
   selectSelectedPlantingId,
-  selectPlantings,
+  selectPlantingsWithRelations,
   (id, plantings) => {
-    return plantings.get(id)
+    return getPlanting(plantings, id)
   }
 )
 
 export const selectSelectedEvent = createSelector(
   selectSelectedPlanting,
   (state) => selectViewState(state).selectedEventIndex,
-  (planting, eventIndex) => planting && planting.timeline[eventIndex] || undefined
+  (planting, eventIndex) => planting && getEventAtIndex(planting, eventIndex) || undefined
 )
 
 export const selectLogData = createSelector(
@@ -150,7 +193,7 @@ export const selectLogData = createSelector(
 )
 
 export const selector = createSelector(
-  selectPlantings,
+  selectPlantingsWithRelations,
   selectTrashedPlantings,
   selectActivePlantings,
   selectPlaces,
@@ -181,3 +224,35 @@ export const selector = createSelector(
     logData
   })
 )
+
+// ------------------------------------
+// Sagas
+// ------------------------------------
+const wait = (ms) => new Promise((resolve) => setInterval(() => resolve(), ms))
+
+// FIXME when the Babel generators transform-runtime bug is fixed,
+// get rid of the factory and export directly
+function sagaFactory () {
+  return [
+
+    function * savePlantingEventFromUI () {
+      while (true) {
+        const {payload} = yield take(SAVE_EVENT)
+        // const {plantingId, eventIndex, eventData} = payload
+        yield put(savingEvent())
+        yield put(setPlantingEvent(payload))
+        yield put(savedEvent())
+        yield call(wait, 1000)
+        yield put(hideEditEventUI())
+      }
+    }
+
+  ]
+}
+const sagasArray = sagaFactory()
+
+export const savePlantingEventFromUI = sagasArray[0]
+
+export const sagas = [
+  ...sagasArray
+]

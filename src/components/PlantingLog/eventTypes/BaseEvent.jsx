@@ -1,9 +1,20 @@
 import React, {Component, PropTypes} from 'react'
+import {StyleSheet} from 'react-native-web'
 import View, { Cover } from 'components/View'
 import Immutable from 'immutable'
 import _ from 'lodash'
 
 import Fatty from 'components/Fatty'
+
+export const baseStyles = StyleSheet.create({
+  text: {
+    color: '#FFF'
+  },
+  notes: {
+    fontSize: 12,
+    fontWeight: 500
+  }
+})
 
 export default class BaseEvent extends Component{
 
@@ -26,7 +37,7 @@ export default class BaseEvent extends Component{
   render () {
     return (
       <View style={{}}>
-        
+
       </View>
     )
   }

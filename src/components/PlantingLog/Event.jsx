@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react'
-import {StyleSheet} from 'react-native-web'
+import {Text, StyleSheet} from 'react-native-web'
 import moment from 'moment'
 
 import {View, Cover, Row} from 'components/View'
@@ -9,7 +9,10 @@ import {eventComponents, lifecycleEventNames, actionEventNames} from './EventTyp
 const defaultStyles = StyleSheet.create({
   container: {
     alignItems: 'stretch',
-    flexShrink: 0
+    flexShrink: 0,
+    color: '#FFFFFF',
+    paddingTop: 0,
+    paddingBottom: 0
   },
   containerSelected: {
     backgroundColor: 'rgba(255,255,255,.3)'
@@ -28,14 +31,16 @@ const defaultStyles = StyleSheet.create({
     fontWeight: 700,
     lineHeight: '32px',
     flexBasis: 32,
-    order: 2
+    order: 2,
+    color: '#FFF'
   },
   dateMonth: {
     fontSize: 18,
     fontWeight: 700,
     lineHeight: '18px',
     flexBasis: 18,
-    order: 1
+    order: 1,
+    color: '#FFF'
   },
   details: {
     userSelect: 'initial',
@@ -80,16 +85,16 @@ export default class PlantingLogEvent extends Component{
         <View
           style={defaultStyles.date}
           onClick={() => this.handleDateClick(eventData.date)}>
-          <span style={defaultStyles.dateDay}>
+          <Text style={defaultStyles.dateDay}>
             {moment(eventData.date).format('DD')}
-          </span>
-          <span style={defaultStyles.dateMonth}>
+          </Text>
+          <Text style={defaultStyles.dateMonth}>
             {moment(eventData.date).format('MMM')}
-          </span>
+          </Text>
         </View>
         <View className="Planting-Timeline-Event-marker">
           <svg width="30">
-            <circle cx="10" cy="50%" r="6" />
+            <circle cx="10" cy="50%" r="6" fill="#FFF"/>
           </svg>
         </View>
 

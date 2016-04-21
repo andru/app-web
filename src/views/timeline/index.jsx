@@ -1,6 +1,5 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { createSelector } from 'reselect'
 import { Link } from 'react-router'
 import { StyleSheet } from 'react-native-web'
 import TransitionGroup from 'react-addons-css-transition-group'
@@ -8,13 +7,16 @@ import Measure from 'react-measure'
 import moment from 'moment'
 import _ from 'lodash'
 
-import {Cover, Col} from 'components/View'
+import {Cover, Col, Row} from 'components/View'
 import Timeline, {TimeAxis, TrackGroup, Track, Line, Period, Marker} from 'components/Timeline'
 import YearNav from 'components/YearNav'
 import {EditEvent} from 'components/PlantingEventForm'
 
-import { actions as timelineActions, selector as timelineSelector } from '../../redux/modules/timeline'
-import { actions as plantingsActions } from '../../redux/modules/plantings'
+import { actions as timelineActions, selector as timelineSelector } from 'redux/modules/timeline'
+import { actions as plantingsActions } from 'redux/modules/plantings'
+import { showEditEventUI, hideEditEventUI } from 'redux/modules/editEventUI'
+
+import {getPlanting, getEventAtIndex} from 'utils/plantings'
 
 export class TimelineView extends React.Component {
   static propTypes = {
@@ -61,9 +63,12 @@ export class TimelineView extends React.Component {
   };
 
   handleMarkerEditIntent = (groupIndex, trackIndex, markerIndex, marker) => {
-    this.props.showEditEventForm({
-      plantingId: this.props.timelineData[groupIndex].tracks[trackIndex].plantingId,
-      eventIndex: marker.eventIndex
+    const plantingId = this.props.timelineData[groupIndex].tracks[trackIndex].plantingId
+    const planting = getPlanting(this.props.plantings, plantingId)
+    this.props.showEditEventUI({
+      plantingId: plantingId,
+      eventIndex: marker.eventIndex,
+      eventData: getEventAtIndex(planting, marker.eventIndex)
     })
   };
 
@@ -88,17 +93,10 @@ export class TimelineView extends React.Component {
         console.log('Dimensions: ', dimensions);
         this.setState({dimensions})
         }}>
-        <Cover style={{visibility: this.state.isMounted ? 'visible' : 'hidden'}}>
-          {this.props.viewState.editEventForm.show &&
-            <EditEvent
-              onChange={this.handleEventDataChange}
-              eventData={this.props.editEventFormData}
-              l10n={this.l10n}
-            />
-          }
+        <Row style={{visibility: this.state.isMounted ? 'visible' : 'hidden'}}>
           {this.state.isMounted &&
             <Col>
-              <div style={{overflowY: 'scroll', flexGrow:1, flexShrink:1}} >
+              <div style={{overflowY: 'scroll', overflowX: 'hidden', flexGrow:1, flexShrink:1}} >
                 <Timeline
                   from={viewState.from}
                   to={viewState.to}
@@ -123,13 +121,18 @@ export class TimelineView extends React.Component {
               </div>
             </Col>
           }
-        </Cover>
+        </Row>
       </Measure>
     )
   }
 }
 
-export default connect(timelineSelector, {...timelineActions, ...plantingsActions})(TimelineView)
+export default connect(timelineSelector, {
+  ...timelineActions,
+  ...plantingsActions,
+  showEditEventUI,
+  hideEditEventUI
+})(TimelineView)
 
 const styles = StyleSheet.create({
 })

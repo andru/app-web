@@ -2,7 +2,9 @@ import _ from 'lodash'
 import moment from 'moment'
 import momentRange from 'moment-range' // used as moment.range
 
-import {earliest, latest} from './reduce.js'
+import {getPlace, getPlaceName} from './places'
+import {getPlant, getPlantName} from './plants'
+import {earliest, latest} from './reduce'
 import eventIcons from 'components/TimelineIcons'
 
 // import {
@@ -11,8 +13,29 @@ import eventIcons from 'components/TimelineIcons'
 //   HARVEST
 // } from 'constants/plantingEvents'
 
+export function getPlanting (plantings, plantingId) {
+  if (!plantings instanceof Map) {
+    throw Error('Expected `plantings` to be instance of Map')
+  }
+  return plantings.get(plantingId)
+}
+export function getPlantingName (planting) {
+  return planting.name
+}
+export function getPlantingPlaceName (planting) {
+  return planting.place
+    ? getPlaceName(planting.place)
+    : ''
+}
+export function getPlantingPlantName (planting) {
+  return getPlantName(planting.plant)
+}
 export function getEventIcon (event) {
   return eventIcons[event.activityType || event.lifecycleStage] || undefined
+}
+
+export const getEventAtIndex = function (planting, eventIndex) {
+  return planting.timeline[eventIndex]
 }
 
 export function coerceToDate (date) {
@@ -209,7 +232,8 @@ export function formatPlantingForLog (plants, places, planting) {
       ...ev,
       date: getEventDate(ev),
       indexInTimeline: i,
-      id: ev.id || i
+      id: ev.id || i,
+      placeName: ev.placeId && getPlaceName(getPlace(places, ev.placeId))
     }))
     .filter(ev => ev.eventDateType !== 'range')
     .groupBy(ev => moment(getEarliestEventDate(ev)).format('YYYY MM'))

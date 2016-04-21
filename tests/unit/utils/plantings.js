@@ -7,6 +7,10 @@ import cloneMap from 'utils/cloneMap'
 import modelArrayToMap from 'utils/modelArrayToMap'
 
 import {
+  getPlanting,
+  getPlantingName,
+  getPlantingPlaceName,
+  getPlantingPlantName,
   getEventDate,
   getEarliestEventDate,
   getLatestEventDate,
@@ -46,6 +50,32 @@ const actualRange = Object.freeze({
   actualDateRange: [new Date('2015-01-01'), new Date('2015-02-01')]
 })
 
+test('getPlanting', function (t) {
+  t.plan(1)
+  const plantingId = 'planting/one'
+  t.deepEqual(
+    getPlanting(plantings, plantingId),
+    plantings.get(plantingId),
+    'returns planting with matching id'
+  )
+})
+test('getPlantingName', function (t) {
+  t.plan(1)
+  const planting = plantings.get('planting/one')
+  t.equal(getPlantingName(planting),
+    planting.name,
+    'returns planting name'
+  )
+})
+test.skip('getPlantingPlaceName', function (t) {
+  t.plan(1)
+  const planting = plantings.get('planting/one')
+  t.equal(getPlantingPlaceName(planting),
+    '')
+})
+test.skip('getPlantingPlantName', function (t) {
+
+})
 test('getEventDate', function (t) {
   t.plan(6)
 

@@ -2,7 +2,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router'
 
-import {Cover} from 'components/View'
+import {Cover, Row, Col} from 'components/View'
 
 export default class Root extends React.Component {
   static propTypes = {
@@ -33,10 +33,10 @@ export default class Root extends React.Component {
   render () {
     return (
       <Provider store={this.props.store}>
-        <Cover>
+        <Row>
           {this.content}
           {this.devTools}
-        </Cover>
+        </Row>
       </Provider>
     )
   }

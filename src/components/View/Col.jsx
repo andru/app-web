@@ -17,6 +17,7 @@ const defaultStyles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     flexGrow: 1,
-    flexShrink: 1
+    flexShrink: 1,
+    overflow: 'hidden'
   }
 })
