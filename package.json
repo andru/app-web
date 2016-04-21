@@ -15,6 +15,7 @@
     "test": "node -r dotenv/config ./node_modules/karma/bin/karma start bin/karma.js",
     "test:dev": "npm run test -- --watch",
     "deploy": "npm run test && npm run clean && npm run compile",
+    "storybook": "start-storybook -p 9001"
   },
   "repository": {
     "type": "git",
@@ -58,6 +59,7 @@
     "yup": "^0.14.0"
   },
   "devDependencies": {
+    "@kadira/storybook": "^1.15.0",
     "babel-core": "^6.4.5",
     "babel-eslint": "^5.0.0-beta6",
     "babel-loader": "^6.2.1",
