@@ -2,37 +2,45 @@ import React from 'react'
 import { storiesOf, action } from '@kadira/storybook'
 import Panelled, {Panel, Tab, TabSpacer} from '../'
 
-const pad = (content) => <div style={{padding:10}}>{content}</div>
+function wrap (component) {
+  return (
+    <div style={{display:'flex', width:'100%'}}>{component}</div>
+  )
+}
+
+function pad (content) {
+  return (<div style={{padding:10}}>{content}</div>)
+}
 
 storiesOf('Panelled', module)
   .add('No panels', () => (
-    <Panelled />
+    wrap(<Panelled />)
   ))
   .add('Single panel', () => (
-    <Panelled>
+    wrap(<Panelled>
       <Panel label="Only Panel">This is the only panel</Panel>
-    </Panelled>
+    </Panelled>)
   ))
   .add('Multiple panels', () => (
-    <Panelled>
+    wrap(<Panelled>
       <Panel label="Um">{pad('Content for the first panel')}</Panel>
       <Panel label="Dous">{pad('This is the second panel')}</Panel>
       <Panel label="Tres">{pad('Isto é a terceira panel')}</Panel>
       <Panel label="Derradeira">{pad('Pois sim')}</Panel>
-    </Panelled>
+    </Panelled>)
   ))
   .add('Tab spacer', () => (
-    <Panelled>
+    wrap(<Panelled>
       <Panel label="Um">{pad('Content for the first panel')}</Panel>
       <Panel label="Dous">{pad('This is the second panel')}</Panel>
       <TabSpacer />
       <Panel label="Tres">{pad('Isto é a terceira panel')}</Panel>
       <TabSpacer />
       <Panel label="Derradeira">{pad('Pois sim')}</Panel>
-    </Panelled>
+    </Panelled>)
   ))
   .add('Tab component', () => (
-    <Panelled>
+    wrap(<Panelled>
       <Panel label="Um">{pad('Content for the first panel')}</Panel>
       <Panel label="Dous">{pad('This is the second panel')}</Panel>
       <Panel label="Tres">{pad('Isto é a terceira panel')}</Panel>
@@ -45,5 +53,5 @@ storiesOf('Panelled', module)
       )}>
         {pad('Smile!')}
       </Panel>
-    </Panelled>
+    </Panelled>)
   ))
