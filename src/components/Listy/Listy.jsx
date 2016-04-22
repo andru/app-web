@@ -17,23 +17,23 @@ const Listy = React.createClass({
   propTypes: {
     data: PropTypes.array.isRequired,
     // A list of predefined filters to show as tabs
-    filters: PropTypes.array,
+    filters: PropTypes.array.isRequired,
     multiple: PropTypes.bool,
     activePanel: PropTypes.number,
-    onPanelChange: PropTypes.func,
+    onPanelChange: PropTypes.func.isRequired,
     selectedItems: PropTypes.array,
     showAddButton: PropTypes.bool,
     addComponent: PropTypes.element,
     onAddClick: PropTypes.func,
     // fires with full selected state
-    onChange: PropTypes.func,
+    onChange: PropTypes.func.isRequired,
     // fires with just the clicked item
     onItemClick: PropTypes.func,
-    itemRenderer: PropTypes.func.isRequired,
+    itemRenderer: PropTypes.func,
     itemHeight: PropTypes.number,
     itemHeightGetter: PropTypes.func,
     searchValue: PropTypes.string,
-    onSearchChange: PropTypes.func,
+    onSearchChange: PropTypes.func.isRequired,
     searchFunction: PropTypes.func,
     //  A list of maps describing possible filters
     //  `name` the name of the filter, usually referencing a property name
@@ -48,7 +48,7 @@ const Listy = React.createClass({
       PropTypes.object
     ]),
     filterFunction: PropTypes.func,
-    onFilterChange: PropTypes.func,
+    onFilterChange: PropTypes.func.isRequired,
     theme: PropTypes.string,
     styles: PropTypes.object
   },
@@ -76,9 +76,9 @@ const Listy = React.createClass({
     // var direction
   },
   componentDidUpdate (oldProps) {
-    // if(oldProps.showSearchSheet===false && this.props.showSearchSheet===true){
-    //   this.refs.searchInput.focus();
-    // }
+    if(oldProps.showSearchSheet===false && this.props.showSearchSheet===true){
+       this.refs.searchInput.focus()
+    }
   },
   _filterChange (i, filter) {
     console.log('Filter change %s', i, filter)
@@ -155,9 +155,11 @@ const Listy = React.createClass({
     let searchData = this.props.searchFunction
       ? this.filter(item => this.props.searchFunction(item, this.props.searchValue))
       : null
-    let filterData = this.filter(item => (
-      this.props.filterFunction(item, this.props.filterValues))
-    )
+    let filterData = this.props.filterFunction
+      ? this.filter(item => (
+        this.props.filterFunction(item, this.props.filterValues))
+      )
+      : null
 
     return (
     <div className={cx('Listy', `Listy--${this.props.theme}`)}>
