@@ -4,7 +4,7 @@ import Panelled, {Panel, Tab, TabSpacer} from '../'
 
 function wrap (component) {
   return (
-    <div style={{display:'flex', width:'100%'}}>{component}</div>
+    <div style={{display:'flex', width:'100%', minHeight: '100vh'}}>{component}</div>
   )
 }
 
