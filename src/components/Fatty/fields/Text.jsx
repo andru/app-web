@@ -173,6 +173,7 @@ var Text = React.createClass({
     ,  onChange
     ,  textareaComponent
     ,  value
+    ,  placeholder
     ,  ...other
     } = props;
 
@@ -184,7 +185,8 @@ var Text = React.createClass({
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
         onChange={this.handleChange}
-        value = {this.state.value}
+        value={this.state.value}
+        placeholder={this.state.isFocused ? placeholder : ''}
         {...other} />
     );
   }
