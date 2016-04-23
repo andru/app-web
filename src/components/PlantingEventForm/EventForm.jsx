@@ -143,7 +143,7 @@ export default class EventForm extends Component {
         value={_.find(eventOptions, {name: eventData.activityType || eventData.lifecycleStage})}
         filter={(item, search)=>{
         let terms = search.toLocaleLowerCase().split(' ');
-        return  _.all(terms, term=>(
+        return  _.every(terms, term=>(
           item.text.toLocaleLowerCase().match(term)
           ||item.type.toLocaleLowerCase().match(term)
         ));
