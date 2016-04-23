@@ -2,6 +2,8 @@ import React, {Component, PropTypes} from 'react'
 import View, {Cover, Row, Col, ScrollView, Text} from 'components/View'
 import {StyleSheet} from 'react-native-web'
 import _ from 'lodash'
+import moment from 'moment'
+import momentRange from 'moment-range'
 
 import Header from './Header'
 import LogEvent from './Event'
@@ -76,7 +78,7 @@ export default class Log extends Component {
   static propTypes = {
     l10n: PropTypes.func.isRequired,
     planting: PropTypes.object.isRequired,
-    dateRange: PropTypes.object.isRequired,
+    dateRange: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
     monthEvents: PropTypes.object.isRequired,
     onAddEventIntent: PropTypes.func.isRequired,
     onEventEditIntent: PropTypes.func.isRequired,
@@ -134,7 +136,20 @@ export default class Log extends Component {
     let consecutiveEmptyMonths = 0
     let monthNo = 0
 
-    dateRange.by('months', moment => {
+    var range
+
+    if (!dateRange) {
+      let dates = _.keys(monthEvents)
+      dates.sort()
+      range = moment.range(dates[0], dates[dates.length-1])
+    }
+    else {
+      range = (dateRange instanceof moment.range)
+        ? dateRange
+        : moment.range(dateRange[0], dateRange[1])
+    }
+
+    range.by('months', moment => {
       const thisMonthEvents = monthEvents[moment.format('YYYY MM')]
       const isEmpty = !thisMonthEvents
 
