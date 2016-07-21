@@ -1,4 +1,4 @@
-import React from 'react' 
+import React, {PropTypes, Component} from 'react'
 import ReactDOM from 'react-dom'
 import { StyleSheet } from 'react-native-web'
 
@@ -12,9 +12,6 @@ const defaultStyles = {
 
 let debouncedMouseMoveLogger = _.debounce((ev) => console.log(ev), 200)
 
-let minWidth = 100
-let minHeight = 20
-
 function angleBetweenPoints(p1, p2) {
     if (p1[0] == p2[0] && p1[1] == p2[1])
         return Math.PI / 2;
@@ -26,10 +23,32 @@ function distanceBetweenPoints(p1, p2) {
     return Math.sqrt( Math.pow( p2[1] - p1[1], 2 ) + Math.pow( p2[0] - p1[0], 2 ) );
 }
 
-export default class Plotter extends React.Component {
+function rotatePoint(cx, cy, x, y, angle) {
+    var radians = (Math.PI / 180) * angle,
+        cos = Math.cos(radians),
+        sin = Math.sin(radians),
+        nx = (cos * (x - cx)) + (sin * (y - cy)) + cx,
+        ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
+    return [nx, ny];
+}
+
+export default class Plotter extends Component {
   static propTypes = {
-    height: React.PropTypes.number,
-    width: React.PropTypes.number
+    height: PropTypes.number,
+    width: PropTypes.number,
+    getSVG: PropTypes.func.isRequired,
+    plantings: PropTypes.array.isRequired,
+    current: PropTypes.object,
+    snap: PropTypes.bool.isRequired,
+    resolution: PropTypes.number.isRequired,
+    isTranslating: PropTypes.bool.isRequired,
+    isScaling: PropTypes.bool.isRequired,
+    isRotating: PropTypes.bool.isRequired,
+    transformStart: PropTypes.object.isRequired,
+    transformParams: PropTypes.object.isRequired,
+
+    stopAllTransforms: PropTypes.func.isRequired,
+    deselectAll: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -37,8 +56,16 @@ export default class Plotter extends React.Component {
     height: 0
   };
 
+  plantingInstances = {};
+
   componentDidMount () {
-    window.addEventListener('keydown', this.handleKeyDown)    
+    // TODO: reuse listeners, or find a more reacty way of handling this to prevent multiple listeners
+    window.addEventListener('keydown', this.handleKeyDown)
+    window.addEventListener('keyup', this.handleKeyUp)
+  }
+  componentWillUnmount () {
+    window.removeEventListener('keydown', this.handleKeyDown)
+    window.removeEventListener('keyup', this.handleKeyUp)
   }
 
   selectPlanting = (planting) => {
@@ -47,30 +74,17 @@ export default class Plotter extends React.Component {
 
   handleMouseDown = (e) => {
     console.log('Mouse down')
-    const { updateState } = this.props
+    const { setState } = this.props
   };
 
   handleMouseUp = (planting, e) => {
-    console.log('Mouse up: planting')
-    const { updateState } = this.props
-    updateState({
-      isTranslating: false,
-      isScaling: false,
-      isRotating: false,
-      transformParams: false,
-      transformStart: false
-    })
+    console.log('Mouse up: plantings')
+    this.props.stopAllTransforms()
   };
 
   handleMouseLeave = (e) => {
-    console.log('mouse leave')
-    const { updateState } = this.props
-    updateState({
-      isTranslating: false,
-      isScaling: false,
-      transformParams: false,
-      transformStart: false
-    })
+    console.log('Mouse leave: plantings')
+    this.props.stopAllTransforms()
   };
 
   handleMouseMove = (e) => {
@@ -79,16 +93,16 @@ export default class Plotter extends React.Component {
   };
 
   makePoint = (x, y) => {
-    this.point = this.point || this.props.getSVG().createSVGPoint()
-    this.point.x = x
-    this.point.y = y
-    return this.point
+    let point = this.props.getSVG().createSVGPoint()
+    point.x = x
+    point.y = y
+    return point
   };
 
   batchedMouseMove = (e) => {
 
     const {
-      plantings, 
+      plantings,
       current,
       isTranslating,
       isScaling,
@@ -100,103 +114,178 @@ export default class Plotter extends React.Component {
       zoom,
       padding,
       resolution,
-      updateState,
+      setState,
       updateCurrent,
-      setCurrentPosition
+      setCurrentPosition,
+      shiftDown
     } = this.props
     const ev = e.nativeEvent
 
-    debouncedMouseMoveLogger(Object.assign({}, e))
+    // debouncedMouseMoveLogger(Object.assign({}, e))
+
+    console.log('shiftdown', shiftDown)
 
     if (!current) {
       return
     }
-
-    let svgEl = ReactDOM.findDOMNode(this.props.getSVG())
-    let currentEl = ReactDOM.findDOMNode(this.refs[current.id])
-    //mouse point
-    let mouseP = this.makePoint(e.clientX, e.clientY)
-    let mouseToCanvasTM = this.props.getSVG().getScreenCTM().inverse().multiply(svgEl.getCTM())
-    let canvasToCurrentTM = currentEl.getCTM().inverse().multiply(mouseToCanvasTM)
-    //convert the mouse clientXY coords to SVG space
-    let mouseCanvasP = mouseP.matrixTransform(mouseToCanvasTM)
-    let mouseCurrentP = mouseP.matrixTransform(canvasToCurrentTM)
-    //let previousMouseCanvasP = this.makePoint(transformStart.x, transformStart.y).matrixTransform(mouseToCanvasTM)
-    //
-    console.log(mouseCurrentP, mouseCanvasP)
-
-    let difX = mouseCanvasP.x - transformStart.x
-    let difY = mouseCanvasP.y - transformStart.y
-    let x = mouseCanvasP.x
-    let y = mouseCanvasP.y
-
-    if (snap) {
-      x = Math.floor(x / resolution) * resolution || 0
-      y = Math.floor(y / resolution) * resolution || 0
+    if (!isTranslating && !isScaling && !isRotating) {
+      return
     }
-    if (isTranslating) {
-      //console.log({difX, difY}, transformStart, {x, y})
-      //setCurrentPosition(x + deltaX, y + deltaY)
-      updateState({
-        plantings: plantings.map(p => p.id===current.id ? Object.assign({}, p, { x: p.x+difX, y:p.y+difY }) : p),
-        transformStart: { x, y }
-      })
-    } else if (isScaling) {
-      //console.dir(ReactDOM.findDOMNode(this.refs[current.id].refs.bodyRect))
-      let {width, height, surface} = transformStart
-      let newX = transformStart.x
-      let newY = transformStart.y
 
-      switch (surface) {
-        case 1: // top
-          height = height + mouseCurrentP.y*-1
-          newY = mouseCanvasP.y
-          break;
-        case 2: // right
-          width = width - (width - mouseCurrentP.x)
-          break;
-        case 3: // bottom
-          height = height - (height - mouseCurrentP.y)
-          break;
-        case 4: // left
-          width = width + mouseCurrentP.x*-1
-          newX = mouseCanvasP.x
-          break; 
+    let svgElement = this.props.getSVG()
+    let element = ReactDOM.findDOMNode(this.plantingInstances[current.id])
+    // mouse point
+    let mousePoint = this.makePoint(e.clientX, e.clientY)
+    // Transform from window to <SVG> coordinate space
+    let windowToCanvasTM = this.props.getSVG().getScreenCTM().inverse().multiply(svgElement.getCTM())
+    //transform matrix: window coords to main <SVG> element coords
+    let windowToElementTM = element.getCTM().inverse().multiply(windowToCanvasTM)
+    // Transform from element to canvas coordinate space
+    let elementToCanvasTM = element.getCTM().multiply(svgElement.getCTM())
+
+    // Coords of mouse cursor, relative to SVG Canvas
+    let mouseCoordsInCanvasSpace = mousePoint.matrixTransform(windowToCanvasTM)
+    // Coords of mouse cursor in element coordinate space
+    let mouseCoordsInElementSpace = mousePoint.matrixTransform(windowToElementTM)
+
+    //
+    // if (snap) {
+    //   x = Math.floor(x / resolution) * resolution || 0
+    //   y = Math.floor(y / resolution) * resolution || 0
+    // }
+    if (isTranslating) {
+      let x = mouseCoordsInCanvasSpace.x - (transformStart.mouseToCanvas.x - transformStart.x)
+      let y = mouseCoordsInCanvasSpace.y - (transformStart.mouseToCanvas.y - transformStart.y)
+
+      if (snap && !shiftDown) {
+        x = Math.floor(x / resolution) * resolution || 0
+        y = Math.floor(y / resolution) * resolution || 0
       }
 
-      updateCurrent({
-        x: newX,
-        y: newY,
-        width: Math.max(minWidth, width),
-        height: Math.max(minHeight, height)
-      })
+      setState(updateCurrent({
+        x,
+        y
+      }))
+
+
+    } else if (isScaling) {
+      let {width, height, surface} = transformStart
+
+      let startScalingP = this.makePoint(transformStart.x, transformStart.y)
+      let mouseToScaleStartP = startScalingP.matrixTransform(windowToElementTM)
+
+
+      switch (surface) {
+
+        //top transform is broken; disabled
+        case 1: // top
+          // //to fix the bottom in place, we need to:
+          // //get the starting Y coords and the starting height, add to get bottom Y
+          // //subtract current mouse coords from bottom Y
+          // height = (transformStart.y + transformStart.height) - mouseCoordsInCanvasSpace.y
+          // //to get the new X coords we need to:
+          // //get the current difference in height from start to current
+          //
+          // newY =  mouseCoordsInCanvasSpace.y - transformStart.mouseToElement.y
+          break;
+        case 2: // right
+          width = width - transformStart.mouseToElement.x + mouseCoordsInElementSpace.x
+          break;
+        case 3: // bottom
+          height = height - transformStart.mouseToElement.y + mouseCoordsInElementSpace.y
+          break;
+
+        //left scale is broken; disabled
+        case 4: // left
+          // width = width + mouseCoordsInElementSpace.x*-1
+          // newX = mouseCoordsInCanvasSpace.x
+          break;
+      }
+
+      // Coords of actual element top left corner in SVG space (not of bounding box!)
+      let elementTopLeft = this.makePoint(0, 0).matrixTransform(elementToCanvasTM)
+
+      let nextTransformParams = {
+        origin: {x:0, y:0},
+        translate: {x: elementTopLeft.x, y: elementTopLeft.y}
+      }
+      let elementCenter = this.makePoint(width/2, height/2).matrixTransform(elementToCanvasTM)
+
+      console.log(
+        transformStart.elementCenter.x - elementCenter.x,
+        transformStart.elementCenter.y - elementCenter.y
+      )
+
+      // let newX = current.x - (transformStart.elementCenter.x - elementCenter.x)
+      // let newY = current.y - (transformStart.elementCenter.y - elementCenter.y)
+      let newWidth = Math.max(this.props.resolution, width)
+      let newHeight = Math.max(this.props.resolution, height)
+      if (snap && !shiftDown) {
+        // newX = Math.floor(newX / resolution) * resolution || 0
+        // newY = Math.floor(newY / resolution) * resolution || 0
+        newHeight = Math.max(Math.floor(newHeight / resolution) * resolution || 0, this.props.resolution)
+        newWidth = Math.max(Math.floor(newWidth / resolution) * resolution || 0, this.props.resolution)
+      }
+
+      setState({
+        ...updateCurrent({
+          width: newWidth,
+          height: newHeight,
+          // x: newX,
+          // y: newY
+        }),
+        ...{
+          transformParams: nextTransformParams
+        }
+      }
+      )
 
     } else if (isRotating) {
-      let dx = transformStart.x - mouseCanvasP.x + width/2;
-      let dy = transformStart.y - mouseCanvasP.y + height/2;
-            
-      let d = Math.sqrt(dx*dx + dy*dy);
-      let theta = 90 + Math.atan2(dy, dx)*180/Math.PI;
+      // initial click mouse coords (canvas space)
+      let s_x = transformStart.mouseToCanvas.x
+      let s_y = transformStart.mouseToCanvas.y
+      // current drag mouse coords (canvas space)
+      let h_x = mouseCoordsInCanvasSpace.x
+      let h_y = mouseCoordsInCanvasSpace.y
+      // transform origin
+      let o_x = transformStart.x + transformStart.width/2 + transformStart.elementTopLeftCenterRotated.x
+      let o_y = transformStart.y + transformStart.height/2 + transformStart.elementTopLeftCenterRotated.y
 
-      // let angle = transformStart.rotation + angleBetweenPoints(
-      //   [transformStart.x, transformStart.y], 
-      //   [mouseCanvasP.x, mouseCanvasP.y] 
-      // );
+      // radians from origin to initial mouse
+      let initalMouseRadians = Math.atan2(s_y - o_y, s_x - o_x)
+      // radians from origin to current mouse
+      let currentMouseRadians = Math.atan2(h_y - o_y, h_x - o_x)
+      // radians of existing element rotation
+      let elementRadians = (transformStart.rotation/360*(Math.PI*2))
+      let radians = elementRadians + currentMouseRadians - initalMouseRadians
+      let degree = (radians * (360 / (2 * Math.PI)));
 
-      // let angle = Math.atan2( transformStart.y - mouseCurrentP.y, transformStart.x - mouseCurrentP.x )*180/Math.PI;
+      let nextTransformParams = {
+        origin: {x:transformStart.width/2, y:transformStart.height/2},
+        translate: {
+          x: transformStart.elementTopLeft.x + transformStart.elementTopLeftCenterRotated.x,
+          y: transformStart.elementTopLeft.y + transformStart.elementTopLeftCenterRotated.y
+        }
+      }
 
-      // let angle = Math.tan((mouseCanvasP.x - transformStart.x)/(mouseCanvasP.y - transformStart.y)) 
-      
-      let angle = transformStart.rotation + theta
+      if (snap && !shiftDown) {
+        degree = Math.floor(degree / 10) * 10 || 0
+      }
 
-      console.log('rotate', dx, dy, angle)
+      let elementTopLeft = this.makePoint(0, 0).matrixTransform(elementToCanvasTM)
+      console.log(elementTopLeft, transformStart.elementTopLeft, transformStart.elementTopLeftCenterRotated)
 
-      if(angle===NaN)
-        return
 
-      updateCurrent({
-        rotation: angle
-      })      
+      setState({
+        ...updateCurrent({
+          rotation: degree,
+          x: elementTopLeft.x,
+          y: elementTopLeft.y
+        }),
+        ...{
+          transformParams: nextTransformParams
+        }
+      })
 
     }
   };
@@ -210,33 +299,49 @@ export default class Plotter extends React.Component {
       zoom,
       snap,
       resolution,
-      updateState
+      setState
     } = this.props
 
-    let svgEl = ReactDOM.findDOMNode(this.props.getSVG())
-    let currentEl = ReactDOM.findDOMNode(this.refs[planting.id])
-    //mouse point
-    let mouseP = this.makePoint(e.clientX, e.clientY)
-    let mouseToCanvasTM = this.props.getSVG().getScreenCTM().inverse().multiply(svgEl.getCTM())
-    let canvasToCurrentTM = mouseToCanvasTM.inverse().multiply(currentEl.getCTM())
-    let mouseCanvasP = mouseP.matrixTransform(mouseToCanvasTM)
+    let svgElement = this.props.getSVG()
+    let element = ReactDOM.findDOMNode(this.plantingInstances[planting.id])
+    //make a point at the current mouse coords, relative to window
+    let mousePoint = this.makePoint(e.clientX, e.clientY)
+    //transform matrix: window coords to main <SVG> element coords
+    let windowToCanvasTM = this.props.getSVG().getScreenCTM().inverse().multiply(svgElement.getCTM())
+    //transform matrix: element to mouse coords
+    let windowToElementTM = element.getCTM().inverse().multiply(windowToCanvasTM)
 
-    console.log(mouseP.matrixTransform(mouseToCanvasTM), 
-      mouseP.matrixTransform( currentEl.getCTM().inverse() ),
-      mouseP.matrixTransform( currentEl.getCTM().inverse().multiply(mouseToCanvasTM) )
-    )
+    //coords: element relative to <SVG>
+    // let elementCoordsToCanvas = this.makePoint(0, 0).matrixTransform(windowToElement)
+    //coords: mouse relative to <SVG>
+    // let mouseCoordsToCanvas = mousePoint.matrixTransform(windowToCanvasTM)
+    //coords: mouse relative to clicked element
+    let mouseCoordsInElementSpace = mousePoint.matrixTransform(windowToElementTM)
 
-    let x = mouseCanvasP.x
-    let y = mouseCanvasP.y
-    if (snap) {
-      x = Math.floor(x / resolution) * resolution || 0
-      y = Math.floor(y / resolution) * resolution || 0
-    }
-    updateState({
+    //console.log('Element to canvas', elementCoordsToCanvas)
+    //console.log('Mouse to element', mouseCoordsInElementSpace)
+
+    let elementTransform = element.transform.baseVal.consolidate()
+    let x = elementTransform.matrix.e
+    let y = elementTransform.matrix.f
+
+    // let x = elementCoordsToCanvas.x
+    // let y = elementCoordsToCanvas.y
+    // if (snap) {
+    //   x = Math.floor(x / resolution) * resolution || 0
+    //   y = Math.floor(y / resolution) * resolution || 0
+    // }
+    setState({
       selected: true,
+      cursor: '-webkit-grabbing',
       current: planting,
       isTranslating: true,
-      transformStart: { x, y}
+      transformStart: {
+        x,
+        y,
+        mouseToElement: mouseCoordsInElementSpace,
+        mouseToCanvas: mousePoint.matrixTransform(windowToCanvasTM)
+      }
     })
   };
 
@@ -252,40 +357,108 @@ export default class Plotter extends React.Component {
       padding,
       snap,
       resolution,
-      updateState
+      setState
     } = this.props
     const {
       width,
       height
     } = planting
     // const ev = e.nativeEvent
-    let x = ev.offsetX  
-    let y = ev.offsetY  
+
+    let svgElement = ReactDOM.findDOMNode(this.props.getSVG())
+    let element = ReactDOM.findDOMNode(this.plantingInstances[planting.id])
+
+    //make a point at the current mouse coords, relative to window
+    let mousePoint = this.makePoint(e.clientX, e.clientY)
+
+    //transform matrix: window coords to main <SVG> element coords
+    let windowToCanvasTM = this.props.getSVG().getScreenCTM().inverse().multiply(svgElement.getCTM())
+    //transform matrix: element to mouse coords
+    let windowToElementTM = element.getCTM().inverse().multiply(windowToCanvasTM)
+    // Transform from element to canvas coordinate spave
+    let elementToCanvasTM = element.getCTM().multiply(svgElement.getCTM())
+    //coords: mouse relative to clicked element
+    let mouseCoordsInElementSpace = mousePoint.matrixTransform(windowToElementTM)
+    // Coords of actual element top left corner in SVG space (not of bounding box!)
+    let elementTopLeft = this.makePoint(0, 0).matrixTransform(elementToCanvasTM)
+    let elementCenter = this.makePoint(width/2, height/2).matrixTransform(elementToCanvasTM)
+
+    let x = ev.offsetX
+    let y = ev.offsetY
     if (snap) {
       x = Math.floor(x / resolution) * resolution || 0
       y = Math.floor(y / resolution) * resolution || 0
     }
-    updateState({
+    setState({
       isScaling: true,
-      transformStart: { x: planting.x, y: planting.y, width, height, surface, original:{x, y, width, height} }
+      transformStart: {
+        x: planting.x,
+        y: planting.y,
+        width,
+        height,
+        surface,
+        mouseToElement: mouseCoordsInElementSpace,
+        elementTopLeft,
+        elementCenter
+      }
     })
   };
 
   handleRotate = (plantingid, e) => {
     const {
-      updateState
+      setState,
+      current
     } = this.props
 
     const planting = this.props.plantings.find(p => p.id === plantingid)
 
-    updateState({
+    let rotation = current.rotation || 0
+    let {width, height, x, y} = current
+    // this.selectPlanting(planting)
+
+    let svgElement = ReactDOM.findDOMNode(this.props.getSVG())
+    let element = ReactDOM.findDOMNode(this.plantingInstances[planting.id])
+
+    //make a point at the current mouse coords, relative to window
+    let mousePoint = this.makePoint(e.clientX, e.clientY)
+
+    //transform matrix: window coords to main <SVG> element coords
+    let windowToCanvasTM = this.props.getSVG().getScreenCTM().inverse().multiply(svgElement.getCTM())
+    //transform matrix: element to mouse coords
+    let windowToElementTM = element.getCTM().inverse().multiply(windowToCanvasTM)
+    let elementToCanvasTM = element.getCTM().multiply(svgElement.getCTM())
+
+    //coords: mouse relative to clicked element
+    let mouseCoordsInElementSpace = mousePoint.matrixTransform(windowToElementTM)
+    // Coords of mouse cursor, relative to SVG Canvas
+    let mouseCoordsInCanvasSpace = mousePoint.matrixTransform(windowToCanvasTM)
+
+    let elementTopLeft = this.makePoint(0, 0).matrixTransform(elementToCanvasTM)
+    let elementCenter = this.makePoint(width/2, height/2).matrixTransform(elementToCanvasTM)
+
+    var centerRotate = svgElement.createSVGMatrix().translate(width/-2, height/-2).rotate(rotation).translate(width/2, height/2)
+    let elementTopLeftCenterRotated = this.makePoint(0,0).matrixTransform(centerRotate)
+    console.log(centerRotate, elementTopLeftCenterRotated)
+
+    setState({
       isRotating: true,
-      transformStart: { x: planting.x, y: planting.y, rotation: planting.rotation || 0 }
+      transformStart: {
+        x: current.x,
+        y: current.y,
+        width,
+        height,
+        rotation,
+        mouseToElement: mouseCoordsInElementSpace,
+        mouseToCanvas: mouseCoordsInCanvasSpace,
+        elementTopLeft,
+        elementCenter,
+        elementTopLeftCenterRotated
+      },
+      transformParams: {}
     })
   };
 
   handleKeyDown = (e) => {
-    console.log(e.keyCode)
     const {
       plantings,
       current,
@@ -293,58 +466,113 @@ export default class Plotter extends React.Component {
       height,
       snap,
       resolution,
-      setCurrentPosition
+      updateCurrent,
+      setState
     } = this.props
-    if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) {
+
+    let nextState = {}
+    let useSnap = snap
+
+    if (e.metaKey || e.ctrlKey) {
       return
     }
     if (!current) {
       return
     }
+    if (e.shiftKey) {
+      nextState.shiftDown = true
+      useSnap = false
+    }
+    if (e.altKey) {
+      nextState.altDown = true
+    }
     let {x, y} = plantings.find(p => p.id === current.id)
     switch (e.keyCode) {
+      case 16:
+        nextState.shiftDown = true
+        break
+      case 18:
+        nextState.altDown = true
+        break
       case 38: // Up
         e.preventDefault()
         if (y > 0) {
-          y = snap ? y - resolution : y - 1
+          y = useSnap ? y - resolution : y - 1
         }
         break
       case 40: // Down
         e.preventDefault()
         if (y) {
-          y = snap ? y + resolution : y + 1
+          y = useSnap ? y + resolution : y + 1
         }
         break
       case 37: // Left
         e.preventDefault()
         if (x > 0) {
-          x = snap ? x - resolution : x - 1
+          x = useSnap ? x - resolution : x - 1
         }
         break
       case 39: // Right
         e.preventDefault()
         if (x) {
-          x = snap ? x + resolution : x + 1
+          x = useSnap ? x + resolution : x + 1
         }
         break
     }
-    setCurrentPosition(x, y)
+    setState({
+      ...updateCurrent({x, y}),
+      ...nextState
+    })
   };
 
-  handleMouseOver = e => { this.props.setCursor('move') };
-  handleMouseOut = e => { this.props.setCursor() };
+  handleKeyUp = (e) => {
+    console.log('Keyup', e)
+    let nextState = {}
+    switch (e.keyCode) {
+      case 16:
+        nextState.shiftDown = false
+        break
+      case 18:
+        nextState.altDown = false
+        break
+    }
+    this.props.setState(nextState)
+  };
 
+  handleMouseOver = e => {
+    //this.props.setCursor('-webkit-grab')
+  };
+  handleMouseOut = e => {
+
+  };
+
+  handleBackgroundClick = e => {
+    this.props.deselectAll()
+  };
 
   render () {
-    let {plantings, current, width, height, cursor, setCursor} = this.props
+    let {width, height, plantings, current, cursor, setCursor, getSVG} = this.props
 
     return (
-      <g>
+      <g
+        id="plantings"
+        onMouseMove={this.handleMouseMove}
+        onMouseLeave={this.handleMouseLeave}
+        onMouseUp={this.handleMouseUp}
+      >
+        {current &&
+          <rect
+            id="plantings-hitbox"
+            x={0} y={0} width={width} height={height}
+            onClick={this.handleBackgroundClick}
+            stroke="none" fill="transparent"
+          />}
         {plantings
-          .map(planting => <Planting
-            ref={planting.id} 
+        .map(planting => (
+          <Planting
+            ref={(c) => c && (this.plantingInstances[planting.id] = c)}
             key={planting.id}
-            onMouseMove={this.handleMouseMove}
+            getSVG={getSVG}
             onTranslate={this.handleTranslate}
             onScale={this.handleScale}
             onRotate={this.handleRotate}
@@ -352,13 +580,17 @@ export default class Plotter extends React.Component {
             onMouseOver={this.handleMouseOver}
             onMouseOut={this.handleMouseOut}
             setCursor={setCursor}
-            isSelected={current && current.id === planting.id} 
-            planting={planting} />
-          )
-        }
+            isSelected={current && current.id === planting.id}
+            isTranslating={this.props.isTranslating}
+            isScaling={this.props.isScaling}
+            isRotating={this.props.isRotating}
+            transformParams={this.props.transformParams}
+            planting={planting}
+            cursor={cursor}
+          />)
+        )}
       </g>
-    )  
+    )
   }
 
 }
-

@@ -1,32 +1,31 @@
-import React, {Component} from 'react'
+import React, {PropTypes, Component} from 'react'
 import ReactDOM from 'react-dom'
 
 export default class Background extends Component {
 
-  handleMouseDown = e => {
-    this.props.deselectAll()
+  static propTypes = {
+    width: PropTypes.number.isRequired,
+    height: PropTypes.number.isRequired,
+    onMouseUp: PropTypes.func
   };
 
-  handleMouseUp = e => this.props.isTranslating && this.props.updateState({isTranslating: false});
+  static defaultProps = {
+    onMouseUp: () => {},
+    onMouseDown: () => {}
+  };
 
   render () {
     let { width, height } = this.props
 
-
     let styles = {
       bg: {
         fill: '#E0DDC0'
-      },
+      }
     }
-
-    // if (!grid || preview) {
-    //   return false
-    // }
-
 
     return (
       <g>
-        <rect {...{...styles.bg, width, height}} onMouseDown={this.handleMouseDown} onMouseUp={this.handleMouseUp} ref="background"  />
+        <rect {...{...styles.bg, width, height}} onMouseDown={this.props.onMouseDown} onMouseUp={this.props.handleMouseUp} ref="background"  />
       </g>
     )
   }
