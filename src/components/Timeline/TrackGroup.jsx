@@ -5,7 +5,7 @@ import Track from './Track'
 
 const defaultStyles = {
   all: {
-    
+
   },
   backdrop: {
     fill: 'transparent',
@@ -39,7 +39,7 @@ export default class TrackGroup extends Component {
   };
 
   static defaultProps = {
-    styles: defaultStyles, 
+    styles: defaultStyles,
     showTicks: false
   };
 
@@ -60,7 +60,7 @@ export default class TrackGroup extends Component {
       isEven,
       isHovered,
       isSelected,
-      ...childProps 
+      ...childProps
     } = this.props
 
     return {
@@ -93,7 +93,7 @@ export default class TrackGroup extends Component {
       isEven,
       isHovered,
       isSelected,
-      ...childProps 
+      ...childProps
     } = this.props
 
     const newChildren = this.props.assistedRender ? this.copyChildren() : this.renderChildren()
@@ -102,7 +102,7 @@ export default class TrackGroup extends Component {
 
     return (
       <g transform={`translate(0, ${plotY(numChildren)})`} style={{...defaultStyles.all, ...styles.all}}>
-        <rect x={0} y={0} width="100%" height={trackHeight * numChildren} 
+        <rect x={0} y={0} width="100%" height={trackHeight * numChildren}
         style={{...defaultStyles.backdrop, ...styles.backdrop, ...defaultStyles[`backdrop${isEven?'Even':'Odd'}`], ...styles[`backdrop${isEven?'Even':'Odd'}`]}} />
         <g style={{...defaultStyles.lines, ...styles.lines}}>
         {showTicks && ticks
@@ -129,10 +129,10 @@ export default class TrackGroup extends Component {
     const sharedProps = this.getSharedChildProps()
 
     return (tracks.map(({from, to, lines, periods, markers, styles}, trackIndex) =>
-      (<Track 
-        from={from} 
-        to={to} 
-        key={trackIndex} 
+      (<Track
+        from={from}
+        to={to}
+        key={trackIndex}
         styles={styles || {}}
         yPos={trackHeight*trackIndex}
         trackIndex={trackIndex}
@@ -140,7 +140,7 @@ export default class TrackGroup extends Component {
         periods={periods}
         markers={markers}
         isHovered={isHovered && hoveredTrackIndex[1]===trackIndex}
-        isSelected={isSelected && selectedTrackIndex[1]===trackIndex}        
+        isSelected={isSelected && selectedTrackIndex[1]===trackIndex}
         {...sharedProps}>
       </Track>)
     ))

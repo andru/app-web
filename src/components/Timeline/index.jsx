@@ -23,7 +23,7 @@ const defaultStyles = {
   svg: {
     overflow:'visible',
     userSelect:'none',
-    display: 'flex',
+    WebkitUserSelect: 'none',
     flex: 1
   },
   backdrop: {
@@ -54,7 +54,8 @@ export default class Timeline extends Component {
     topGutterHeight: PropTypes.number,
     onMarkerChange: PropTypes.func,
     onMarkerEditIntent: PropTypes.func,
-    onDateRangeChange: PropTypes.func
+    onDateRangeChange: PropTypes.func,
+    styles: PropTypes.object
   };
 
   static defaultProps = {
