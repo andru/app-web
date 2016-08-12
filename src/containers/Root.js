@@ -35,7 +35,7 @@ export default class Root extends React.Component {
       <Provider store={this.props.store}>
         <Row>
           {this.content}
-          {this.devTools}
+          {window.devToolsExtension || this.devTools}
         </Row>
       </Provider>
     )
