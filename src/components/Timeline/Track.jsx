@@ -19,6 +19,9 @@ const defaultStyles = {
     stroke: 'none',
     cursor: 'pointer'
   },
+  inner: {
+
+  },
   outer: {
 
   },
@@ -38,6 +41,8 @@ export default class Track extends Component {
   static propTypes = {
     plotX: React.PropTypes.func.isRequired,
     yPos: PropTypes.number.isRequired,
+    drawFrom: PropTypes.instanceOf(Date).isRequired,
+    drawTo: PropTypes.instanceOf(Date).isRequired,
     from: PropTypes.instanceOf(Date).isRequired,
     to: PropTypes.instanceOf(Date).isRequired,
     styles: PropTypes.object,
@@ -111,11 +116,11 @@ export default class Track extends Component {
     }
     return (
       <g
-      style={style}
-      onMouseEnter={this.onMouseEnter}
-      onClick={this.onClick}
-      transform={`translate(0, ${yPos})`}>
-        <rect style={backgroundStyle} width="100%" height={height} />
+        style={style}
+        onMouseEnter={this.onMouseEnter}
+        onClick={this.onClick}
+        transform={`translate(0, ${yPos})`}>
+        <rect style={backgroundStyle} x={plotX(this.props.drawFrom)} width={plotX(this.props.drawTo)} height={height} />
         <g
         style={{...defaultStyles.inner, ...styles.inner}}>
           {newChildren}

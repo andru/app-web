@@ -24,18 +24,19 @@ const defaultStyles = {
 
 export default class TrackGroup extends Component {
   static propTypes = {
-    state: PropTypes.object,
-    actions: PropTypes.object,
-    plotX: PropTypes.func,
+    actions: PropTypes.object.isRequired,
+    plotX: PropTypes.func.isRequired,
+    drawFrom: PropTypes.instanceOf(Date).isRequired,
+    drawTo: PropTypes.instanceOf(Date).isRequired,
     from: PropTypes.instanceOf(Date).isRequired,
     to: PropTypes.instanceOf(Date).isRequired,
-    plotY: PropTypes.func,
+    plotY: PropTypes.func.isRequired,
     styles: PropTypes.object,
-    trackHeight: PropTypes.number,
-    ticks: PropTypes.object,
+    trackHeight: PropTypes.number.isRequired,
+    ticks: PropTypes.array,
     showTicks: PropTypes.bool,
-    hoveredTrackIndex: PropTypes.number,
-    selectedTrackIndex: PropTypes.number
+    hoveredTrackIndex: PropTypes.array.isRequired,
+    selectedTrackIndex: PropTypes.array.isRequired
   };
 
   static defaultProps = {
@@ -102,17 +103,17 @@ export default class TrackGroup extends Component {
 
     return (
       <g transform={`translate(0, ${plotY(numChildren)})`} style={{...defaultStyles.all, ...styles.all}}>
-        <rect x={0} y={0} width="100%" height={trackHeight * numChildren}
-        style={{...defaultStyles.backdrop, ...styles.backdrop, ...defaultStyles[`backdrop${isEven?'Even':'Odd'}`], ...styles[`backdrop${isEven?'Even':'Odd'}`]}} />
+        <rect x={plotX(from)} y={0} width={plotX(to)} height={trackHeight * numChildren}
+          style={{...defaultStyles.backdrop, ...styles.backdrop, ...defaultStyles[`backdrop${isEven?'Even':'Odd'}`], ...styles[`backdrop${isEven?'Even':'Odd'}`]}} />
         <g style={{...defaultStyles.lines, ...styles.lines}}>
-        {showTicks && ticks
-          .map( date => ({date, xPos:plotX(date)}) )
-          .map( ({date, xPos}) => <line x1={xPos} x2={xPos} y1={0} y2={trackHeight * numChildren} />)
-        }
+          {showTicks && ticks
+            .map( date => ({date, xPos:plotX(date)}) )
+            .map( ({date, xPos}) => <line x1={xPos} x2={xPos} y1={0} y2={trackHeight * numChildren} />)
+          }
         </g>
         {newChildren}
       </g>
-    )
+      )
   }
 
   renderChildren () {
@@ -128,8 +129,11 @@ export default class TrackGroup extends Component {
 
     const sharedProps = this.getSharedChildProps()
 
-    return (tracks.map(({from, to, lines, periods, markers, styles}, trackIndex) =>
-      (<Track
+    return (
+      tracks.map(({from, to, lines, periods, markers, styles}, trackIndex) => (
+      <Track
+        drawFrom={this.props.drawFrom}
+        drawTo={this.props.drawTo}
         from={from}
         to={to}
         key={trackIndex}
