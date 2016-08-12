@@ -9,7 +9,8 @@ import {
   getEventDate,
   getEarliestEventDate,
   getLatestEventDate,
-  // getLatestTimelineDate,
+  getEarlestTimelineDate,
+  getLatestTimelineDate,
   // isEstimate,
   // isEventDateRange,
   formatPlantingForTimeline
@@ -94,7 +95,10 @@ export const selectTimelineData = createSelector(
     // create an object that the timeline can use
     .map(_.partial(formatPlantingForTimeline, plants, places))
     .groupBy('placeId')
-    .map((group, id) => ({name: id, tracks: group}))
+    .map((group, id) => ({
+      name: id,
+      tracks: group
+    }))
     .value()
   }
 )
@@ -120,7 +124,7 @@ export const selectToDateString = createSelector(
   }
 )
 
-export const selectedTimelineDataForRange = createSelector(
+export const selectTimelineDataForRange = createSelector(
   selectFromDateString,
   selectToDateString,
   selectTimelineData,
@@ -180,7 +184,7 @@ export const selectEditEventFormData = createSelector(
 export const selector = createSelector(
   selectActivePlantings,
   selectTimelineState,
-  selectedTimelineDataForRange,
+  selectTimelineData,
   (plantings,
     viewState,
     timelineData) => ({
