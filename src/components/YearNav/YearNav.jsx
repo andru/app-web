@@ -150,7 +150,10 @@ export default class YearNav extends Component{
     // TODO performance improvements by batching this into RaF
     // or move all state out into props to allow for performance tweaking
     // higher up
-    this.props.onChange(newSelectedFromDate, newSelectedToDate)
+
+    if (newSelectedFromDate < newSelectedToDate) {
+      this.props.onChange(newSelectedFromDate, newSelectedToDate)
+    }
     this.setState({
       mouseStart: mouse
     })
