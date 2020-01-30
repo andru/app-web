@@ -3,6 +3,24 @@
 var React = require('react');
 var cx = require('classnames');
 
+const defaultTheme = {
+  sheet: {
+    "background": "#F0F0E7"
+  },
+  field: {
+    "background": "#FFFFFF"
+  }
+}
+
+const whiteTheme = {
+  sheet: {
+    "background": "#FFFFFF"
+  },
+  field: {
+    "background": "#F0F0E7"
+  }
+}
+
 var FattySheet = React.createClass({
   propTypes:{
     size: React.PropTypes.oneOf(['supersize', 'regular', 'value'])
@@ -28,17 +46,8 @@ var FattySheet = React.createClass({
       ...props
     } = this.props;
 
-    var fieldClasses = cx(
-      'Fatty'
-    ,  'Fatty-Sheet'
-    , 'Fatty-Sheet--'.concat(this.props.theme)
-    , {
-      'Fatty--regular':this.props.size==='regular',
-      'Fatty--supersized': this.props.size==='supersize'
-    });
-    fieldClasses+=' '+(className || '');
 
-    return (<div className={fieldClasses} {...props}>
+    return (<div style={{defaultTheme}} {...props}>
       {this.props.children}
     </div>);
   }

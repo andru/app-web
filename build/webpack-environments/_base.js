@@ -8,6 +8,8 @@ const paths = config.utils_paths
 const debug = _debug('app:webpack:_base')
 debug('Create configuration.')
 
+var DashboardPlugin = require('webpack-dashboard/plugin')
+
 // const CSS_LOADER = !config.compiler_css_modules
 //   ? 'css?sourceMap'
 //   : [
@@ -58,7 +60,8 @@ const webpackConfig = {
       template: paths.client('200.html'),
       __KARMA_IGNORE__: true
     }),
-    new webpack.optimize.CommonsChunkPlugin("common.js")
+    new webpack.optimize.CommonsChunkPlugin("common.js"),
+    new DashboardPlugin()
   ],
   resolve: {
     root: paths.base(config.dir_client),

@@ -134,6 +134,7 @@ export default class Plotter extends Component {
 
     let svgElement = this.props.getSVG()
     let element = ReactDOM.findDOMNode(this.plantingInstances[current.id])
+
     // mouse point
     let mousePoint = this.makePoint(e.clientX, e.clientY)
     // Transform from window to <SVG> coordinate space
@@ -304,6 +305,11 @@ export default class Plotter extends Component {
 
     let svgElement = this.props.getSVG()
     let element = ReactDOM.findDOMNode(this.plantingInstances[planting.id])
+
+    console.log('Does this return anykthings?')
+    console.log(svgElement)
+    console.log(svgElement.getCTM())
+
     //make a point at the current mouse coords, relative to window
     let mousePoint = this.makePoint(e.clientX, e.clientY)
     //transform matrix: window coords to main <SVG> element coords

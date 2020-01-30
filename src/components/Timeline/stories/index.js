@@ -1,9 +1,9 @@
 import React from 'react'
 import {storiesOf, action} from '@kadira/storybook'
+import { withKnobs, text, boolean, number } from '@kadira/storybook-addon-knobs'
 import Measure from 'react-measure'
 
 import Container from './container'
-
 import Timeline from '../'
 
 const fixture = require('./fixture.json')
@@ -57,7 +57,10 @@ const data = fixture.map(item => ({
 
 console.dir(data)
 
-storiesOf('Timeline', module)
-.add('with data', () => {
+const stories = storiesOf('Timeline', module)
+
+stories.addDecorator(withKnobs);
+
+stories.add('with data', () => {
   return wrap(<WrappedTimeline {...{initialFrom, initialTo, data}} />)
 })

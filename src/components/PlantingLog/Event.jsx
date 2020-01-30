@@ -10,6 +10,7 @@ const defaultStyles = StyleSheet.create({
   container: {
     alignItems: 'stretch',
     flexShrink: 0,
+    flexGrow: 0,
     color: '#FFFFFF',
     paddingTop: 0,
     paddingBottom: 0

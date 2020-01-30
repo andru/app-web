@@ -12,6 +12,8 @@ const wrapStyle = {
 
 export function wrap (component, styles={}) {
   return (
-    <div style={{...wrapStyle, ...styles}}>{component}</div>
+    <div style={{...wrapStyle, ...styles}}>
+      {component}
+    </div>
   )
 }

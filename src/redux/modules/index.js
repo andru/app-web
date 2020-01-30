@@ -1,5 +1,4 @@
 import {combineReducers} from 'redux'
-import {routeReducer} from 'redux-simple-router'
 
 // core
 import {reducer as app} from './app'
@@ -25,7 +24,7 @@ import {
   sagas as plantingsListSagas
 } from './plantingsList'
 
-export default combineReducers({
+export const reducers = {
   app,
 
   // app data
@@ -41,9 +40,8 @@ export default combineReducers({
   // views
   timeline,
   journal,
-  plantingsList,
-  routing: routeReducer
-})
+  plantingsList
+}
 
 export const sagas = [
   ...plantingsListSagas,

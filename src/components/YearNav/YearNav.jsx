@@ -1,7 +1,9 @@
 import React, {Component, PropTypes} from 'react'
 import ReactDOM from 'react-dom'
 import scale from 'd3-scale'
-import d3time from 'd3-time'
+// @FIXME for some reason import d3time ends up undefined but require works ok
+// import d3time from 'd3-time'
+const d3time = require('d3-time')
 import moment from 'moment'
 
 const RESIZEFACE_LEFT = 'LEFT'

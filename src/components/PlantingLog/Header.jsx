@@ -29,7 +29,7 @@ const defaultStyles = StyleSheet.create({
     paddingLeft: 0
   },
   menuIcon: {
-    width: 40,
+    width: 35,
     flexGrow: 0,
     flexShrink: 0
   },
@@ -87,7 +87,7 @@ export default class LogHeader extends Component{
     return (
       <Col style={getStyle('container')}>
         <Row style={getStyle('iconAndDetails')}>
-          <View style={getStyle('menuIcon')}>...</View>
+          <View style={getStyle('menuIcon')}></View>
           <View style={getStyle('plantIcon')}>icon</View>
           <Col style={getStyle('textDetails')}>
             <Row style={{alignItems: 'flex-end'}}>

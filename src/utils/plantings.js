@@ -84,7 +84,9 @@ export function isEstimate (event) {
 }
 
 export function isEventDateRange (event) {
-  return event.eventDateType === 'range'
+  return (
+    event.eventDateType === 'range'
+  )
 }
 
 export function orderTimelineByDate (events) {
@@ -128,45 +130,50 @@ export function formatPlantingForTimeline (plants, places, planting) {
     plantId,
     name,
     lines: timeline.reduce((accum, ev) => {
+      // for the first item, just add previousEvent and return
       if (accum.previousEvent === undefined) {
         accum.previousEvent = ev
-        return accum
+        // return accum
       }
 
       let earliestDate = getEarliestEventDate(ev)
       let latestDate = getLatestEventDate(ev)
-      let previousEventDate = getLatestEventDate(accum.previousEvent)
+      let eventIsEstimate = isEstimate(ev)
+      let eventIsRange = isEventDateRange(ev)
 
-      if (isEstimate(accum.previousEvent) && isEstimate(ev)) {
+      // 2 types of line to be drawn here...
+      // - a line between the two dates of a range event
+      // - a line from the previous event to the start of current event
+
+      if (accum.previousEvent) {
+        let previousEventDate = getLatestEventDate(accum.previousEvent)
+        // draw a line from the previous event to this one...
         addLine(accum.lines, {
           from: previousEventDate,
           to: earliestDate,
-          appearance: 'dashed'
-        })
-        // if the event is a range/period, draw a line between the two dates
-        if (!moment(latestDate).isSame(earliestDate)) {
-          // draw a dotted line between the two range dates if the latter is undefined...
-          if (ev.estimateDateRange[1] === undefined) {
-            addLine(accum.lines, {
-              from: earliestDate,
-              to: latestDate,
-              appearance: 'dashed'
-            })
-          } else {
-            addLine(accum.lines, {
-              from: earliestDate,
-              to: latestDate,
-              appearance: 'solid'
-            })
-          }
-        }
-      } else {
-        addLine(accum.lines, {
-          from: previousEventDate,
-          to: latestDate,
           appearance: 'solid'
         })
       }
+
+      // if the event is a range/period, draw a line between the two dates
+      if (eventIsRange) {
+        if (ev.estimateDateRange[1] === undefined) {
+          // addLine(accum.lines, {
+          //   from: earliestDate,
+          //   to: latestDate,
+          //   appearance: eventIsEstimate ? 'dashed' : 'solid'
+          // })
+        } else {
+          addLine(accum.lines, {
+            from: earliestDate,
+            to: latestDate,
+            appearance: 'solid' //eventIsEstimate ? 'dashed' : 'solid'
+          })
+        }
+      }
+
+      accum.previousEvent = ev
+
       return accum
     }, {
       lines: [],

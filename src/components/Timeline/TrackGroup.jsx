@@ -85,6 +85,8 @@ export default class TrackGroup extends Component {
       trackGroupIndex,
       plotX,
       plotY,
+      drawFrom,
+      drawTo,
       from,
       to,
       trackHeight,
@@ -103,7 +105,7 @@ export default class TrackGroup extends Component {
 
     return (
       <g transform={`translate(0, ${plotY(numChildren)})`} style={{...defaultStyles.all, ...styles.all}}>
-        <rect x={plotX(from)} y={0} width={plotX(to)} height={trackHeight * numChildren}
+        <rect x={this.props.drawBoundary[0]} y={0} width={this.props.drawBoundary[1]-this.props.drawBoundary[0]} height={trackHeight * numChildren}
           style={{...defaultStyles.backdrop, ...styles.backdrop, ...defaultStyles[`backdrop${isEven?'Even':'Odd'}`], ...styles[`backdrop${isEven?'Even':'Odd'}`]}} />
         <g style={{...defaultStyles.lines, ...styles.lines}}>
           {showTicks && ticks

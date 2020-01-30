@@ -122,7 +122,7 @@ export default class Track extends Component {
         transform={`translate(0, ${yPos})`}>
         <rect style={backgroundStyle} x={plotX(this.props.drawFrom)} width={plotX(this.props.drawTo)} height={height} />
         <g
-        style={{...defaultStyles.inner, ...styles.inner}}>
+          style={{...defaultStyles.inner, ...styles.inner}}>
           {newChildren}
         </g>
       </g>
@@ -132,12 +132,12 @@ export default class Track extends Component {
   renderChildren () {
     const { periods, lines, markers, trackGroupIndex, trackIndex, plotX, height, isEditing } = this.props
 
-    const sharedProps = this.getSharedChildProps()
+    const {yPos, ...sharedProps} = this.getSharedChildProps()
 
     let renderedPeriods = periods.map( ({from, to}, i) => (
-      <Period from={from} to={to} key={`period-${i}`} {...sharedProps} />) )
-    let renderedLines = lines.map( ({from, to, appearance}) => (
-      <Line from={from} to={to} appearance={appearance} {...sharedProps} />) )
+      <Period from={from} to={to} key={`period-${i}`} yPos={yPos} {...sharedProps} />) )
+    let renderedLines = lines.map( ({from, to, appearance}, i) => (
+      <Line from={from} to={to} appearance={appearance} yPos={yPos} {...sharedProps} />) )
     let renderedMarkers = markers.map( (marker, index) => (
       <Marker
         date={marker.date}
@@ -146,6 +146,7 @@ export default class Track extends Component {
         appearance={marker.appearance}
         onMouseDown={e => isEditing && this.startMarkerMove(trackGroupIndex, trackIndex, index, marker, e)}
         onClick={e => isEditing || this.editMarker(trackGroupIndex, trackIndex, index, marker, e)}
+        yPos={yPos}
         {...sharedProps} />
     ) )
 

@@ -1,7 +1,9 @@
 import React, {Component, PropTypes} from 'react'
 import ReactDOM from 'react-dom'
 import TransitionGroup from 'react-addons-css-transition-group'
-import d3time from 'd3-time'
+// @FIXME for some reason import d3time ends up undefined but require works ok
+// import d3time from 'd3-time'
+const d3time = require('d3-time')
 import scale from 'd3-scale'
 import _ from 'lodash'
 import moment from 'moment'
@@ -166,10 +168,11 @@ export default class Timeline extends Component {
   }
 
   getDrawDates () {
-    const numDays = moment.duration(moment.range(dateBounds[0], dateBounds[1]).valueOf()).asDays()
+    const numDays = moment.duration(moment.range(this.props.from, this.props.to).valueOf()).asDays()
 
     return [
-      this.props.from
+      this._scale(),
+      this._Scale()
     ]
   }
 
@@ -284,6 +287,7 @@ export default class Timeline extends Component {
   };
 
   handleMouseWheel = (e) => {
+    e.preventDefault()
     if (e.deltaX !== 0) {
       // console.log(e.deltaX)
       const {from, to} = this.props
@@ -412,6 +416,10 @@ export default class Timeline extends Component {
               key={groupIndex}
               drawFrom={this.props.from}
               drawTo={this.props.to}
+              drawBoundary={[
+                this.props.width * -1 * this._zoomScale,
+                this.props.width * 2 * this._zoomScale
+              ]}
               from={tracks.map( ({from}) => from ).reduce(earliest)}
               to={tracks.map( ({to}) => to ).reduce(latest)}
               tracks={tracks}

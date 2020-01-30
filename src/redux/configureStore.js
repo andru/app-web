@@ -1,17 +1,18 @@
 import thunk from 'redux-thunk'
-import rootReducer, {sagas} from './modules'
-import {syncHistory} from 'redux-simple-router'
+import {reducers, sagas} from './modules'
 import {applyMiddleware, compose, combineReducers, createStore} from 'redux'
+import {browserHistory} from 'react-router'
+import {routerMiddleware, routerReducer} from 'react-router-redux'
 import createSagaMiddleware from 'redux-saga'
 
-export default function configureStore (initialState, history) {
+export default function configureStore (initialState) {
   let createStoreWithMiddleware
 
   // Sync dispatched route actions to the history
-  const reduxRouterMiddleware = syncHistory(history)
+  // const reduxRouterMiddleware = syncHistory(history)
 
   const middleware = applyMiddleware(
-    reduxRouterMiddleware,
+    routerMiddleware(browserHistory),
     thunk,
     createSagaMiddleware(...sagas)
   )
@@ -27,12 +28,15 @@ export default function configureStore (initialState, history) {
   }
 
   const store = createStoreWithMiddleware(createStore)(
-    rootReducer, initialState
+    combineReducers({
+      ...reducers,
+      routing: routerReducer
+    }), initialState
   )
-  if (__DEBUG__) {
-    // Required for replaying actions from devtools to work
-    reduxRouterMiddleware.listenForReplays(store)
-  }
+  // if (__DEBUG__) {
+  //   // Required for replaying actions from devtools to work
+  //   reduxRouterMiddleware.listenForReplays(store)
+  // }
   if (module.hot) {
     module.hot.accept('./modules', () => {
       const nextRootReducer = require('./modules')
